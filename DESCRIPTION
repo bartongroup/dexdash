@@ -1,0 +1,29 @@
+Package: DEexplorer
+Type: Package
+Title: Shiny app to explore results from the differential expression
+Version: 0.1.0
+Authors@R: person(
+    given = "Marek",
+    family = "Gierlinski",
+    email = "M.Gierlinski@dundee.ac.uk",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0001-9149-3514")
+    ) 
+Description: 
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    assertthat,
+    rlang,
+    dplyr,
+    stringr,
+    readr,
+    purrr,
+    jsonlite,
+    fenr,
+    shiny,
+    bslib,
+    bsicons,
+    shinyWidgets,
+    dqshiny

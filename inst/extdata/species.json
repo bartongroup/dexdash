@@ -1,0 +1,12 @@
+{
+  "human" : {
+    "go" : "goa_human",
+    "reactome" : "Homo sapiens",
+    "kegg" : "hsa"
+  },
+  "yeast" : {
+    "go" : "sgd",
+    "reactome" : "Saccharomyces cerevisiae",
+    "kegg" : "sce"
+  }
+}
