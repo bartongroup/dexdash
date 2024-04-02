@@ -10,8 +10,8 @@
 #    state$sel_term - feature IDs corresponding to the functional term selected in the table.
 #
 # Uses:
-#    DATA$fterms - a list of fterm objects prepared by fterm
-#    DATA$de - differential expression results (only to find the full list of featrures)
+#    data_set$fterms - a list of fterm objects prepared by fterm
+#    data_set$de - differential expression results (only to find the full list of featrures)
 #
 
 # ----- UI definitions -----
@@ -61,7 +61,7 @@ mod_enrichment_server <- function(id, data_set, state) {
 
     # Observe state$sel_brush - a selection brushed from a Volcano/MA plot.
     # Create and return a functional enrichment table using fenr. Requires
-    # DATA$de - differential expression results and DATA$fterms - prepared for
+    # data_set$de - differential expression results and data_set$fterms - prepared for
     # fenr.
     enrichment_table <- shiny::reactive({
       sel_ids <- state$sel_functional_enrichment
@@ -99,7 +99,7 @@ mod_enrichment_server <- function(id, data_set, state) {
 
   }
 
-  moduleServer(id, server)
+  shiny::moduleServer(id, server)
 }
 
 
@@ -114,7 +114,10 @@ mod_enrichment_server <- function(id, data_set, state) {
 #' @param fdr_limit FDR limit for selection of terms
 #'
 #' @return A tibble with significant functional terms
+#' @noRd
 make_functional_enrichment <- function(sel_ids, all_ids, trms, id2name, fdr_limit) {
+  p_adjust <- term_id <- term_name <- n_with_sel <- odds_ratio <- ids <- NULL
+
   n <- length(sel_ids)
 
   fe <- NULL

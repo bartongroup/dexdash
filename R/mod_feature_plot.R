@@ -7,12 +7,10 @@
 #    state$sel_feature_plot - selection of feature IDs to plot
 #
 # Uses:
-#    DATA$data - a tibble with values per feature
-#    DATA$features - a tibble with feature ID and feature name
-#    DATA$metadata - a tibble with data grouping
+#    data_set$data - a tibble with values per feature
+#    data_set$features - a tibble with feature ID and feature name
+#    data_set$metadata - a tibble with data grouping
 #
-
-okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "grey80", "grey30", "black")
 
 # ----- UI definitions -----
 
@@ -71,19 +69,19 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
-    output$feature_plot <- renderPlot({
+    output$feature_plot <- shiny::renderPlot({
       ids <- state$sel_feature_plot
       shiny::req(ids)
       d <- data_set$data |>
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id")
-      sh_plot_features(d, meta = data_set$metadata, scale = input$intensity_scale,
+      plot_features(d, meta = data_set$metadata, scale = input$intensity_scale,
                     what = "value", max_n_lab = 50, norm_fc = input$norm_fc,
                     group_mean = input$group_mean)
     })
   }
 
-  moduleServer(id, server)
+  shiny::moduleServer(id, server)
 }
 
 
@@ -98,7 +96,11 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #' @param cex Point spread scaling for beeswarm
 #'
 #' @return ggplot object
-sh_plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_size, cex) {
+#' @noRd
+plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_size, cex) {
+  val <- group <- shape <- x <- NULL
+  okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
+    "#CC79A7", "grey80", "grey30", "black")
 
   d <- d |>
     dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
@@ -134,14 +136,17 @@ sh_plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, poi
 #' Plot a heatmap of multiple features
 #'
 #' @param d Feature data
-#' @param ylab Label on y axis
+#' @param lab Label on y axis
 #' @param text_size Text size
 #' @param max_n_lab Limit of features above which feature names are not displayed
 #' @param norm_fc Logical, normalise in each feature to its mean and plot logFC
 #' @param group_mean logical, to average data across groups (conditions)
+#' @param max_name_len Numeric, maximum length of the name; longer names will be shortened in the plot.
 #'
 #' @return ggplot object
-sh_plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_mean, max_name_len = 18) {
+#' @noRd
+plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_mean, max_name_len = 18) {
+  id <- val <- M <- name <- group <- NULL
 
   if (norm_fc) {
     d <- d |>
@@ -206,7 +211,8 @@ sh_plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group
 #' @param group_mean logical, to average data across groups (conditions)
 #'
 #' @return A ggplot object
-sh_plot_features <- function(dat, meta, scale, what = "value", text_size = 14, point_size = 3, cex = 2,
+#' @noRd
+plot_features <- function(dat, meta, scale, what = "value", text_size = 14, point_size = 3, cex = 2,
                           max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
 
   if(nrow(dat) == 0) return(NULL)
@@ -227,8 +233,8 @@ sh_plot_features <- function(dat, meta, scale, what = "value", text_size = 14, p
 
   n_feat <- length(unique(d$id))
   if(n_feat == 1) {
-    sh_plot_one_feature(d, lab, scale, text_size, point_size, cex)
+    plot_one_feature(d, lab, scale, text_size, point_size, cex)
   } else {
-    sh_plot_feature_heatmap(d, lab, text_size, max_n_lab, norm_fc, group_mean)
+    plot_feature_heatmap(d, lab, text_size, max_n_lab, norm_fc, group_mean)
   }
 }

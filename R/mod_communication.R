@@ -12,7 +12,7 @@ mod_communication_server <- function(id, data_set, state) {
     # Select feature IDs to be displayed by feature plot and shown in feature
     # table. Order of commands defines priority, the last one being most
     # important.
-    observe({
+    shiny::observe({
       ids <- NULL
       if(!is.null(state$sel_brush))
         ids <- state$sel_brush
@@ -29,7 +29,7 @@ mod_communication_server <- function(id, data_set, state) {
 
     # Selection for feature info. It is not the same as feature plot, because
     # one can select a row from the feature info table and display it as a plot.
-    observe({
+    shiny::observe({
       ids <- NULL
       if(!is.null(state$sel_brush))
         ids <- state$sel_brush
@@ -44,12 +44,12 @@ mod_communication_server <- function(id, data_set, state) {
 
     # For functional enrichment we only take brushed IDs from the Volcano/MA
     # plot
-    observe({
+    shiny::observe({
       state$sel_functional_enrichment <- state$sel_brush
     })
 
     # Selection of feature IDs to highlight in the Volcano/MA plot
-    observe({
+    shiny::observe({
       ids <- NULL
       if(!is.null(state$sel_term))
         ids <- state$sel_term
@@ -62,5 +62,5 @@ mod_communication_server <- function(id, data_set, state) {
 
   }
 
-  moduleServer(id, server)
+  shiny::moduleServer(id, server)
 }

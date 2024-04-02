@@ -25,7 +25,9 @@
 #'   biological databases. If `all_features` is provided, it also prepares the
 #'   data for enrichment analysis with `fenr::prepare_for_enrichment`.
 #' @examples
-#' terms <- download_functional_terms(species = "yeast")
+#' \dontrun{
+#' terms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
+#' }
 #' @export
 download_functional_terms <- function(species, species_file = NULL,
                                       feature_name = c("gene_symbol" ,"gene_id"), all_features = NULL) {
@@ -35,8 +37,8 @@ download_functional_terms <- function(species, species_file = NULL,
     assertthat::assert_that(file.exists(species_file))
     sf <- species_file
   } else {
-    #sf <- system.file("extdata", "species.json", package = "DEexplorer")
-    sf <- "inst/extdata/species.json"
+    sf <- system.file("extdata", "species.json", package = "DEexplorer")
+    #sf <- "inst/extdata/species.json"
   }
 
   all_sp <- jsonlite::read_json(sf)

@@ -26,17 +26,18 @@ mod_global_input_ui <- function(id) {
 # ----- Server logic -----
 
 mod_global_input_server <- function(id, data_set, state) {
+  contrast <- NULL
 
   server <- function(input, output, session) {
 
     # Update dummy contrast selection
     contrasts <- levels(data_set$de$contrast)
-    observe({
+    shiny::observe({
       shiny::updateSelectInput(session, "contrast", choices = contrasts)
     })
 
     # Update bases and search input when experiment changed
-    observeEvent(input$experiment, {
+    shiny::observeEvent(input$experiment, {
       all_names <- data_set$features$name |> unique()
       dqshiny::update_autocomplete_input(session, "search", options = c("", all_names))
     })
@@ -46,7 +47,7 @@ mod_global_input_server <- function(id, data_set, state) {
       state$base <- input$base
       ctrs <- data_set$de |>
         dplyr::pull(contrast) |>
-        dplyr::unique()
+        unique()
       shiny::updateSelectInput(session, "contrast", choices = ctrs)
     })
 
@@ -67,5 +68,5 @@ mod_global_input_server <- function(id, data_set, state) {
 
   }
 
-  moduleServer(id, server)
+  shiny::moduleServer(id, server)
 }

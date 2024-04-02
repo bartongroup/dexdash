@@ -10,8 +10,8 @@
 #    state$sel_tab - one feature ID selected in this info table
 #
 # Uses:
-#    DATA$de - a tibble with differential expression values
-#    DATA$features - a tibble with feature ID and feature name
+#    data_set$de - a tibble with differential expression values
+#    data_set$features - a tibble with feature ID and feature name
 #
 
 # ----- UI definitions -----
@@ -33,6 +33,7 @@ mod_feature_info_ui <- function(id) {
 mod_feature_info_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
+    contrast <- name <- description <- log_fc <- fdr <- logFC <- FDR <- NULL
 
     make_feature_info_table <- function(de, ids, ctr) {
       if (length(ids) <= CONFIG$max_points) {
@@ -73,7 +74,7 @@ mod_feature_info_server <- function(id, data_set, state) {
       if(!("Error" %in% colnames(ge))) {
         ge <- ge |>
           dplyr::select(Name = name, Description = description, logFC = log_fc, FDR = fdr) |>
-          dplyr::mutate(across(c(logFC, FDR), ~signif(.x, 3)))
+          dplyr::mutate(dplyr::across(c(logFC, FDR), ~signif(.x, 3)))
       }
       DT::datatable(
         ge,
@@ -86,5 +87,5 @@ mod_feature_info_server <- function(id, data_set, state) {
     })
   }
 
-  moduleServer(id, server)
+  shiny::moduleServer(id, server)
 }

@@ -9,17 +9,21 @@ Authors@R: person(
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-9149-3514")
     ) 
-Description: 
-License: MIT
+Description: For the input data (expression, differential expression and experimental design),
+    DEexplorer provides a Shiny app to explore the volcano or MA, plot, interrogate individual genes,
+    and explore functional enrichment.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
     assertthat,
     rlang,
+    tibble,
+    tidyr,
     dplyr,
     stringr,
-    readr,
     purrr,
+    ggplot2,
     ggbeeswarm,
     DT,
     jsonlite,
@@ -31,3 +35,4 @@ Imports:
     dqshiny
 Depends: 
     R (>= 2.10)
+RoxygenNote: 7.3.1

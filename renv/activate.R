@@ -763,7 +763,7 @@ local({
       return(basename(project))
   
     # otherwise, disambiguate based on project's path
-    id <- substring(renv_bootstrap_hash_text(project), 1L, 8L)
+    id <- substring(renv_bootstrap_hatext(project), 1L, 8L)
     paste(basename(project), id, sep = "-")
   
   }
@@ -856,7 +856,7 @@ local({
     is.character(expected) && identical(expected, version)
   }
   
-  renv_bootstrap_hash_text <- function(text) {
+  renv_bootstrap_hatext <- function(text) {
   
     hashfile <- tempfile("renv-hash-")
     on.exit(unlink(hashfile), add = TRUE)
