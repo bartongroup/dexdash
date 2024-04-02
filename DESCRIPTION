@@ -1,4 +1,4 @@
-Package: DEexplorer
+Package: volcenrich
 Type: Package
 Title: Shiny app to explore results from the differential expression
 Version: 0.1.0

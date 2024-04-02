@@ -37,7 +37,7 @@ download_functional_terms <- function(species, species_file = NULL,
     assertthat::assert_that(file.exists(species_file))
     sf <- species_file
   } else {
-    sf <- system.file("extdata", "species.json", package = "DEexplorer")
+    sf <- system.file("extdata", "species.json", package = "volcenrich")
     #sf <- "inst/extdata/species.json"
   }
 
