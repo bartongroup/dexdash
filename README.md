@@ -4,10 +4,18 @@ Maintainer: Marek Gierlinski
 
 Interactive explorer for differential expression data. Centred around an interactive volcano (or MA) plot, allows for manual selection of individual genes or groups of genes, provides plots and fast functional enrichment.
 
+## Installation
+
+```
+install.packages("remotes")
+remotes::install_github("daqana/dqshiny")
+remotes::install_github("bartongroup/volcenrich")
+```
+
 ## Example
 
 ```
-library(VolcenRich)
+library(volcenrich)
 
 # Load example data
 data(de, data, metadata, features)
