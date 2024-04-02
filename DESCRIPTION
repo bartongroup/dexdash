@@ -20,6 +20,8 @@ Imports:
     stringr,
     readr,
     purrr,
+    ggbeeswarm,
+    DT,
     jsonlite,
     fenr,
     shiny,
@@ -27,3 +29,5 @@ Imports:
     bsicons,
     shinyWidgets,
     dqshiny
+Depends: 
+    R (>= 2.10)

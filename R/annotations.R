@@ -8,6 +8,12 @@
 #' @param species_file (Optional) A character string providing the path to a
 #'   JSON file containing species information. If `NULL`, the default
 #'   species.json file from the package will be used.
+#' @param feature_name The name of the column in the \code{mapping} tibble to be
+#'   used as the feature identifier. It can be "gene_symbol" or "gene_id". If
+#'   your data contain gene symbols (e.g. "BRCA1" or "FOXP1"), use \code{feature_name
+#'   = "gene_symbol"}. If your data contain Ensembl identifiers (e.g. "ENSG00000012048"
+#'    or  "ENSG00000114861"), use \code{feature_name
+#'   = "gene_id"}.
 #' @param all_features (Optional) A vector of all possible features (such as
 #'   gene symbols) to prepare the data for enrichment analysis.
 #' @return A list of three elements, each containing data frames with the terms
@@ -21,7 +27,9 @@
 #' @examples
 #' terms <- download_functional_terms(species = "yeast")
 #' @export
-download_functional_terms <- function(species, species_file = NULL, all_features = NULL) {
+download_functional_terms <- function(species, species_file = NULL,
+                                      feature_name = c("gene_symbol" ,"gene_id"), all_features = NULL) {
+  feature_name <- match.arg(feature_name)
 
   if(!is.null(species_file)) {
     assertthat::assert_that(file.exists(species_file))
@@ -52,17 +60,9 @@ download_functional_terms <- function(species, species_file = NULL, all_features
   ontologies <- names(terms)
   purrr::map(ontologies, function(ont) {
     trm <- terms[[ont]]
-    fenr::prepare_for_enrichment(trm$terms, trm$mapping, all_features, feature_name = "gene_symbol")
+    fenr::prepare_for_enrichment(trm$terms, trm$mapping, all_features, feature_name = feature_name)
   }) |>
     rlang::set_names(ontologies)
 }
 
-
-CONFIG <- list(
-  title = "Test",
-  ontologies = c("go", "kegg", "reactome"),
-  max_points = 3000,
-  default_data_column = "rpkm"
-)
-EXPERIMENTS <- list()
 

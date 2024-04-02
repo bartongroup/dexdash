@@ -10,16 +10,6 @@ mod_global_input_ui <- function(id) {
 
   tagList(
     selectInput(
-      inputId = ns("experiment"),
-      label = "Experiment",
-      choices = c(EXPERIMENTS)
-    ),
-    selectInput(
-      inputId = ns("base"),
-      label = "DE approach",
-      choices = c("")
-    ),
-    selectInput(
       inputId = ns("contrast"),
       label = "Contrast",
       choices = c("")
@@ -38,36 +28,26 @@ mod_global_input_ui <- function(id) {
 
 # ----- Server logic -----
 
-mod_global_input_server <- function(id, state) {
+mod_global_input_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
-    # Update dummy base selection
-    bases <- unique(DATA[[EXPERIMENTS[1]]]$de$base)
-    observe({
-      updateSelectInput(session, "base", choices = bases)
-    })
-
     # Update dummy contrast selection
-    contrasts <- levels(DATA[[EXPERIMENTS[1]]]$de$contrast)
+    contrasts <- levels(data_set$de$contrast)
     observe({
       updateSelectInput(session, "contrast", choices = contrasts)
     })
 
     # Update bases and search input when experiment changed
     observeEvent(input$experiment, {
-      state$experiment <- input$experiment
-      bases <- unique(DATA[[input$experiment]]$de$base)
-      updateSelectInput(session, "base", choices = bases)
-      all_names <- DATA[[input$experiment]]$features$name |> unique()
+      all_names <- data_set$features$name |> unique()
       update_autocomplete_input(session, "search", options = c("", all_names))
     })
 
     # Observe base selection, copy to state, update contrast selection
     observeEvent(input$base, {
       state$base <- input$base
-      ctrs <- DATA[[input$experiment]]$de |>
-        filter(base == input$base) |>
+      ctrs <- data_set$de |>
         pull(contrast) |>
         unique()
       updateSelectInput(session, "contrast", choices = ctrs)

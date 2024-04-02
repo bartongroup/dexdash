@@ -77,7 +77,7 @@ mod_volma_plot_ui <- function(id) {
 #  - state$contrast - contrast selection
 #  - state$plot_type - Volcano or MA
 
-mod_volma_plot_server <- function(id, state) {
+mod_volma_plot_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
@@ -89,7 +89,7 @@ mod_volma_plot_server <- function(id, state) {
 
     # ...update app state with the selection
     observeEvent(to_listen(), {
-      xy_data <- get_volma_data(DATA[[state$experiment]]$de, state$base, state$contrast, input$plot_type)
+      xy_data <- get_volma_data(data_set$de, state$contrast, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
       if(!is.null(input$plot_brush)){
@@ -104,7 +104,7 @@ mod_volma_plot_server <- function(id, state) {
     })
 
     output$main_plot <- shiny::renderPlot({
-      xy_data <- get_volma_data(DATA[[state$experiment]]$de, state$base, state$contrast, input$plot_type)
+      xy_data <- get_volma_data(data_set$de, state$contrast, input$plot_type)
       sh_main_plot(xy_data, input$plot_type, state$sel_volma_highlight,
                    fdr_limit = input$fdr_limit, logfc_limit = input$logfc_limit)
     })
@@ -117,9 +117,9 @@ mod_volma_plot_server <- function(id, state) {
 
 # Functions used by the module
 
-get_volma_data <- function(de, bse, ctr, plot_type) {
+get_volma_data <- function(de, ctr, plot_type) {
   de <- de |>
-    dplyr::filter(base == bse & contrast == ctr)
+    dplyr::filter(contrast == ctr)
   if(plot_type == "Volcano") {
     xy_data <- de |>
       dplyr::mutate(x = log_fc, y = -log10(p_value))

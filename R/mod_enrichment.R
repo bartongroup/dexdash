@@ -64,7 +64,7 @@ mod_enrichment_ui <- function(id) {
 
 # ----- Server logic -----
 
-mod_enrichment_server <- function(id, state) {
+mod_enrichment_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
@@ -75,8 +75,8 @@ mod_enrichment_server <- function(id, state) {
     enrichment_table <- reactive({
       sel_ids <- state$sel_functional_enrichment
       req(!is.null(sel_ids) & length(sel_ids) > 1)
-      all_ids <- unique(DATA[[state$experiment]]$de$id)
-      make_functional_enrichment(sel_ids, all_ids, DATA[[state$experiment]]$fterms[[input$ontology]], DATA[[state$experiment]]$id2name, input$fdr_limit)
+      all_ids <- unique(data_set$de$id)
+      make_functional_enrichment(sel_ids, all_ids, data_set$fterms[[input$ontology]], data_set$id2name, input$fdr_limit)
     })
 
     # Wait for row selection in the enrichment table, find annotated features,
@@ -86,7 +86,7 @@ mod_enrichment_server <- function(id, state) {
       if(!is.null(rows_sel)) {
         fe <- enrichment_table()
         term_id <- fe[rows_sel, ]$TermId
-        ids <- fenr::get_term_features(DATA[[state$experiment]]$fterms[[input$ontology]], term_id)
+        ids <- fenr::get_term_features(data_set$fterms[[input$ontology]], term_id)
       } else {
         ids <- NULL
       }

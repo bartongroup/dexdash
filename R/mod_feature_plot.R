@@ -76,18 +76,18 @@ mod_feature_plot_ui <- function(id) {
 
 # ----- Server logic -----
 
-mod_feature_plot_server <- function(id, state) {
+mod_feature_plot_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
     output$feature_plot <- renderPlot({
       ids <- state$sel_feature_plot
       req(ids)
-      d <- DATA[[state$experiment]]$data |>
+      d <- data_set$data |>
         dplyr::filter(id %in% ids) |>
-        dplyr::left_join(DATA[[state$experiment]]$features, by = "id")
-      sh_plot_features(d, meta = DATA[[state$experiment]]$metadata, scale = input$intensity_scale,
-                    what = CONFIG$default_data_column, max_n_lab = 50, norm_fc = input$norm_fc,
+        dplyr::left_join(data_set$features, by = "id")
+      sh_plot_features(d, meta = data_set$metadata, scale = input$intensity_scale,
+                    what = "value", max_n_lab = 50, norm_fc = input$norm_fc,
                     group_mean = input$group_mean)
     })
   }
@@ -126,7 +126,7 @@ sh_plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, poi
       legend.position = "bottom"
     ) +
     scale_shape_identity() +  # necessary for shape mapping
-    geom_beeswarm(data = d, aes(x = group, y = val, fill = replicate, shape = shape),
+    geom_beeswarm(data = d, aes(x = group, y = val, fill = group, shape = shape),
                   colour = "grey40", size = point_size, cex = cex) +
     geom_vline(data = vlines, aes(xintercept = x), colour = "grey80", alpha = 0.5) +
     #scale_fill_viridis_d(option = "cividis") +
@@ -215,7 +215,7 @@ sh_plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group
 #' @param group_mean logical, to average data across groups (conditions)
 #'
 #' @return A ggplot object
-sh_plot_features <- function(dat, meta, scale, what = "rpkm", text_size = 14, point_size = 3, cex = 2,
+sh_plot_features <- function(dat, meta, scale, what = "value", text_size = 14, point_size = 3, cex = 2,
                           max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
 
   if(nrow(dat) == 0) return(NULL)
@@ -224,6 +224,8 @@ sh_plot_features <- function(dat, meta, scale, what = "rpkm", text_size = 14, po
     dplyr::mutate(val = get(what)) |>
     dplyr::left_join(meta, by = "sample") |>
     tidyr::drop_na()
+
+  print(d)
 
   if(nrow(d) == 0) return(NULL)
 

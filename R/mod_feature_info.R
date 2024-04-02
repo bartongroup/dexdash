@@ -35,15 +35,15 @@ mod_feature_info_ui <- function(id) {
 
 # ----- Server logic -----
 
-mod_feature_info_server <- function(id, state) {
+mod_feature_info_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
-    make_feature_info_table <- function(de, ids, bse, ctr) {
+    make_feature_info_table <- function(de, ids, ctr) {
       if (length(ids) <= CONFIG$max_points) {
         df <- de |>
-          dplyr::filter(id %in% ids & base == bse & contrast == ctr) |>
-          dplyr::left_join(DATA[[state$experiment]]$features, by = "id") |>
+          dplyr::filter(id %in% ids & contrast == ctr) |>
+          dplyr::left_join(data_set$features, by = "id") |>
           dplyr::arrange(name) |>
           dplyr::mutate(name = str_replace_all(name, ";", "; "))
       } else {
@@ -55,10 +55,9 @@ mod_feature_info_server <- function(id, state) {
     # Prepare updated feature info table
     feature_info_table <- reactive({
       ids <- state$sel_feature_info
-      bse <- state$base
       ctr <- state$contrast
       req(ids, ctr)
-      make_feature_info_table(DATA[[state$experiment]]$de, ids, bse, ctr)
+      make_feature_info_table(data_set$de, ids, ctr)
     })
 
     # Wait for row selection in the feature info table, pass it to app state
