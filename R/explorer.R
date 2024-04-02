@@ -1,6 +1,3 @@
-require(shiny)
-require(bslib)
-
 
 CONFIG <- list(
   title = "Test",
@@ -24,18 +21,18 @@ de_interactive <- function(de, data, metadata, features, fterms) {
   )
 
 
-  ui <- page_sidebar(
-    theme = bs_theme(bootswatch = "journal"),
+  ui <- bslib::page_sidebar(
+    theme = bslib::bs_theme(bootswatch = "journal"),
     title = "DE explorer",
 
-    sidebar = sidebar(
+    sidebar = bslib::sidebar(
       title = CONFIG$title,
       mod_global_input_ui("global_input")
     ),
 
-    layout_column_wrap(
+    bslib::layout_column_wrap(
       width = 1/3,
-      layout_column_wrap(
+      bslib::layout_column_wrap(
         width = 1,
         mod_volma_plot_ui("volma_plot"),
         mod_feature_plot_ui("feature_plot")
@@ -48,12 +45,12 @@ de_interactive <- function(de, data, metadata, features, fterms) {
   server <- function(input, output, session) {
     # Prevents RStudio from crashing when Shiny window closed manually
     session$onSessionEnded(function() {
-      stopApp()
+      shiny::stopApp()
     })
 
     # Initialise app state, reactive object for communication between modules
     # Note: an undefined reactive value defaults to NULL, so we can start with an empty list
-    app_state <- reactiveValues()
+    app_state <- shiny::reactiveValues()
 
     # server logic: modules
     mod_global_input_server("global_input", data_set, app_state)
@@ -63,8 +60,6 @@ de_interactive <- function(de, data, metadata, features, fterms) {
     mod_enrichment_server("enrichment", data_set, app_state)
     mod_communication_server("communication", data_set, app_state)
   }
-
-
 
   shiny::shinyApp(ui, server)
 }

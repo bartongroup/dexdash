@@ -14,27 +14,18 @@
 #    DATA$de - differential expression results (only to find the full list of featrures)
 #
 
-require(shinyWidgets)
-require(DT)
-require(tibble)
-require(dplyr)
-require(stringr)
-require(fenr)
-require(shiny)
-require(bsicons)
-
 # ----- UI definitions -----
 
 mod_enrichment_ui <- function(id) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
-  ontology <- radioGroupButtons(
+  ontology <- shinyWidgets::radioGroupButtons(
     inputId = ns("ontology"),
     label = "Ontology",
     choices = CONFIG$ontologies
   )
 
-  fdr_limit <- numericInput(
+  fdr_limit <- shiny::numericInput(
     inputId = ns("fdr_limit"),
     label = "FDR limit",
     value = 0.05,
@@ -42,14 +33,14 @@ mod_enrichment_ui <- function(id) {
     max = 1
   )
 
-  gear <- popover(
-    bs_icon("gear"),
+  gear <- bslib::popover(
+    bsicons::bs_icon("gear"),
     ontology,
     fdr_limit
   )
 
-  card(
-    card_header(
+  bslib::card(
+    bslib::card_header(
       "Functional enrichment",
       gear,
       class = "d-flex justify-content-between"
@@ -72,16 +63,16 @@ mod_enrichment_server <- function(id, data_set, state) {
     # Create and return a functional enrichment table using fenr. Requires
     # DATA$de - differential expression results and DATA$fterms - prepared for
     # fenr.
-    enrichment_table <- reactive({
+    enrichment_table <- shiny::reactive({
       sel_ids <- state$sel_functional_enrichment
-      req(!is.null(sel_ids) & length(sel_ids) > 1)
+      shiny::req(!is.null(sel_ids) & length(sel_ids) > 1)
       all_ids <- unique(data_set$de$id)
       make_functional_enrichment(sel_ids, all_ids, data_set$fterms[[input$ontology]], data_set$id2name, input$fdr_limit)
     })
 
     # Wait for row selection in the enrichment table, find annotated features,
     # pass it to the app state.
-    observeEvent(input$enrichment_rows_selected, ignoreNULL = FALSE, {
+    shiny::observeEvent(input$enrichment_rows_selected, ignoreNULL = FALSE, {
       rows_sel <- input$enrichment_rows_selected
       if(!is.null(rows_sel)) {
         fe <- enrichment_table()

@@ -12,60 +12,51 @@
 #    DATA$metadata - a tibble with data grouping
 #
 
-require(shiny)
-require(shinyWidgets)
-require(bsicons)
-require(dplyr)
-require(tibble)
-require(tidyr)
-require(ggplot2)
-require(ggbeeswarm)
-
 okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "grey80", "grey30", "black")
 
 # ----- UI definitions -----
 
 mod_feature_plot_ui <- function(id) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
-  group_mean <- checkboxInput(
+  group_mean <- shiny::checkboxInput(
     inputId = ns("group_mean"),
     label = "Heatmap averaged across replicates",
     value = TRUE
   )
 
-  norm_fc <- checkboxInput(
+  norm_fc <- shiny::checkboxInput(
     inputId = ns("norm_fc"),
     label = "Heatmap normalised per row",
     value = TRUE
   )
 
-  intensity_scale <- radioButtons(
+  intensity_scale <- shiny::radioButtons(
     inputId = ns("intensity_scale"),
     label = "Intesity scale",
     choices = c("Linear" = "lin", "Logarithmic" = "log"),
     inline = TRUE
   )
 
-  gear <- popover(
-    bs_icon("gear"),
+  gear <- bslib::popover(
+    bsicons::bs_icon("gear"),
     group_mean,
     norm_fc,
-    conditionalPanel(
+    shiny::conditionalPanel(
       condition = 'input.norm_fc == 0',
       ns = ns,
       intensity_scale
     )
   )
 
-  card(
-    card_header(
+  bslib::card(
+    bslib::card_header(
       "Feature plot",
       gear,
       class = "d-flex justify-content-between"
     ),
 
-    plotOutput(
+    shiny::plotOutput(
       outputId = ns("feature_plot"),
       width = "100%",
       height = "300px"
@@ -82,7 +73,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
     output$feature_plot <- renderPlot({
       ids <- state$sel_feature_plot
-      req(ids)
+      shiny::req(ids)
       d <- data_set$data |>
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id")
@@ -110,29 +101,29 @@ mod_feature_plot_server <- function(id, data_set, state) {
 sh_plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_size, cex) {
 
   d <- d |>
-    dplyr::mutate(shape = if_else(val == 0, 24, 21))
+    dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
 
   ncond <- length(unique(d$group))
   vlines <- tibble::tibble(x = seq(0.5, ncond + 0.5, 1))
 
-  nm <- first(d$name)
+  nm <- dplyr::first(d$name)
 
-  g <- ggplot() +
-    theme_bw() +
-    theme(
-      text = element_text(size = text_size),
-      panel.grid = element_blank(),
-      axis.text.x = element_text(angle = 45, hjust = 1),
+  g <- ggplot2::ggplot() +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      text = ggplot2::element_text(size = text_size),
+      panel.grid = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
       legend.position = "bottom"
     ) +
-    scale_shape_identity() +  # necessary for shape mapping
-    geom_beeswarm(data = d, aes(x = group, y = val, fill = group, shape = shape),
+    ggplot2::scale_shape_identity() +  # necessary for shape mapping
+    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = group, y = val, fill = group, shape = shape),
                   colour = "grey40", size = point_size, cex = cex) +
-    geom_vline(data = vlines, aes(xintercept = x), colour = "grey80", alpha = 0.5) +
+    ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5) +
     #scale_fill_viridis_d(option = "cividis") +
-    scale_fill_manual(values = okabe_ito_palette) +
-    guides(fill = guide_legend(override.aes = list(shape = 21))) +
-    labs(x = NULL, y = ylab, title = nm)
+    ggplot2::scale_fill_manual(values = okabe_ito_palette) +
+    ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21))) +
+    ggplot2::labs(x = NULL, y = ylab, title = nm)
 
   # if(scale == "lin")
   #   g <- g + scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))
@@ -170,33 +161,33 @@ sh_plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group
   }
 
   d <- d |>
-    mutate(name = if_else(nchar(name) < max_name_len,
+    dplyr::mutate(name = dplyr::if_else(nchar(name) < max_name_len,
                             name,
-                            str_c(str_sub(name, end = max_name_len), "...")
+                            stringr::str_c(stringr::str_sub(name, end = max_name_len), "...")
                           )
            )
 
   g <- d |>
-    ggplot(aes(x = sample, y = name, fill = val)) +
-    theme_bw() +
-    theme(
-      panel.grid = element_blank(),
-      text = element_text(size = text_size),
-      axis.text.x = element_text(angle = 45, hjust = 1)
+    ggplot2::ggplot(ggplot2::aes(x = sample, y = name, fill = val)) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      text = ggplot2::element_text(size = text_size),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
     ) +
-    geom_tile() +
-    scale_x_discrete(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0)) +
-    labs(x = NULL, y = NULL, fill = lab)
+    ggplot2::geom_tile() +
+    ggplot2::scale_x_discrete(expand = c(0, 0)) +
+    ggplot2::scale_y_discrete(expand = c(0, 0)) +
+    ggplot2::labs(x = NULL, y = NULL, fill = lab)
 
   if(norm_fc) {
-    g <- g + scale_fill_distiller(type = "div", palette = "RdBu")
+    g <- g + ggplot2::scale_fill_distiller(type = "div", palette = "RdBu")
   } else {
-    g <-  g + scale_fill_viridis_c(option = "cividis")
+    g <-  g + ggplot2::scale_fill_viridis_c(option = "cividis")
   }
 
   if(length(unique(d$id)) > max_n_lab)
-    g <- g + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+    g <- g + ggplot2::theme(axis.text.y = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank())
 
   return(g)
 }
@@ -225,15 +216,13 @@ sh_plot_features <- function(dat, meta, scale, what = "value", text_size = 14, p
     dplyr::left_join(meta, by = "sample") |>
     tidyr::drop_na()
 
-  print(d)
-
   if(nrow(d) == 0) return(NULL)
 
   lab <- what
 
   if(scale == "log"){
     d$val <- log10(d$val)
-    lab <-  str_glue("Log {what}")
+    lab <-  stringr::str_glue("Log {what}")
   }
 
   n_feat <- length(unique(d$id))

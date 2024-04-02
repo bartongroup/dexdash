@@ -13,23 +13,18 @@
 #    DATA$de - a tibble with differential expression results
 #
 
-require(dplyr)
-require(ggplot2)
-require(shiny)
-require(bsicons)
-
 # ----- UI definitions -----
 
 mod_volma_plot_ui <- function(id) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
-  plot_type <- radioGroupButtons(
+  plot_type <- shinyWidgets::radioGroupButtons(
     inputId = ns("plot_type"),
     label = "Main plot type",
     choices = c("Volcano", "MA")
   )
 
-  fc_limit <- numericInput(
+  fc_limit <- shiny::numericInput(
     inputId = ns("logfc_limit"),
     label = "|log FC| significance limit",
     value = 0,
@@ -37,7 +32,7 @@ mod_volma_plot_ui <- function(id) {
     max = 100
   )
 
-  fdr_limit <- numericInput(
+  fdr_limit <- shiny::numericInput(
     inputId = ns("fdr_limit"),
     label = "FDR significance limit",
     value = 0.01,
@@ -45,23 +40,23 @@ mod_volma_plot_ui <- function(id) {
     max = 1
   )
 
-  gear <- popover(
-    bs_icon("gear"),
+  gear <- bslib::popover(
+    bsicons::bs_icon("gear"),
     plot_type,
     fc_limit,
     fdr_limit
   )
 
-  card(
-    card_header(
+  bslib::card(
+    bslib::card_header(
       "Volcano/MA plot",
       gear,
       class = "d-flex justify-content-between"
     ),
 
-    card_body(
+    bslib::card_body(
       min_height = 250,
-      plotOutput(
+      shiny::plotOutput(
         outputId = ns("main_plot"),
         width = "100%",
         brush = ns("plot_brush"),
@@ -83,12 +78,12 @@ mod_volma_plot_server <- function(id, data_set, state) {
 
 
     # When brush or hover detected...
-    to_listen <- reactive({
+    to_listen <- shiny::reactive({
       list(input$plot_brush, input$plot_hover)
     })
 
     # ...update app state with the selection
-    observeEvent(to_listen(), {
+    shiny::observeEvent(to_listen(), {
       xy_data <- get_volma_data(data_set$de, state$contrast, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
@@ -96,7 +91,7 @@ mod_volma_plot_server <- function(id, data_set, state) {
         brushed <- na.omit(brushedPoints(xy_data, input$plot_brush))
         ids_brush <- brushed$id
       } else if(!is.null(input$plot_hover)) {
-        near <- nearPoints(xy_data, input$plot_hover, threshold = 20, maxpoints = 1)
+        near <- shiny::nearPoints(xy_data, input$plot_hover, threshold = 20, maxpoints = 1)
         ids_hover <- near$id
       }
       state$sel_brush <- ids_brush
@@ -125,7 +120,7 @@ get_volma_data <- function(de, ctr, plot_type) {
       dplyr::mutate(x = log_fc, y = -log10(p_value))
   } else if(plot_type == "MA") {
     xy_data <- de |>
-      dplyr::mutate(x = log_exp, y = log_fc)
+      dplyr::mutate(x = expr, y = log_fc)
   } else {
     stop("What the fuck?")
   }
@@ -150,22 +145,22 @@ get_volma_data <- function(de, ctr, plot_type) {
 #' @return A ggplot object
 sh_plot_xy <- function(d, point_size = 0.2, sig_size = 0.4, sel_size = 3, text_size = 13,
                        point_colour = "grey70", sig_colour = "black", sel_fill = "blue", sel_colour = "yellow") {
-  g <- ggplot(mapping = aes(x, y)) +
-    theme_bw() +
-    theme(
-      panel.grid = element_blank(),
-      text = element_text(size = text_size)
+  g <- ggplot2::ggplot(mapping = ggplot2::aes(x, y)) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      text = ggplot2::element_text(size = text_size)
     )
   # No selection, show significant genes
   if(sum(d$sel) == 0) {
     g <- g +
-      geom_point(data = d[!d$sig, ], size = point_size, colour = point_colour) +
-      geom_point(data = d[d$sig, ], size = sig_size, colour = sig_colour)
+      ggplot2::geom_point(data = d[!d$sig, ], size = point_size, colour = point_colour) +
+      ggplot2::geom_point(data = d[d$sig, ], size = sig_size, colour = sig_colour)
   } else {
     # With selection, do not show significant genes, grey background better for clarity
     g <- g +
-      geom_point(data = d, size = point_size, colour = point_colour) +
-      geom_point(data = d[d$sel, ], size = sel_size, shape = 21, fill = sel_fill, colour = sel_colour)
+      ggplot2::geom_point(data = d, size = point_size, colour = point_colour) +
+      ggplot2::geom_point(data = d[d$sel, ], size = sel_size, shape = 21, fill = sel_fill, colour = sel_colour)
   }
   g
 }
@@ -173,16 +168,16 @@ sh_plot_xy <- function(d, point_size = 0.2, sig_size = 0.4, sel_size = 3, text_s
 sh_plot_volcano <- function(d, ...) {
   d |>
     sh_plot_xy(...) +
-    geom_vline(xintercept = 0, colour = "grey70") +
-    labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.03)))
+    ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
+    ggplot2::labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.03)))
 }
 
 sh_plot_ma <- function(d, ...) {
   d |>
     sh_plot_xy(...) +
-    geom_hline(yintercept = 0, colour = "grey70") +
-    labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
+    ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
+    ggplot2::labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
 }
 
 #' Main plot: volcano or MA

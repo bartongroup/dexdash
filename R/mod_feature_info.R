@@ -14,18 +14,13 @@
 #    DATA$features - a tibble with feature ID and feature name
 #
 
-require(DT)
-require(dplyr)
-require(tibble)
-require(shiny)
-
 # ----- UI definitions -----
 
 mod_feature_info_ui <- function(id) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
-  card(
-    card_header("Feature information"),
+  bslib::card(
+    bslib::card_header("Feature information"),
     DT::dataTableOutput(
       outputId = ns("feature_info")
     )
@@ -45,23 +40,23 @@ mod_feature_info_server <- function(id, data_set, state) {
           dplyr::filter(id %in% ids & contrast == ctr) |>
           dplyr::left_join(data_set$features, by = "id") |>
           dplyr::arrange(name) |>
-          dplyr::mutate(name = str_replace_all(name, ";", "; "))
+          dplyr::mutate(name = stringr::str_replace_all(name, ";", "; "))
       } else {
-        df <- tibble::tibble(Error = str_glue("Only {CONFIG$max_points} points can be selected."))
+        df <- tibble::tibble(Error = stringr::str_glue("Only {CONFIG$max_points} points can be selected."))
       }
       return(df)
     }
 
     # Prepare updated feature info table
-    feature_info_table <- reactive({
+    feature_info_table <- shiny::reactive({
       ids <- state$sel_feature_info
       ctr <- state$contrast
-      req(ids, ctr)
+      shiny::req(ids, ctr)
       make_feature_info_table(data_set$de, ids, ctr)
     })
 
     # Wait for row selection in the feature info table, pass it to app state
-    observeEvent(input$feature_info_rows_selected, ignoreNULL = FALSE, {
+    shiny::observeEvent(input$feature_info_rows_selected, ignoreNULL = FALSE, {
       rows_sel <- input$feature_info_rows_selected
       if(is.null(rows_sel)) {
         state$sel_tab <- NULL
