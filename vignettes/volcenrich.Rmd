@@ -1,0 +1,71 @@
+---
+title: "Differential expression explorer with functional enrichment"
+author: "Marek Gierlinski"
+package: volcenrich
+output:
+  BiocStyle::html_document:
+    toc_float: true
+abstract: |
+  This R package, designed for interactive exploration and analysis
+    of differential expression or abundance data, integrates Shiny-based
+    visualization tools with rapid functional enrichment analysis. Users
+    can dynamically select genes from volcano or MA plots and instantly access
+    enriched GO, KEGG, and Reactome pathway analyses, facilitating a deeper
+    understanding of gene functions and biological pathways. The package
+    supports customized plotting, feature information retrieval, and handles
+    large datasets efficiently, making it an ideal tool for genomic
+    researchers and bioinformaticians seeking to uncover the biological
+    significance behind differential expression patterns.
+vignette: >
+  %\VignetteIndexEntry{Fast functional enrichment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(width = 72)
+```
+
+# Purpose
+
+# Installation
+
+*fenr* can be installed from *Bioconductor* by using:
+
+```{r bioconductor_install, eval=FALSE}
+if (!require("remotes", quietly = TRUE))
+  install.packages("remotes")
+
+remotes::install_github("bartongroup/volcenrich")
+```
+
+# Overview
+
+The input data for *volcenrich* consists of 5 objects: `de`, `data`, `metadata`, `features` and `fterms`.
+
+## Differential expression results
+
+Argument name `de`. It is a data frame (or tibble) with the following columns:
+
+  - `id` (character) - feature identifier,
+  - `log_fc` (numeric) - log-fold change,
+  - `expr` (numeric) - mean expression or abundance,
+  - `p_value` (numeric) - p-value from statistical tests,
+  - `fdr` (numeric) - false discovery rate, p-value corrected for multiple tests,
+  - `contrast` (factor) - name of the contrast; this data frame can contain results from multiple contrasts.
+
+
+
+
+
+
+
+# Session info {.unnumbered}
+
+```{r session_info, echo=FALSE}
+sessionInfo()
+```

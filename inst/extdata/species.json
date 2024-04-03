@@ -4,6 +4,11 @@
     "reactome" : "Homo sapiens",
     "kegg" : "hsa"
   },
+  "mouse" : {
+    "go" : "mgi",
+    "reactome" : "Mus musculus",
+    "kegg" : "mmu"
+  },
   "yeast" : {
     "go" : "sgd",
     "reactome" : "Saccharomyces cerevisiae",

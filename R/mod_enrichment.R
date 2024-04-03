@@ -22,7 +22,7 @@ mod_enrichment_ui <- function(id) {
   ontology <- shinyWidgets::radioGroupButtons(
     inputId = ns("ontology"),
     label = "Ontology",
-    choices = CONFIG$ontologies
+    choices = NULL
   )
 
   fdr_limit <- shiny::numericInput(
@@ -58,6 +58,16 @@ mod_enrichment_ui <- function(id) {
 mod_enrichment_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
+
+    # Update dummy ontology selections from data
+    ontologies <- names(data_set$fterms)
+    shiny::observe({
+      shinyWidgets::updateRadioGroupButtons(
+        session = session,
+        inputId = "ontology",
+        choices = ontologies
+      )
+    })
 
     # Observe state$sel_brush - a selection brushed from a Volcano/MA plot.
     # Create and return a functional enrichment table using fenr. Requires
@@ -103,7 +113,8 @@ mod_enrichment_server <- function(id, data_set, state) {
 }
 
 
-# Functions used in the module
+# ----- Functions used in the module -----
+
 
 #' Make functional enrichment table
 #'
@@ -112,24 +123,25 @@ mod_enrichment_server <- function(id, data_set, state) {
 #' @param trms An fterm object with functional term data
 #' @param id2name A named vector converting feature IDs into feature names
 #' @param fdr_limit FDR limit for selection of terms
+#' @param max_points Maximum number of points selectable
 #'
 #' @return A tibble with significant functional terms
 #' @noRd
-make_functional_enrichment <- function(sel_ids, all_ids, trms, id2name, fdr_limit) {
+make_functional_enrichment <- function(sel_ids, all_ids, trms, id2name, fdr_limit, max_points = 3000) {
   p_adjust <- term_id <- term_name <- n_with_sel <- odds_ratio <- ids <- NULL
 
   n <- length(sel_ids)
 
   fe <- NULL
-  if(n > 1 && n <= CONFIG$max_points) {
+  if(n > 1 && n <= max_points) {
     fe <- fenr::functional_enrichment(all_ids, sel_ids, trms, id2name)
     if(!is.null(fe)) {
       fe <- fe |>
         dplyr::filter(p_adjust < fdr_limit) |>
         dplyr::select(TermId = term_id, Name = term_name, n = n_with_sel, OR = odds_ratio, ids)
     }
-  } else if (n > CONFIG$max_points) {
-    fe <- tibble::tibble(Error = stringr::str_glue("Only {CONFIG$max_points} points can be selected."))
+  } else if (n > max_points) {
+    fe <- tibble::tibble(Error = stringr::str_glue("Only {max_points} points can be selected."))
   }
   fe
 }

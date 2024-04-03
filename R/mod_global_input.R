@@ -9,12 +9,13 @@ mod_global_input_ui <- function(id) {
     shiny::selectInput(
       inputId = ns("contrast"),
       label = "Contrast",
-      choices = c("")
+      choices = NULL
     ),
-    dqshiny::autocomplete_input(
-      id = ns("search"),
+    shiny::selectizeInput(
+      inputId = ns("search"),
       label = "Search",
-      options = NULL
+      selected = NULL,
+      choices = NULL
     ),
     shiny::actionButton(
       inputId = ns("clear"),
@@ -33,22 +34,22 @@ mod_global_input_server <- function(id, data_set, state) {
     # Update dummy contrast selection
     contrasts <- levels(data_set$de$contrast)
     shiny::observe({
-      shiny::updateSelectInput(session, "contrast", choices = contrasts)
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "contrast",
+        choices = contrasts
+      )
     })
 
-    # Update bases and search input when experiment changed
-    shiny::observeEvent(input$experiment, {
-      all_names <- data_set$features$name |> unique()
-      dqshiny::update_autocomplete_input(session, "search", options = c("", all_names))
-    })
-
-    # Observe base selection, copy to state, update contrast selection
-    shiny::observeEvent(input$base, {
-      state$base <- input$base
-      ctrs <- data_set$de |>
-        dplyr::pull(contrast) |>
-        unique()
-      shiny::updateSelectInput(session, "contrast", choices = ctrs)
+    # Update dummy feature selection
+    features <- c("", unique(data_set$features$name))
+    shiny::observe({
+      shiny::updateSelectizeInput(
+        session = session,
+        inputId = "search",
+        choices = features,
+        server = TRUE
+      )
     })
 
     # Observe contrast experiment, selection, copy to state
@@ -64,8 +65,9 @@ mod_global_input_server <- function(id, data_set, state) {
     )
 
     # Clear input
-    shiny::observeEvent(input$clear, dqshiny::update_autocomplete_input(session, "search", value = "", placeholder = ""))
-
+    shiny::observeEvent(input$clear, {
+      shiny::updateSelectizeInput(session, "search", selected = "")
+    })
   }
 
   shiny::moduleServer(id, server)

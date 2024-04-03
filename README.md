@@ -8,7 +8,6 @@ Interactive explorer for differential expression data. Centred around an interac
 
 ```
 install.packages("remotes")
-remotes::install_github("daqana/dqshiny")
 remotes::install_github("bartongroup/volcenrich")
 ```
 
@@ -24,5 +23,5 @@ data(de, data, metadata, features)
 fterms <- download_functional_terms("yeast", feature_name = "gene_id")
 
 # Run interactive explorer
-de_interactive(de, data, metadata, features, fterms)
+run_app(de, data, metadata, features, fterms)
 ```

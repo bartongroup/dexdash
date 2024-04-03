@@ -1,10 +1,79 @@
+#' Download Functional Annotation Terms
+#'
+#' Retrieves Gene Ontology (GO), Reactome, and KEGG terms for a given species
+#' and prepares them to use with the Shiny app.
+#'
+#' @param species A character string specifying the species for which to
+#'   download data.
+#' @param species_file (Optional) A character string providing the path to a
+#'   JSON file containing species information. If `NULL`, the default
+#'   species.json file from the package will be used. See Details for more
+#'   information.
+#' @param feature_name The name of the column in the \code{mapping} tibble to be
+#'   used as the feature identifier. It can be "gene_symbol" or "gene_id". If
+#'   your data contain gene symbols (e.g. "BRCA1" or "FOXP1"), use \code{feature_name
+#'   = "gene_symbol"}. If your data contain Ensembl identifiers (e.g. "ENSG00000012048"
+#'    or  "ENSG00000114861"), use \code{feature_name
+#'   = "gene_id"}.
+#' @param all_features (Optional) A vector of all possible features (such as
+#'   gene symbols) to prepare the data for enrichment analysis.
+#' @return A list of three elements named "go", "reactome" and "kegg", each
+#'   containing \code{fenr_terms} objects required for fast functional
+#'   enrichment.
+#' @details The GO, KEGG and Reactome databases use different species
+#'   designation names. For example, designation for yeast is "sgd",
+#'   "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG,
+#'   respectively. In oder to interrogate these databases, the correct
+#'   designations must be passed on. This package contains a small JSON file
+#'   (can be found at \code{system.file("extdata", "species.json", package =
+#'   "volcenrich")}), with designation information for a few species. If
+#'   your species is not included, you need to create a JSON file in the same
+#'   format, as the included file. The species designations can be found using
+#'   `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and
+#'   `fenr::fetch_kegg_species()`. These three functions return data frames,
+#'   where column `designation` contains the species designation required.
+#' @examples
+#' fterms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
+#' @export
+download_functional_terms <- function(species, species_file = NULL,
+                                      feature_name = c("gene_symbol" ,"gene_id"), all_features = NULL) {
+  feature_name <- match.arg(feature_name)
 
-CONFIG <- list(
-  title = "Test",
-  ontologies = c("go", "kegg", "reactome"),
-  max_points = 3000,
-  default_data_column = "rpkm"
-)
+  if(!is.null(species_file)) {
+    assertthat::assert_that(file.exists(species_file))
+    sf <- species_file
+  } else {
+    sf <- system.file("extdata", "species.json", package = "volcenrich")
+  }
+
+  all_sp <- jsonlite::read_json(sf)
+  assertthat::assert_that(species %in% names(all_sp))
+  sp <- all_sp[[species]]
+
+  message("Loading GO term data")
+  go <- fenr::fetch_go(species = sp$go)
+  message("Loading Reactome data")
+  re <- fenr::fetch_reactome(sp$reactome)
+  message("Loading KEGG data")
+  kg <- fenr::fetch_kegg(sp$kegg)
+
+  terms <- list(
+    go = go,
+    reactome = re,
+    kegg = kg
+  )
+
+  message("Preparing data for fenr.")
+  ontologies <- names(terms)
+  purrr::map(ontologies, function(ont) {
+    trm <- terms[[ont]]
+    fenr::prepare_for_enrichment(trm$terms, trm$mapping, all_features, feature_name = feature_name)
+  }) |>
+    rlang::set_names(ontologies)
+}
+
+
+
 
 #' Launches an Interactive Differential Expression (DE) Data Explorer
 #'
@@ -43,15 +112,13 @@ CONFIG <- list(
 #'   the differential expression data.
 #'
 #' @examples
-#' \dontrun{
-#'   de_interactive(de = de_data,
-#'                  data = expression_data,
-#'                  metadata = sample_metadata,
-#'                  features = feature_mapping,
-#'                  fterms = feature_terms)
+#' if(interactive()) {
+#'   data(de, data, metadata, features)
+#'   fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+#'   run_app(de, data, metadata, features, fterms)
 #' }
 #' @export
-de_interactive <- function(de, data, metadata, features, fterms) {
+run_app <- function(de, data, metadata, features, fterms) {
 
   data_set <- list(
     de = de,
@@ -63,13 +130,12 @@ de_interactive <- function(de, data, metadata, features, fterms) {
     name2id = rlang::set_names(features$id, features$name)
   )
 
-
   ui <- bslib::page_sidebar(
     theme = bslib::bs_theme(bootswatch = "journal"),
-    title = "DE explorer",
+    title = "Volcano enricher",
 
     sidebar = bslib::sidebar(
-      title = CONFIG$title,
+      title = "DE explorer",
       mod_global_input_ui("global_input")
     ),
 
