@@ -28,13 +28,15 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 options(width = 72)
+
+library(tibble)
 ```
 
 # Purpose
 
 # Installation
 
-*fenr* can be installed from *Bioconductor* by using:
+*volcenrich* can be installed from *GitHub* by using:
 
 ```{r bioconductor_install, eval=FALSE}
 if (!require("remotes", quietly = TRUE))
@@ -43,13 +45,23 @@ if (!require("remotes", quietly = TRUE))
 remotes::install_github("bartongroup/volcenrich")
 ```
 
-# Overview
+# Quick example
+
+```{r, eval=FALSE}
+library(volcenrich)
+
+data(yeast_de, yeast_de, yeast_metadata, yeast_features)
+fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+run_app(yeast_de, yeast_de, yeast_metadata, yeast_features, fterms)
+```
+
+# Required input data
 
 The input data for *volcenrich* consists of 5 objects: `de`, `data`, `metadata`, `features` and `fterms`.
 
 ## Differential expression results
 
-Argument name `de`. It is a data frame (or tibble) with the following columns:
+Argument name `de`. This is a data frame (or tibble) containing results of differential expression/abundance, per feature. It should have the following columns:
 
   - `id` (character) - feature identifier,
   - `log_fc` (numeric) - log-fold change,
@@ -57,11 +69,68 @@ Argument name `de`. It is a data frame (or tibble) with the following columns:
   - `p_value` (numeric) - p-value from statistical tests,
   - `fdr` (numeric) - false discovery rate, p-value corrected for multiple tests,
   - `contrast` (factor) - name of the contrast; this data frame can contain results from multiple contrasts.
+  
+Here is an example of differential expression data, included in this package:
+
+```{r}
+library(volcenrich)
+data(yeast_de)
+yeast_de
+```
+
+## Expression data
+
+Argument name `data`. This is a data frame containing expression/abundance data, per sample, per feature. It should have the following columns:
+
+ - `id` (character) - feature identifier, the same as in `de` data frame,
+ - `sample` (character) - sample identifier,
+ - `value` (numeric) - the expression, or abundance of the gene/protein for this sample.
+ 
+Here is an example of expression data, included in this package:
+
+```{r}
+data(yeast_data)
+yeast_data
+```
+
+## Design of the experiment
+ 
+Argument name `metadata`. It contains the design of the experiment. It should have the following columns:
+ 
+  - `sample` (character) - sample identifier, the same as in `data` data frame,
+  - `group` (character/factor) - a grouping variable, for example condition or treatment,
+  - `replicate` - optional replicate ID.
+
+Here is an example of metadata, included in this package:
+
+```{r}
+data(yeast_metadata)
+yeast_metadata
+```
+
+## Feature information
+
+Argument name `features`. It contains alternative names for features (e.g. gene symbols) an descriptions. It should have the following columns:
+
+ - `id` (character) - feature identifier, the same as in `de` and `data` frames,
+ - `name` (character) - a human-readable name of the feature, typically a gene symbol,
+ - `decription` (character) - a brief description of the feature.
 
 
+Here is an example of feature information, included in this package:
 
+```{r}
+data(yeast_features)
+yeast_features
+```
 
+## Functional term data
 
+To perform fast interactive functional enrichment, the Shiny app requires data downloaded from online databases and prepared for fast enrichment. This can be achieved with the following function:
+
+```{r, eval=FALSE}
+fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+```
 
 
 # Session info {.unnumbered}
