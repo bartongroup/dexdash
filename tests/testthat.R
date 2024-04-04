@@ -1,4 +1,4 @@
 library(testthat)
-library(volcenrich)
+library(dexdash)
 
-test_check("volcenrich")
+test_check("dexdash")

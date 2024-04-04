@@ -8,13 +8,13 @@ Interactive explorer for differential expression data. Centred around an interac
 
 ```
 install.packages("remotes")
-remotes::install_github("bartongroup/volcenrich")
+remotes::install_github("bartongroup/dexdash")
 ```
 
 ## Example
 
 ```
-library(volcenrich)
+library(dexdash)
 
 # Load example data
 data(de, data, metadata, features)

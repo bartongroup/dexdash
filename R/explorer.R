@@ -26,7 +26,7 @@
 #'   respectively. In oder to interrogate these databases, the correct
 #'   designations must be passed on. This package contains a small JSON file
 #'   (can be found at \code{system.file("extdata", "species.json", package =
-#'   "volcenrich")}), with designation information for a few species. If
+#'   "dexdash")}), with designation information for a few species. If
 #'   your species is not included, you need to create a JSON file in the same
 #'   format, as the included file. The species designations can be found using
 #'   `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and
@@ -43,7 +43,7 @@ download_functional_terms <- function(species, species_file = NULL,
     assertthat::assert_that(file.exists(species_file))
     sf <- species_file
   } else {
-    sf <- system.file("extdata", "species.json", package = "volcenrich")
+    sf <- system.file("extdata", "species.json", package = "dexdash")
   }
 
   all_sp <- jsonlite::read_json(sf)

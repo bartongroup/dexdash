@@ -46,7 +46,7 @@ The GO, KEGG and Reactome databases use different species
   respectively. In oder to interrogate these databases, the correct
   designations must be passed on. This package contains a small JSON file
   (can be found at \code{system.file("extdata", "species.json", package =
-  "volcenrich")}), with designation information for a few species. If
+  "dexdash")}), with designation information for a few species. If
   your species is not included, you need to create a JSON file in the same
   format, as the included file. The species designations can be found using
   `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and

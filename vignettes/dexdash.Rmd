@@ -1,7 +1,7 @@
 ---
 title: "Differential expression explorer with functional enrichment"
 author: "Marek Gierlinski"
-package: volcenrich
+package: dexdash
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -36,19 +36,19 @@ library(tibble)
 
 # Installation
 
-*volcenrich* can be installed from *GitHub* by using:
+*dexdash* can be installed from *GitHub* by using:
 
 ```{r bioconductor_install, eval=FALSE}
 if (!require("remotes", quietly = TRUE))
   install.packages("remotes")
 
-remotes::install_github("bartongroup/volcenrich")
+remotes::install_github("bartongroup/dexdash")
 ```
 
 # Quick example
 
 ```{r, eval=FALSE}
-library(volcenrich)
+library(dexdash)
 
 data(yeast_de, yeast_de, yeast_metadata, yeast_features)
 fterms <- download_functional_terms("yeast", feature_name = "gene_id")
@@ -57,7 +57,7 @@ run_app(yeast_de, yeast_de, yeast_metadata, yeast_features, fterms)
 
 # Required input data
 
-The input data for *volcenrich* consists of 5 objects: `de`, `data`, `metadata`, `features` and `fterms`.
+The input data for *dexdash* consists of 5 objects: `de`, `data`, `metadata`, `features` and `fterms`.
 
 ## Differential expression results
 
@@ -73,7 +73,7 @@ Argument name `de`. This is a data frame (or tibble) containing results of diffe
 Here is an example of differential expression data, included in this package:
 
 ```{r}
-library(volcenrich)
+library(dexdash)
 data(yeast_de)
 yeast_de
 ```
@@ -129,9 +129,26 @@ yeast_features
 To perform fast interactive functional enrichment, the Shiny app requires data downloaded from online databases and prepared for fast enrichment. This can be achieved with the following function:
 
 ```{r, eval=FALSE}
-fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+fterms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
 ```
 
+
+The first argument in this function is a species name. Based on this name, the function will downlad the relevant data from the online databases. The GO, KEGG and Reactome databases use different species designation names. For example, designation for yeast is "sgd", "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG, respectively. In oder to interrogate these databases, the correct designations must be passed on. This package contains a small JSON file, which can be accessed:
+
+```{r}
+species_file <- system.file("extdata", "species.json", package = "dexdash")
+```
+
+Here is the content of the file:
+
+```{r, results="asis", echo=FALSE}
+cat("<pre>")
+readLines(species_file) |> cat(sep = "\n")
+cat("</pre>")
+```
+
+It contains designation information for a few species. If your species is not included, you need to create a JSON file in the same format, as the included file, and provide its location by argument `species_file` in the `download_functional_terms()` function. The species designations can be found using `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and `fenr::fetch_kegg_species()`. These three functions return data frames,
+where column `designation` contains the species designation required.
 
 # Session info {.unnumbered}
 

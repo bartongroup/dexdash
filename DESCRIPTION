@@ -1,4 +1,4 @@
-Package: volcenrich
+Package: dexdash
 Type: Package
 Title: Shiny app to explore results from differential expression experiments
 Version: 0.1.0
@@ -21,8 +21,8 @@ Description: This R package, designed for interactive exploration and analysis
     significance behind differential expression patterns.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://github.com/bartongroup/volcenrich
-BugReports: https://github.com/bartongroup/volcenrich/issues
+URL: https://github.com/bartongroup/dexdash
+BugReports: https://github.com/bartongroup/dexdash/issues
 biocViews:
     FunctionalPrediction,
     DifferentialExpression,
