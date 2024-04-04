@@ -32,7 +32,16 @@ library(tibble)
 library(dexdash)
 ```
 
-# Purpose
+# Where does dexdash fit in?
+
+You have performed an RNA-seq experiment, a proteomics experiment, or, perhaps, some other -omics experiment. You have done read mapping or protein quantifications and you ended up with data. The data contain expression or abundance (we will call it 'expression' for simplicity) per gene or protein or other entity (we will call it 'feature'). The expression for each feature is found in several biological conditions (we call them 'groups') and replicates. In the next step you have performed differential expression analysis using tools, such as *limma*, *edgeR*, *DESeq2* or any other. This gave you a data frame with log-fold change, p-value and other things.
+
+Now, you want to explore the results. You want to look at a volcano plot, or an MA plot, quickly find some features of interest, investigate functional similarity between selections of similarly behaving features. This is what *dexdash* is for. You provide it with expression data, differential expression results and some additional information about the experimental design and gene names, and - viola! You have a web-based interactive tool to query your data.
+
+
+```{r figure, fig.cap="Screenshot of dexdash Shiny app.", echo=FALSE, out.width="800px"}
+knitr::include_graphics("figures/screenshot.png")
+```
 
 # Installation
 

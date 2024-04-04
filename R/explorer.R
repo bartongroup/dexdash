@@ -139,7 +139,7 @@ run_app <- function(de, data, metadata, features, fterms) {
 
   ui <- bslib::page_sidebar(
     theme = bslib::bs_theme(bootswatch = "journal"),
-    title = "Volcano enricher",
+    title = "DEXDASH",
 
     sidebar = bslib::sidebar(
       title = "DE explorer",
