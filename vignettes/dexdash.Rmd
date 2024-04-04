@@ -1,10 +1,7 @@
 ---
-title: "Differential expression explorer with functional enrichment"
-author: "Marek Gierlinski"
+title: "Differential expression downstream analysis shiny app"
 package: dexdash
-output:
-  BiocStyle::html_document:
-    toc_float: true
+output: rmarkdown::html_vignette
 abstract: |
   This R package, designed for interactive exploration and analysis
     of differential expression or abundance data, integrates Shiny-based
@@ -17,19 +14,22 @@ abstract: |
     researchers and bioinformaticians seeking to uncover the biological
     significance behind differential expression patterns.
 vignette: >
-  %\VignetteIndexEntry{Fast functional enrichment}
+  %\VignetteIndexEntry{Differential expression downstream analysis shiny app}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 options(width = 72)
-
 library(tibble)
+```
+
+```{r setup}
+library(dexdash)
 ```
 
 # Purpose
@@ -48,10 +48,11 @@ remotes::install_github("bartongroup/dexdash")
 # Quick example
 
 ```{r, eval=FALSE}
-library(dexdash)
-
+# Data examples available in the package
 data(yeast_de, yeast_de, yeast_metadata, yeast_features)
+# The slow bit: download functional term data
 fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+# The fast bit: interactive app
 run_app(yeast_de, yeast_de, yeast_metadata, yeast_features, fterms)
 ```
 
@@ -73,7 +74,6 @@ Argument name `de`. This is a data frame (or tibble) containing results of diffe
 Here is an example of differential expression data, included in this package:
 
 ```{r}
-library(dexdash)
 data(yeast_de)
 yeast_de
 ```

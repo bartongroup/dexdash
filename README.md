@@ -1,4 +1,4 @@
-# VolcEnrich
+# Differential EXpression Downstream Analysis SHiny app
 
 Maintainer: Marek Gierlinski
 

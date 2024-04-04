@@ -120,6 +120,13 @@ download_functional_terms <- function(species, species_file = NULL,
 #' @export
 run_app <- function(de, data, metadata, features, fterms) {
 
+  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "fdr", "contrast"), deparse(substitute(de)))
+  assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
+  assert_colnames(metadata, c("sample", "group", "replicate"), deparse(substitute(metadata)))
+  assert_colnames(features, c("id", "name", "description"), deparse(substitute(de)))
+  assertthat::assert_that(is(fterms, "list"))
+  purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms")))
+
   data_set <- list(
     de = de,
     data = data,

@@ -218,7 +218,7 @@ plot_features <- function(dat, meta, scale, what = "value", text_size = 14, poin
   if(nrow(dat) == 0) return(NULL)
 
   d <- dat |>
-    dplyr::mutate(val = get(what)) |>
+    dplyr::rename(val := !!what) |>
     dplyr::left_join(meta, by = "sample") |>
     tidyr::drop_na()
 

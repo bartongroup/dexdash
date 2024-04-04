@@ -13,5 +13,25 @@
     "go" : "sgd",
     "reactome" : "Saccharomyces cerevisiae",
     "kegg" : "sce"
+  },
+  "roundworm" : {
+    "go" : "wb",
+    "reactome" : "Caenorhabditis elegans",
+    "kegg" : "cel"
+  },
+  "slime mold" : {
+    "go" : "dictybase",
+    "reactome" : "Dictyostelium discoideum",
+    "kegg" : "ddi"
+  },
+  "fruit fly" : {
+    "go" : "fb",
+    "reactome" : "Drosophila melanogaster",
+    "kegg" : "dme"
+  },
+    "xenopus" : {
+    "go" : "xenbase",
+    "reactome" : "Xenopus tropicalis",
+    "kegg" : "xtr"
   }
 }

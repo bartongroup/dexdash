@@ -22,7 +22,7 @@ mod_enrichment_ui <- function(id) {
   ontology <- shinyWidgets::radioGroupButtons(
     inputId = ns("ontology"),
     label = "Ontology",
-    choices = NULL
+    choices = ""
   )
 
   fdr_limit <- shiny::numericInput(
