@@ -47,10 +47,15 @@ mod_volma_plot_ui <- function(id) {
     fdr_limit
   )
 
+  info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/volma.md")
+  )
+
   bslib::card(
     bslib::card_header(
-      "Volcano/MA plot",
-      gear,
+      "Volcano/MA plot ",
+      shiny::span(info, gear),
       class = "d-flex justify-content-between"
     ),
 
@@ -75,7 +80,6 @@ mod_volma_plot_ui <- function(id) {
 mod_volma_plot_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
-
 
     # When brush or hover detected...
     to_listen <- shiny::reactive({

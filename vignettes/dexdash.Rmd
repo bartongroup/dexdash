@@ -1,18 +1,20 @@
 ---
-title: "Differential expression downstream analysis shiny app"
+title: "Differential EXpression Downstream Analysis SHiny app"
 package: dexdash
 output: rmarkdown::html_vignette
 abstract: |
-  This R package, designed for interactive exploration and analysis
-    of differential expression or abundance data, integrates Shiny-based
+    This R package is designed for interactive exploration and analysis
+    of differential expression (DE) results. It combines Shiny-based
     visualization tools with rapid functional enrichment analysis. Users
-    can dynamically select genes from volcano or MA plots and instantly access
-    enriched GO, KEGG, and Reactome pathway analyses, facilitating a deeper
-    understanding of gene functions and biological pathways. The package
-    supports customized plotting, feature information retrieval, and handles
-    large datasets efficiently, making it an ideal tool for genomic
-    researchers and bioinformaticians seeking to uncover the biological
-    significance behind differential expression patterns.
+    can select genes from a volcano or MA plot to find their names,
+    descriptions and plot expression patterns. The build-in fast functional
+    enrichment (based on `fenr` package) allows to see instantly which
+    biological pathways and processes those genes are involved in, based on
+    enrichment analysis of Gene Ontology (GO), KEGG, and Reactome databases.
+    The input for the app consists of five data frames containing DE results,
+    expression or abundance data, experimental design, gene names and descriptions.
+    A build-in function allowes for easy downloading of functional term data.
+    Once started, the app is fast and easy to use.
 vignette: >
   %\VignetteIndexEntry{Differential expression downstream analysis shiny app}
   %\VignetteEngine{knitr::rmarkdown}
@@ -32,14 +34,14 @@ library(tibble)
 library(dexdash)
 ```
 
-# Where does dexdash fit in?
+# Where does dexdash come in?
 
-You have performed an RNA-seq experiment, a proteomics experiment, or, perhaps, some other -omics experiment. You have done read mapping or protein quantifications and you ended up with data. The data contain expression or abundance (we will call it 'expression' for simplicity) per gene or protein or other entity (we will call it 'feature'). The expression for each feature is found in several biological conditions (we call them 'groups') and replicates. In the next step you have performed differential expression analysis using tools, such as *limma*, *edgeR*, *DESeq2* or any other. This gave you a data frame with log-fold change, p-value and other things.
+Imagine you've carried out an RNA-seq experiment, a proteomics study, or maybe another type of -omics research. You've tackled read mapping or protein quantifications and now have a set of data in hand. This data captures expression or abundance (we will call it 'expression' for simplicity) for each gene, protein, or other entity (hereinafter referred to as 'feature'). These expressions are recorded across various biological conditions (which we'll call 'groups') and their replicates. Following this, you've conducted a differential expression analysis using tools like *limma*, *edgeR*, *DESeq2*, or similar, ending up with a data frame that includes log-fold change, p-value, among other metrics.
 
-Now, you want to explore the results. You want to look at a volcano plot, or an MA plot, quickly find some features of interest, investigate functional similarity between selections of similarly behaving features. This is what *dexdash* is for. You provide it with expression data, differential expression results and some additional information about the experimental design and gene names, and - viola! You have a web-based interactive tool to query your data.
+Now, you're ready to dive into the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is where *dexdash* shines. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voila! You're equipped with a web-based interactive tool to sift through your data.
 
 
-```{r figure, fig.cap="Screenshot of dexdash Shiny app.", echo=FALSE, out.width="800px"}
+```{r figure, fig.cap="Screenshot of dexdash Shiny app.", echo=FALSE, out.width="700px"}
 knitr::include_graphics("figures/screenshot.png")
 ```
 
@@ -58,11 +60,11 @@ remotes::install_github("bartongroup/dexdash")
 
 ```{r, eval=FALSE}
 # Data examples available in the package
-data(yeast_de, yeast_de, yeast_metadata, yeast_features)
+data(yeast_de, yeast_data, yeast_metadata, yeast_features)
 # The slow bit: download functional term data
 fterms <- download_functional_terms("yeast", feature_name = "gene_id")
 # The fast bit: interactive app
-run_app(yeast_de, yeast_de, yeast_metadata, yeast_features, fterms)
+run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, fterms)
 ```
 
 # Required input data

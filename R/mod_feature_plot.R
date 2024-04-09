@@ -36,6 +36,11 @@ mod_feature_plot_ui <- function(id) {
     inline = TRUE
   )
 
+  info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/feature_plot.md")
+  )
+
   gear <- bslib::popover(
     bsicons::bs_icon("gear"),
     group_mean,
@@ -50,7 +55,7 @@ mod_feature_plot_ui <- function(id) {
   bslib::card(
     bslib::card_header(
       "Feature plot",
-      gear,
+      shiny::span(info, gear),
       class = "d-flex justify-content-between"
     ),
 
