@@ -138,7 +138,8 @@ run_app <- function(de, data, metadata, features, fterms) {
   )
 
   ui <- bslib::page_sidebar(
-    theme = bslib::bs_theme(bootswatch = "journal"),
+    theme = bslib::bs_theme(bootswatch = "journal") |>
+      bslib::bs_add_rules(".info-pop { background-color: #f0f9e8; }"),
     title = "DEXDASH",
 
     sidebar = bslib::sidebar(

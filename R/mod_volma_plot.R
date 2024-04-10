@@ -49,7 +49,8 @@ mod_volma_plot_ui <- function(id) {
 
   info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/volma.md")
+    htmltools::includeMarkdown("man/helpers/volma.md"),
+    options = list(customClass = "info-pop")
   )
 
   bslib::card(
