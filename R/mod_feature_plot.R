@@ -90,6 +90,8 @@ mod_feature_plot_server <- function(id, data_set, state) {
 }
 
 
+# ----- Functions used in the module -----
+
 
 #' Plot one feature
 #'
