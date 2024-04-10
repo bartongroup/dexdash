@@ -1,18 +1,18 @@
 ## Main plot
 
-Interactive volcano or MA plot. Each dot represents one feature. Black dots indicate statistically significant DE features.
+This card condains an interactive volcano or MA plot, where each dot represents one feature. Black dots highlight statistically significant DE features.
 
 ### Plot settings
 
-Click the gear icon to change:
+Adjust your preferences by clicking the gear icon:
 
- - Type of the plot (volcano of MA)
- - FDR limit for significance
- - logFC limit for significance
+ - Choose the plot type (volcano of MA)
+ - Set false discovery rate (FDR) threshold for significance
+ - Set absolute log fold change (|logFC|) threshold for significance
  
- ### Selections
+### Selections
  
-  - Hover the cursor over a dot to select this feature.
+  - Hover the cursor over a dot to select that feature
   - Draw a rectangle to select multiple features
   
-Each selection will show information in other panels.
+Each selection will activate related elements in other panels. Specifically, the feature plot and information table will display data about the selected feature(s); the enrichment panel will show the statistically enriched functional terms.

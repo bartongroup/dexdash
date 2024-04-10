@@ -16,7 +16,7 @@ abstract: |
     A build-in function allowes for easy downloading of functional term data.
     Once started, the app is fast and easy to use.
 vignette: >
-  %\VignetteIndexEntry{Differential expression downstream analysis shiny app}
+  %\VignetteIndexEntry{Differential EXpression Downstream Analysis SHiny app}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -28,6 +28,12 @@ knitr::opts_chunk$set(
 )
 options(width = 72)
 library(tibble)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(stringr)
+library(edgeR)
+library(gt)
 ```
 
 ```{r setup}
@@ -59,6 +65,8 @@ remotes::install_github("bartongroup/dexdash")
 # Quick example
 
 ```{r, eval=FALSE}
+library(dexdash)
+
 # Data examples available in the package
 data(yeast_de, yeast_data, yeast_metadata, yeast_features)
 # The slow bit: download functional term data
@@ -67,73 +75,78 @@ fterms <- download_functional_terms("yeast", feature_name = "gene_id")
 run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, fterms)
 ```
 
-# Required input data
+# How to use the app
 
-The input data for *dexdash* consists of 5 objects: `de`, `data`, `metadata`, `features` and `fterms`.
 
-## Differential expression results
+```{r echo=FALSE}
+args_de <- tibble::tribble(
+  ~column, ~type, ~description,
+  "id", "character", "feature identifier",
+  "log_fc", "numeric", "log-fold change",
+  "expr", "numeric",  "mean expression or abundance",
+  "p_value", "numeric", "p-value from statistical tests",
+  "fdr", "numeric", "false discovery rate, p-value corrected for multiple tests",
+  "contrast", "factor", "name of the contrast; this data frame can contain results from multiple contrast"
+) |> 
+  tibble::add_column(argument = "de", .before = 1)
 
-Argument name `de`. This is a data frame (or tibble) containing results of differential expression/abundance, per feature. It should have the following columns:
+args_data <- tibble::tribble(
+  ~column, ~type, ~description,
+  "id", "character", "feature identifier",
+  "sample", "character", "sample identifer",
+  "value", "numeric", "the expression, or abundance of the gene/protein for this sample"
+) |> 
+  tibble::add_column(argument = "data", .before = 1)
 
-  - `id` (character) - feature identifier,
-  - `log_fc` (numeric) - log-fold change,
-  - `expr` (numeric) - mean expression or abundance,
-  - `p_value` (numeric) - p-value from statistical tests,
-  - `fdr` (numeric) - false discovery rate, p-value corrected for multiple tests,
-  - `contrast` (factor) - name of the contrast; this data frame can contain results from multiple contrasts.
-  
-Here is an example of differential expression data, included in this package:
+args_metadata <- tibble::tribble(
+  ~column, ~type, ~description,
+  "sample", "character", "sample identifer",
+  "group",  "character/factor", "a grouping variable, for example condition or treatment",
+  "replicate", "character", "optional replicate ID"
+) |> 
+  tibble::add_column(argument = "metadata", .before = 1)
 
-```{r}
-data(yeast_de)
-yeast_de
+args_features <- tibble::tribble(
+  ~column, ~type, ~description,
+  "id", "character", "feature identifier",
+  "name", "character", "a human-readable name of the feature, typically a gene symbol",
+  "decription", "character", "a brief description of the feature"
+) |> 
+  tibble::add_column(argument = "features", .before = 1)
+
+all_args <- bind_rows(args_de, args_data, args_metadata, args_features)
 ```
 
-## Expression data
+The `dexdash` Shiny app is launched with a command:
 
-Argument name `data`. This is a data frame containing expression/abundance data, per sample, per feature. It should have the following columns:
-
- - `id` (character) - feature identifier, the same as in `de` data frame,
- - `sample` (character) - sample identifier,
- - `value` (numeric) - the expression, or abundance of the gene/protein for this sample.
- 
-Here is an example of expression data, included in this package:
-
-```{r}
-data(yeast_data)
-yeast_data
+```{r eval=FALSE}
+run_app(de, data, metadata, features, fterms)
 ```
 
-## Design of the experiment
- 
-Argument name `metadata`. It contains the design of the experiment. It should have the following columns:
- 
-  - `sample` (character) - sample identifier, the same as in `data` data frame,
-  - `group` (character/factor) - a grouping variable, for example condition or treatment,
-  - `replicate` - optional replicate ID.
+There are five mandatory arguments:
 
-Here is an example of metadata, included in this package:
+  - `de` - data frame with differential expression results,
+  - `data` - data frame with expression or abundance data,
+  - `metadata` - data frame with the design of the experiment,
+  - `features` - data frame with feature names and descriptions,
+  - `fterms` - an object containing functional terms data.
 
-```{r}
-data(yeast_metadata)
-yeast_metadata
+
+## Data frames
+
+The table below summarises colums required in the four data frames. These data frames must be created by the user. We show a worked example below demonstrating how to prepare the required data.
+
+
+```{r echo=FALSE}
+all_args |> 
+  group_by(argument) |> 
+  gt() |> 
+   tab_style(
+    style = cell_fill(color = "bisque"),
+    locations = cells_row_groups()
+  )
 ```
 
-## Feature information
-
-Argument name `features`. It contains alternative names for features (e.g. gene symbols) an descriptions. It should have the following columns:
-
- - `id` (character) - feature identifier, the same as in `de` and `data` frames,
- - `name` (character) - a human-readable name of the feature, typically a gene symbol,
- - `decription` (character) - a brief description of the feature.
-
-
-Here is an example of feature information, included in this package:
-
-```{r}
-data(yeast_features)
-yeast_features
-```
 
 ## Functional term data
 
@@ -142,7 +155,6 @@ To perform fast interactive functional enrichment, the Shiny app requires data d
 ```{r, eval=FALSE}
 fterms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
 ```
-
 
 The first argument in this function is a species name. Based on this name, the function will downlad the relevant data from the online databases. The GO, KEGG and Reactome databases use different species designation names. For example, designation for yeast is "sgd", "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG, respectively. In oder to interrogate these databases, the correct designations must be passed on. This package contains a small JSON file, which can be accessed:
 
@@ -160,6 +172,131 @@ cat("</pre>")
 
 It contains designation information for a few species. If your species is not included, you need to create a JSON file in the same format, as the included file, and provide its location by argument `species_file` in the `download_functional_terms()` function. The species designations can be found using `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and `fenr::fetch_kegg_species()`. These three functions return data frames,
 where column `designation` contains the species designation required.
+
+
+# Worked example
+
+## Count data
+
+We start with the count data from an RNA-seq experiment. Let's call it `mtx`. It is a matrix with rows corresponding to genes and columns corresponding to samples. It contains the same data as the `yeast_data` object, but in wide, matrix format.
+
+```{r}
+data(mtx)
+dim(mtx)
+head(mtx)
+```
+
+## Metadata
+
+First, we create a metadata data frame with grouping information. We separate sample names into biological condition (WT or Snf2) and replicate number. As per `dexdash` requirements, the column names of this data frame are `id`, `sample`, `group` and `replicate`:
+
+```{r}
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(forcats)
+
+metadata <- tibble(sample = colnames(mtx)) |> 
+  separate_wider_delim(sample, delim = "-", names = c("group", "replicate"),
+                       cols_remove = FALSE) |> 
+  mutate(group = fct_relevel(group, "WT"))
+
+metadata
+```
+
+## Differential expression
+
+Next, we carry out differential expression using `edgeR`. This is a simple case of two conditions (groups), each in six replicates. Again, we need specific column names for `dexdash`. If you use a different differential expression tool, the default column names would be different. In any case, they need to be `id`, `log_fc`, `expr`, `p_value`, `fdr`, and `contrast`. Whichever DE tool you use, make sure to rename the columns before passing the result to `dexdash`.
+
+```{r}
+library(edgeR)
+library(purrr)
+
+design_mat <- model.matrix(~group, metadata)
+de <- mtx |> 
+  DGEList() |>
+  calcNormFactors() |>
+  estimateDisp(design = design_mat) |>
+  glmQLFit(design = design_mat) |>
+  glmQLFTest(coef = "groupSnf2") |>
+  topTags(n = 1e16, adjust.method = "BH", sort.by = "none") |>
+  pluck("table") |>
+  as_tibble(rownames = "id") |>
+  add_column(contrast = "Snf2-WT") |> 
+  rename(
+    log_fc = logFC,
+    expr = logCPM,
+    p_value = PValue,
+    fdr = FDR
+  )
+
+de
+```
+
+## Count data in the long format
+
+`dexdash` requires count data in the long format, with column names `id`, `sample` and `value`. We create the appropriate data frame:
+
+```{r}
+data <- mtx |> 
+  as_tibble(rownames = "id") |> 
+  pivot_longer(-id, names_to = "sample", values_to = "value")
+
+data
+```
+
+## Feature names and descriptions
+
+Next, we need a table converting cryptic gene identifiers into human-readable gene names. We use `biomaRt` for this purpose. Below, we shorten gene descriptions by removing everything after the semicolon (extended desctiption) and/or after bracket `[`, which contains species name.
+
+```{r include=FALSE}
+features = yeast_features
+```
+
+
+```{r eval=FALSE}
+library(biomaRt)
+library(stringr)
+
+mart <- useEnsembl(biomart = "ensembl", dataset = "scerevisiae_gene_ensembl")
+attr <- c(
+  id = "ensembl_gene_id",
+  name = "external_gene_name",
+  description = "description"
+)
+
+features <- getBM(attributes = attr, mart = mart, useCache = TRUE) |> 
+  as_tibble() |> 
+  rename(!!attr) |> 
+  mutate(
+      description = str_remove(description, "(;|\\s\\[).+$"),
+      name = na_if(name, "")
+    ) |> 
+  mutate(name = if_else(is.na(name), id, name))
+```
+
+The resulting data frame is
+
+```{r}
+features
+```
+
+## Functional enrichment data
+
+Finally, as indicated earlier, we need the functional enrichment data:
+
+```{r eval=FALSE}
+fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+```
+
+## Run dexdash
+
+Now, we have all necessary data to launch `dexdash`:
+
+```{r eval=FALSE}
+run_app(de, data, metadata, features, fterms)
+```
+
 
 # Session info {.unnumbered}
 

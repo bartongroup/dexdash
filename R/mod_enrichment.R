@@ -39,10 +39,16 @@ mod_enrichment_ui <- function(id) {
     fdr_limit
   )
 
+  info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/enrichment.md"),
+    options = list(customClass = "info-pop")
+  )
+
   bslib::card(
     bslib::card_header(
       "Functional enrichment",
-      gear,
+      shiny::span(info, gear),
       class = "d-flex justify-content-between"
     ),
 

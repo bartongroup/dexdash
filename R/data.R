@@ -35,3 +35,13 @@
 #' @format A tibble with 6 columns
 #' @return Feature description table.
 "yeast_features"
+
+#' Expression data for yeast RNA-seq in wide matrix format.
+#'
+#' A subset of 6 + 6 replicates was selected from data set reported in
+#' https://doi.org/10.1093/bioinformatics/btv425
+#'
+#' @usage data(mtx)
+#' @format A matrix with 6298 rows and 12 columns.
+#' @return Expression data from a yeast RNA-seq experiment.
+"mtx"

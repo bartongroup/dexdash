@@ -38,7 +38,8 @@ mod_feature_plot_ui <- function(id) {
 
   info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/feature_plot.md")
+    htmltools::includeMarkdown("man/helpers/feature_plot.md"),
+    options = list(customClass = "info-pop")
   )
 
   gear <- bslib::popover(

@@ -52,7 +52,10 @@ Suggests:
     BiocStyle,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    forcats,
+    purrr,
+    gt
 Depends: 
     R (>= 4.1)
 RoxygenNote: 7.3.1

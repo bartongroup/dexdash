@@ -19,8 +19,18 @@
 mod_feature_info_ui <- function(id) {
   ns <- shiny::NS(id)
 
+  info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/feature_info.md"),
+    options = list(customClass = "info-pop")
+  )
+
   bslib::card(
-    bslib::card_header("Feature information"),
+    bslib::card_header(
+      "Feature information",
+      info,
+      class = "d-flex justify-content-between"
+    ),
     DT::dataTableOutput(
       outputId = ns("feature_info")
     )

@@ -123,7 +123,7 @@ run_app <- function(de, data, metadata, features, fterms) {
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "fdr", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
   assert_colnames(metadata, c("sample", "group", "replicate"), deparse(substitute(metadata)))
-  assert_colnames(features, c("id", "name", "description"), deparse(substitute(de)))
+  assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
   purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms")))
 
@@ -138,8 +138,8 @@ run_app <- function(de, data, metadata, features, fterms) {
   )
 
   ui <- bslib::page_sidebar(
-    theme = bslib::bs_theme(bootswatch = "journal") |>
-      bslib::bs_add_rules(".info-pop { background-color: #f0f9e8; }"),
+    theme = bslib::bs_theme(bootswatch = "sandstone") |>
+      bslib::bs_add_rules(".info-pop { max-width: 500px; background-color: #f0f9e8; }"),
     title = "DEXDASH",
 
     sidebar = bslib::sidebar(

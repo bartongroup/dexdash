@@ -1,12 +1,12 @@
 ## Feature plot
 
-Shows the expression or abundance of one, or multiple features (genes or proteins). For a single feature it creates an intensity vs group plot. For multiple features it shows a heatmap of features againt samples/groups.
+This card displays the expression or abundance levels of selected features (genes or proteins). For a single feature, it presents an intensity versus group plot. When multiple features are selected, it shows a heatmap of features against samples or groups.
 
 ### Plot settings
 
-Click the gear icon to change:
+Adjust your preferences by clicking the gear icon:
 
- - Heatmap averaged across replicates - if selected, replicates in each group are averaged
- - Heatmap normalised per row - if selected, each row (gene) is normalised to its own mean, if not selected, original expression/abundance is displayed
- - Intensity scale (linear or logarithmic) - not shown when normalisation to row is selected
+ - 'Heatmap averaged across replicates' - if enabled, the data for replicates in each group are averaged
+ - 'Heatmap normalised per row' - if enabled, each row (gene) is normalised to its own mean; if unselected, the original expression or abundance data are shown
+ - 'Intensity scale' - Choose between a linear or logarithmic scale. This option is unavailable when normalization to row is active.
  

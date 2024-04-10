@@ -5,15 +5,27 @@
 mod_global_input_ui <- function(id) {
   ns <- shiny::NS(id)
 
+  contrast_info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/contrast.md"),
+    options = list(customClass = "info-pop")
+  )
+
+  search_info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown("man/helpers/search.md"),
+    options = list(customClass = "info-pop")
+  )
+
   shiny::tagList(
     shiny::selectInput(
       inputId = ns("contrast"),
-      label = "Contrast",
+      label = shiny::span("Contrast", contrast_info),
       choices = NULL
     ),
     shiny::selectizeInput(
       inputId = ns("search"),
-      label = "Search",
+      label = shiny::span("Search", search_info),
       selected = NULL,
       choices = NULL
     ),
