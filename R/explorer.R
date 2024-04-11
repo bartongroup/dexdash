@@ -146,8 +146,9 @@ run_app <- function(de, data, metadata, features, fterms) {
     name2id = rlang::set_names(features$id, features$name)
   )
 
+
   ui <- bslib::page_sidebar(
-    theme = bslib::bs_theme(bootswatch = "sandstone") |>
+    theme = bslib::bs_theme(bootswatch = "spacelab", spacer = "0.8rem") |>
       bslib::bs_add_rules(".info-pop { max-width: 500px; background-color: #f0f9e8; }"),
     title = "DEXDASH",
 

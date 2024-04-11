@@ -9,7 +9,7 @@ This R package is designed for interactive exploration and analysis of different
 
 ```
 install.packages("remotes")
-remotes::install_github("bartongroup/dexdash")
+remotes::install_github("bartongroup/dexdash", build_vignettes = TRUE)
 ```
 
 ## Example
@@ -25,4 +25,12 @@ fterms <- download_functional_terms("yeast", feature_name = "gene_id")
 
 # The fast bit: interactive app
 run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, fterms)
+```
+
+## More information
+
+Please read the package's vignette:
+
+```
+vignette("dexdash")
 ```
