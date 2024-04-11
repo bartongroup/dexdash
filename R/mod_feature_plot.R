@@ -219,29 +219,29 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, what = "value", scale, text_size = 14, point_size = 3, cex = 2,
+plot_features <- function(dat, what = "value", scale = "lin", text_size = 14, point_size = 3, cex = 2,
                           max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
   val <- NULL
 
   if(nrow(dat) == 0) return(NULL)
 
-  d <- dat |>
-    dplyr::mutate(val = get(what)) |>
+  dat$val <- dat[[what]]
+  dat <- dat |>
     tidyr::drop_na()
 
-  if(nrow(d) == 0) return(NULL)
+  if(nrow(dat) == 0) return(NULL)
 
   lab <- what
 
   if(scale == "log"){
-    d$val <- log10(d$val)
+    dat$val <- log10(dat$val)
     lab <-  stringr::str_glue("Log {what}")
   }
 
-  n_feat <- length(unique(d$id))
+  n_feat <- length(unique(dat$id))
   if(n_feat == 1) {
-    plot_one_feature(d, lab, scale, text_size, point_size, cex)
+    plot_one_feature(dat, lab, scale, text_size, point_size, cex)
   } else {
-    plot_feature_heatmap(d, lab, text_size, max_n_lab, norm_fc, group_mean)
+    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_fc, group_mean)
   }
 }
