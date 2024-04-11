@@ -59,7 +59,6 @@ mod_volma_plot_ui <- function(id) {
       shiny::span(info, gear),
       class = "d-flex justify-content-between"
     ),
-
     bslib::card_body(
       min_height = 250,
       shiny::plotOutput(

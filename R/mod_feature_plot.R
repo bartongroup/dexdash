@@ -78,12 +78,12 @@ mod_feature_plot_server <- function(id, data_set, state) {
     output$feature_plot <- shiny::renderPlot({
       ids <- state$sel_feature_plot
       shiny::req(ids)
-      d <- data_set$data |>
+      data_set$data |>
         dplyr::filter(id %in% ids) |>
-        dplyr::left_join(data_set$features, by = "id")
-      plot_features(d, meta = data_set$metadata, scale = input$intensity_scale,
-                    what = "value", max_n_lab = 50, norm_fc = input$norm_fc,
-                    group_mean = input$group_mean)
+        dplyr::left_join(data_set$features, by = "id") |>
+        dplyr::left_join(data_set$metadata, by = "sample") |>
+        plot_features(what = "value", scale = input$intensity_scale, max_n_lab = 50,
+                      norm_fc = input$norm_fc, group_mean = input$group_mean)
     })
   }
 
@@ -114,7 +114,7 @@ plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_
     dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
 
   ncond <- length(unique(d$group))
-  vlines <- tibble::tibble(x = seq(0.5, ncond + 0.5, 1))
+  vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
 
   nm <- dplyr::first(d$name)
 
@@ -208,7 +208,6 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #' Make a feature plot: intensity vs sample or group
 #'
 #' @param dat Tibble with feature intensities
-#' @param meta Metadata with grouping of samples
 #' @param scale Intensity scale, "lin" or  "log"
 #' @param what Which column to plot
 #' @param text_size Text size
@@ -220,7 +219,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, meta, scale, what = "value", text_size = 14, point_size = 3, cex = 2,
+plot_features <- function(dat, what = "value", scale, text_size = 14, point_size = 3, cex = 2,
                           max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
   val <- NULL
 
@@ -228,7 +227,6 @@ plot_features <- function(dat, meta, scale, what = "value", text_size = 14, poin
 
   d <- dat |>
     dplyr::mutate(val = get(what)) |>
-    dplyr::left_join(meta, by = "sample") |>
     tidyr::drop_na()
 
   if(nrow(d) == 0) return(NULL)
