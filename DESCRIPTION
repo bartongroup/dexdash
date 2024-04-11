@@ -32,8 +32,10 @@ biocViews:
     Reactome,
     Visualization
 Imports:
-    assertthat,
+    methods,
+    stats,
     rlang,
+    assertthat,
     tibble,
     tidyr,
     dplyr,
@@ -47,15 +49,15 @@ Imports:
     shiny,
     bslib,
     bsicons,
-    shinyWidgets
+    shinyWidgets,
+    htmltools
 Suggests:
     BiocStyle,
     testthat,
     knitr,
     rmarkdown,
-    forcats,
-    purrr,
-    gt
+    edgeR,
+    forcats
 Depends: 
     R (>= 4.1)
 RoxygenNote: 7.3.1

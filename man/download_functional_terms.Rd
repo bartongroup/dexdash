@@ -54,5 +54,7 @@ The GO, KEGG and Reactome databases use different species
   where column `designation` contains the species designation required.
 }
 \examples{
+\dontrun{
 fterms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
+}
 }

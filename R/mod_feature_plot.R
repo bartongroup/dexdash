@@ -20,7 +20,7 @@ mod_feature_plot_ui <- function(id) {
   group_mean <- shiny::checkboxInput(
     inputId = ns("group_mean"),
     label = "Heatmap averaged across replicates",
-    value = TRUE
+    value = FALSE
   )
 
   norm_fc <- shiny::checkboxInput(
@@ -222,11 +222,12 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #' @noRd
 plot_features <- function(dat, meta, scale, what = "value", text_size = 14, point_size = 3, cex = 2,
                           max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
+  val <- NULL
 
   if(nrow(dat) == 0) return(NULL)
 
   d <- dat |>
-    dplyr::rename(val := !!what) |>
+    dplyr::mutate(val = get(what)) |>
     dplyr::left_join(meta, by = "sample") |>
     tidyr::drop_na()
 

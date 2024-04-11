@@ -36,7 +36,6 @@ library(tidyr)
 library(forcats)
 library(stringr)
 library(edgeR)
-library(gt)
 ```
 
 ```{r setup}
@@ -135,19 +134,6 @@ There are five mandatory arguments:
 ## Data frames
 
 The table below summarises columns required in the four data frames. These data frames must be created by the user. Differential expression output differs from tool to tool, here we show which columns to use from the output of *edgeR*, *DESeq2* and *limma*. A full worked example below demonstrates how to prepare the required data, step by step.
-
-
-```{r data_frame_columns, echo = FALSE, results = 'asis', eval=FALSE}
-all_args |> 
-  group_by(argument) |> 
-  gt() |> 
-   tab_style(
-    style = cell_fill(color = "bisque"),
-    locations = cells_row_groups()
-  ) |> 
-  as_raw_html()
-```
-
 
 ```{r data_columns, echo = FALSE}
 knitr::kable(all_args)

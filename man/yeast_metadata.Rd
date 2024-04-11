@@ -5,7 +5,7 @@
 \alias{yeast_metadata}
 \title{Experimental design from an yeast RNA-seq experiment.}
 \format{
-A tibble with 3 columns
+A tibble with 2 columns
 }
 \usage{
 data(yeast_metadata)

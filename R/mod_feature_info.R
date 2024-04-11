@@ -129,7 +129,7 @@ make_feature_info_table <- function(de, features, ids, ctr, max_points = 3000) {
       dplyr::arrange(name) |>
       dplyr::mutate(name = stringr::str_replace_all(name, ";", "; "))
   } else {
-    df <- tibble::tibble(Error = stringr::str_glue("Only max_points points can be selected."))
+    df <- tibble::tibble(Error = stringr::str_glue("Only {max_points} points can be selected."))
   }
   return(df)
 }

@@ -5,13 +5,13 @@
 \alias{yeast_features}
 \title{Feature description for an example RNA-seq experiment.}
 \format{
-A tibble with 6 columns
+A tibble with 3 columns
 }
 \usage{
 data(yeast_features)
 }
 \value{
-Feature description table.
+Feature description table, downloaded from Ensembl.
 }
 \description{
 Feature description for an example RNA-seq experiment.

@@ -33,7 +33,9 @@
 #'   `fenr::fetch_kegg_species()`. These three functions return data frames,
 #'   where column `designation` contains the species designation required.
 #' @examples
+#' \dontrun{
 #' fterms <- download_functional_terms(species = "yeast", feature_name = "gene_id")
+#' }
 #' @export
 download_functional_terms <- function(species, species_file = NULL,
                                       feature_name = c("gene_symbol" ,"gene_id"), all_features = NULL) {
@@ -111,6 +113,9 @@ download_functional_terms <- function(species, species_file = NULL,
 #'   in the user's default web browser, allowing for interactive exploration of
 #'   the differential expression data.
 #'
+#' @importFrom methods is
+#' @importFrom stats p.adjust
+#'
 #' @examples
 #' if(interactive()) {
 #'   data(de, data, metadata, features)
@@ -119,6 +124,7 @@ download_functional_terms <- function(species, species_file = NULL,
 #' }
 #' @export
 run_app <- function(de, data, metadata, features, fterms) {
+  p_value <- NULL
 
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))

@@ -5,7 +5,7 @@
 \alias{yeast_de}
 \title{Differential expression results for yeast RNA-seq.}
 \format{
-A tibble with 6 columns
+A tibble with 5 columns
 }
 \usage{
 data(yeast_de)

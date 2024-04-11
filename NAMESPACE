@@ -2,3 +2,5 @@
 
 export(download_functional_terms)
 export(run_app)
+importFrom(methods,is)
+importFrom(stats,p.adjust)
