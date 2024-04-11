@@ -9,9 +9,9 @@ run_app(de, data, metadata, features, fterms)
 \arguments{
 \item{de}{Differential expression data as a data frame, expected to contain
 the following columns: `id` - feature id, `log_fc` - log-fold change,
-`expr` - expression or abundance, e.g. gene read count, `p_value` - p-value
-from the DE test, `fdr` - false discovery rate, which is p-value corrected
-for multiple tests, `contrast` - name of the contrast used for the test.}
+`expr` - expression or abundance, e.g. gene read count, `p_value` -
+uncorrected p-value from the DE test, `contrast` - name of the contrast
+used for the test.}
 
 \item{data}{A data frame containing the primary dataset for exploration,
 expected to contain the following columns: `id` - feature id, the same as

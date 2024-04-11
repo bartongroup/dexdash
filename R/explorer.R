@@ -87,9 +87,9 @@ download_functional_terms <- function(species, species_file = NULL,
 #'
 #' @param de Differential expression data as a data frame, expected to contain
 #'   the following columns: `id` - feature id, `log_fc` - log-fold change,
-#'   `expr` - expression or abundance, e.g. gene read count, `p_value` - p-value
-#'   from the DE test, `fdr` - false discovery rate, which is p-value corrected
-#'   for multiple tests, `contrast` - name of the contrast used for the test.
+#'   `expr` - expression or abundance, e.g. gene read count, `p_value` -
+#'   uncorrected p-value from the DE test, `contrast` - name of the contrast
+#'   used for the test.
 #' @param data A data frame containing the primary dataset for exploration,
 #'   expected to contain the following columns: `id` - feature id, the same as
 #'   in `de` data frame, `sample` - sample name, the same as in the `metadata`
@@ -120,12 +120,15 @@ download_functional_terms <- function(species, species_file = NULL,
 #' @export
 run_app <- function(de, data, metadata, features, fterms) {
 
-  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "fdr", "contrast"), deparse(substitute(de)))
+  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
   assert_colnames(metadata, c("sample", "group", "replicate"), deparse(substitute(metadata)))
   assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
   purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms")))
+
+  de <- de |>
+    dplyr::mutate(fdr = p.adjust(p_value, method = "BH"))
 
   data_set <- list(
     de = de,

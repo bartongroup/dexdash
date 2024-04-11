@@ -14,7 +14,7 @@
 #' https://doi.org/10.1093/bioinformatics/btv425
 #'
 #' @usage data(yeast_metadata)
-#' @format A tibble with 3 columns
+#' @format A tibble with 2 columns
 #' @return Design of the experiment containing expression `data` and
 #'   differential expression `de`.
 "yeast_metadata"
@@ -25,15 +25,15 @@
 #' https://doi.org/10.1093/bioinformatics/btv425
 #'
 #' @usage data(yeast_de)
-#' @format A tibble with 6 columns
+#' @format A tibble with 5 columns
 #' @return Results for differential expression for yeast RNA-seq.
 "yeast_de"
 
 #' Feature description for an example RNA-seq experiment.
 #'
 #' @usage data(yeast_features)
-#' @format A tibble with 6 columns
-#' @return Feature description table.
+#' @format A tibble with 3 columns
+#' @return Feature description table, downloaded from Ensembl.
 "yeast_features"
 
 #' Expression data for yeast RNA-seq in wide matrix format.
