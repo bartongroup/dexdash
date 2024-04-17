@@ -59,6 +59,10 @@ download_functional_terms <- function(species, species_file = NULL,
   message("Loading KEGG data")
   kg <- fenr::fetch_kegg(sp$kegg)
 
+  # Backwards compatibility with fenr 1.0.5
+  if("gene_synonym" %in% colnames(go$mapping))
+    go$mapping$gene_id <- go$mapping$gene_synonym
+
   terms <- list(
     go = go,
     reactome = re,

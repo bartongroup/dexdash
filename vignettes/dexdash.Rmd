@@ -297,7 +297,7 @@ run_app(de, data, metadata, features, fterms)
 
 ### ShinyGO
 
-*[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-base Shiny app for comprehensive KEGG pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works on differential expression result set and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG adn Reactome enrichment analysis.
+*[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-base Shiny app for comprehensive KEGG pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works on differential expression result set and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG and Reactome enrichment analysis.
 
 ### Glimma
 
