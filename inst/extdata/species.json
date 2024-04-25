@@ -1,37 +1,110 @@
 {
   "human" : {
-    "go" : "goa_human",
-    "reactome" : "Homo sapiens",
-    "kegg" : "hsa"
+    "ontology" : {
+      "go" : "goa_human",
+      "reactome" : "Homo sapiens",
+      "kegg" : "hsa"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "hsapiens_gene_ensembl"
+    }
   },
   "mouse" : {
-    "go" : "mgi",
-    "reactome" : "Mus musculus",
-    "kegg" : "mmu"
+    "ontology" : {
+      "go" : "mgi",
+      "reactome" : "Mus musculus",
+      "kegg" : "mmu"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "mmusculus_gene_ensembl"
+    }
+  },
+  "rat" : {
+    "ontology" : {
+      "go" : "rgd",
+      "reactome" : "Rattus norvegicus",
+      "kegg" : "rno"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "rnorvegicus_gene_ensembl"
+    }
   },
   "yeast" : {
-    "go" : "sgd",
-    "reactome" : "Saccharomyces cerevisiae",
-    "kegg" : "sce"
+    "ontology" : {
+      "go" : "sgd",
+      "reactome" : "Saccharomyces cerevisiae",
+      "kegg" : "sce"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "scerevisiae_gene_ensembl"
+    }
   },
   "roundworm" : {
-    "go" : "wb",
-    "reactome" : "Caenorhabditis elegans",
-    "kegg" : "cel"
+    "ontology" : {
+      "go" : "wb",
+      "reactome" : "Caenorhabditis elegans",
+      "kegg" : "cel"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "celegans_gene_ensembl"
+    }
   },
   "slime mold" : {
-    "go" : "dictybase",
-    "reactome" : "Dictyostelium discoideum",
-    "kegg" : "ddi"
+    "ontology" : {
+      "go" : "dictybase",
+      "reactome" : "Dictyostelium discoideum",
+      "kegg" : "ddi"
+    },
+    "ensembl" : {
+      "biomart" : "protists_mart",
+      "host" : "https://protists.ensembl.org",
+      "dataset" : "ddiscoideum_eg_gene"
+    }
   },
   "fruit fly" : {
-    "go" : "fb",
-    "reactome" : "Drosophila melanogaster",
-    "kegg" : "dme"
+    "ontology" : {
+      "go" : "fb",
+      "reactome" : "Drosophila melanogaster",
+      "kegg" : "dme"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "dmelanogaster_gene_ensembl"
+    }
   },
-    "xenopus" : {
-    "go" : "xenbase",
-    "reactome" : "Xenopus tropicalis",
-    "kegg" : "xtr"
+  "xenopus" : {
+    "ontology" : {
+      "go" : "xenbase",
+      "reactome" : "Xenopus tropicalis",
+      "kegg" : "xtr"
+    },
+    "ensembl" : {
+      "biomart" : "ensembl",
+      "host" : "https://www.ensembl.org",
+      "dataset" : "xtropicalis_gene_ensembl"
+    }
+  },
+  "arabidopsis" : {
+    "ontology" : {
+      "go" : "tair",
+      "kegg" : "ath"
+    },
+    "ensembl" : {
+      "biomart" : "plants_mart",
+      "host" : "https://plants.ensembl.org",
+      "dataset" : "athaliana_eg_gene"
+    }
+
   }
 }

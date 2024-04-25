@@ -2,7 +2,7 @@
 % Please edit documentation in R/explorer.R
 \name{run_app}
 \alias{run_app}
-\title{Launches an Interactive Differential Expression (DE) Data Explorer}
+\title{Launches an interactive differential expression (DE) data explorer}
 \usage{
 run_app(de, data, metadata, features, fterms)
 }
@@ -28,7 +28,8 @@ condition or treatment, `replicate` - replicate name.}
 descriptions. Expected to contain the following columns: `id` - feature id,
 must match the identifier in the `data` object, `name` - human-friendly
 name of the feature, e.g. gene symbol, `description` - a brief description
-of the feature.}
+of the feature. This data frame can be obtained using function
+\code{download_gene_informarion()}.}
 
 \item{fterms}{An object containing functional term information, created using
 function \code{download_functional_terms}.}

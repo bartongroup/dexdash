@@ -4,40 +4,24 @@
 \alias{download_functional_terms}
 \title{Download Functional Annotation Terms}
 \usage{
-download_functional_terms(
-  species,
-  species_file = NULL,
-  feature_name = c("gene_symbol", "gene_id"),
-  all_features = NULL
-)
+download_functional_terms(species, species_file = NULL)
 }
 \arguments{
 \item{species}{A character string specifying the species for which to
-download data.}
+download data. Available species can be listed using function
+`list_species()`.}
 
 \item{species_file}{(Optional) A character string providing the path to a
 JSON file containing species information. If `NULL`, the default
 species.json file from the package will be used. See Details for more
 information.}
-
-\item{feature_name}{The name of the column in the \code{mapping} tibble to be
-used as the feature identifier. It can be "gene_symbol" or "gene_id". If
-your data contain gene symbols (e.g. "BRCA1" or "FOXP1"), use \code{feature_name
-= "gene_symbol"}. If your data contain Ensembl identifiers (e.g. "ENSG00000012048"
- or  "ENSG00000114861"), use \code{feature_name
-= "gene_id"}.}
-
-\item{all_features}{(Optional) A vector of all possible features (such as
-gene symbols) to prepare the data for enrichment analysis.}
 }
 \value{
 A list of three elements named "go", "reactome" and "kegg", each
-  containing \code{fenr_terms} objects required for fast functional
-  enrichment.
+  containing two data frames with term descriptions and feature mapping.
 }
 \description{
-Retrieves Gene Ontology (GO), Reactome, and KEGG terms for a given species
-and prepares them to use with the Shiny app.
+Retrieves Gene Ontology (GO), Reactome, and KEGG terms for a given species.
 }
 \details{
 The GO, KEGG and Reactome databases use different species

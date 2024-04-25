@@ -44,7 +44,7 @@ mod_global_input_server <- function(id, data_set, state) {
   server <- function(input, output, session) {
 
     # Update dummy contrast selection
-    contrasts <- levels(data_set$de$contrast)
+    contrasts <- unique(data_set$de$contrast)
     shiny::observe({
       shiny::updateSelectInput(
         session = session,
