@@ -21,10 +21,11 @@ library(dexdash)
 data(yeast_de, yeast_data, yeast_metadata, yeast_features)
 
 # The slow bit: download functional term data
-fterms <- download_functional_terms("yeast", feature_name = "gene_id")
+yeast_terms <- download_functional_terms("yeast")
+yeast_fterms <- prepare_functional_terms(terms, feature_name = "gene_id")
 
 # The fast bit: interactive app
-run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, fterms)
+run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
 ```
 
 ## More information
