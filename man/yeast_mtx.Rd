@@ -6,18 +6,12 @@
 \title{Expression data for yeast RNA-seq in wide matrix format.}
 \format{
 A matrix with 6298 rows and 12 columns.
-
-A matrix with 50892 rows and 16 columns.
 }
 \usage{
 data(yeast_mtx)
-
-data(mouse_mtx)
 }
 \value{
 Expression data from a yeast RNA-seq experiment.
-
-Expression data from a mouse RNA-seq experiment.
 }
 \description{
 A subset of 6 + 6 replicates was selected from data set reported in
