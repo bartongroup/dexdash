@@ -14,3 +14,9 @@
  - Wrote new section of the vignette with an advanced example.
  - Added mouse RNA-seq data for the example.
  - Added Ensembl settings for all species in the `species.json` file.
+
+## Version 0.1.3
+
+ - Bug fixes
+ - Lazy data recompression
+ 
