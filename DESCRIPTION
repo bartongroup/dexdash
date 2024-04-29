@@ -46,16 +46,16 @@ Imports:
     DT,
     jsonlite,
     fenr,
+    biomaRt,
     shiny,
     bslib,
     bsicons,
     shinyWidgets,
     htmltools
 Suggests:
-    BiocStyle,
     testthat,
+    quarto,
     knitr,
-    rmarkdown,
     edgeR,
     forcats
 Depends: 
@@ -63,3 +63,5 @@ Depends:
 RoxygenNote: 7.3.1
 VignetteBuilder: quarto
 LazyData: true
+LazyDataCompression: xz
+

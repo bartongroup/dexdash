@@ -208,6 +208,8 @@ prepare_functional_terms <- function(terms, feature_name = c("gene_symbol" ,"gen
 #' }
 #' @export
 download_feature_information <- function(species, species_file = NULL, id = "ensembl_gene_id") {
+  name <- description <- NULL
+
   sp <- load_species(species, species_file)
 
   mart <- biomaRt::useMart(biomart = sp$ensembl$biomart, host = sp$ensembl$host, dataset = sp$ensembl$dataset)
@@ -284,7 +286,7 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #' }
 #' @export
 run_app <- function(de, data, metadata, features, fterms) {
-  p_value <- NULL
+  p_value <- contrast <- NULL
 
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
