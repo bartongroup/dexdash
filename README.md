@@ -36,3 +36,6 @@ Please read the package's vignette:
 ```
 vignette("dexdash")
 ```
+
+A copy of the vignette is available on [our server](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html).
+
