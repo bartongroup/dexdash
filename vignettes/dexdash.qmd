@@ -1,7 +1,9 @@
 ---
-title: "Differential EXpression Downstream Analysis SHiny app"
+title: "Dexdash: Differential EXpression Downstream Analysis SHiny app"
 package: dexdash
-output: rmarkdown::html_vignette
+format: 
+  html:
+    toc: true
 abstract: |
     This R package is designed for interactive exploration and analysis
     of differential expression (DE) results. It combines Shiny-based
@@ -17,7 +19,7 @@ abstract: |
     Once started, the app is fast and easy to use.
 vignette: >
   %\VignetteIndexEntry{Differential EXpression Downstream Analysis SHiny app}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -71,10 +73,13 @@ remotes::install_github("bartongroup/dexdash")
 library(dexdash)
 
 # Data examples available in the package
-data(yeast_de, yeast_data, yeast_metadata, yeast_features)
-# The slow bit: download functional term data
-yeast_terms <- download_functional_terms("yeast")
+data(yeast_de, yeast_data, yeast_metadata)
+
+# The slow bit: download feature information and functional term data
+yeast_features <- download_feature_information(species = "yeast")
+yeast_terms <- download_functional_terms(species = "yeast")
 yeast_fterms <- prepare_functional_terms(terms, feature_name = "gene_id")
+
 # The fast bit: interactive app
 run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
 ```
@@ -115,7 +120,7 @@ args_features <- tibble::tribble(
 ) |> 
   tibble::add_column(argument = c("features", "", ""), .before = 1)
 
-all_args <- bind_rows(args_de, args_data, args_metadata, args_features)
+all_args <- bind_rows(args_de, args_data, args_metadata)
 ```
 
 The *dexdash* Shiny app is launched with a command:
@@ -133,47 +138,86 @@ There are five mandatory arguments:
   - `fterms` - an object containing functional terms data.
 
 
-### Data frames
+### User data: experimental results
 
-The table below summarises columns required in the four data frames. These data frames must be created by the user. Differential expression output differs from tool to tool, here we show which columns to use from the output of *edgeR*, *DESeq2* and *limma*. A full worked example below demonstrates how to prepare the required data, step by step.
+There are three data frames containing experimental results, provided by the user. As differential expression output differs from tool to tool, it would be difficult to feed them directly into *dexdash*. Therefore, the user needs to rename data frame columns as shown in @tbl-data-columns. A fully worked example below demonstrates how to prepare the required data, step by step.
 
-```{r data_columns, echo = FALSE}
+```{r}
+#| label: tbl-data-columns
+#| tbl-cap: Column names, types and descriptions for data frames with differential expression results (de), expression data (data) and experimental design (metadata).
+#| echo: false
 knitr::kable(all_args)
 ```
+
+### Feature information
+
+Feature (gene or protein) information should be prepared in a data frame with columns `id`, `name` and `description`, as explained in @tbl-feature-columns.
+
+```{r}
+#| label: tbl-feature-columns
+#| tbl-cap: Column names, types and descriptions for data frame with feature (gene or protein) information.
+#| echo: false
+knitr::kable(args_features)
+```
+
+This data frame can be prepared by the user, but *dexdash* includes a helper function to download these data from Ensembl:
+
+```{r eval = FALSE}
+yeast_features <- download_feature_information(species = "yeast")
+```
+
+The necessary information to connect to the correct Ensembl dataset is stored in a JSON file attached to the package (see @sec-json for details).
 
 ### Functional term data
 
 To perform fast interactive functional enrichment, *dexdash* requires data downloaded from on-line databases and prepared for fast enrichment. This can be achieved with the following functions:
-
-```{r yeast_terms, include = FALSE}
-data(yeast_fterms)
-```
 
 ```{r download_terms, eval = FALSE}
 yeast_terms <- download_functional_terms(species = "yeast")
 yeast_fterms <- prepare_functional_terms(terms, feature_name = "gene_id")
 ```
 
-The first argument in this function is a species name. Based on this name, the function will download the relevant data from the online databases. The GO, KEGG and Reactome databases use different species designation names. For example, designation for yeast is "sgd", "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG, respectively. In oder to interrogate these databases, the correct designations must be passed on. This package contains a small JSON file, which can be accessed:
+The first function downloads functional term data and term-feature mapping from on-line databases and returns them in a format of two data frame (tibbles). These are user-readable and can be accessed to check if data conforms to the required format. The argument `species = "yeast"` refers to the entry in the JSON file attached to the package (see @sec-json for details).
+
+The second function converts data frames into an object required by *dexdash* for fast functional enrichment (based on Bioconductor's *fenr* package). The second argument, `feature_name`, specifies the name of the column in the `mapping` tibble to be used as the feature identifier. See the [vignette](https://bioconductor.org/packages/release/bioc/vignettes/fenr/inst/doc/fenr.html) of `fenr` package for more details. `feature_name` can be either `"gene_symbol"` or `"gene_id"`. If
+your data contain gene symbols (e.g. `"BRCA1"` or `"FOXP1"`), use `feature_name = "gene_symbol"`. If your data contain Ensembl identifiers (e.g. `"ENSG00000012048"` or  `"ENSG00000114861"`), use `feature_name = "gene_id"`.
+
+
+### Species JSON file {#sec-json}
+
+On-line databases (GO, Reactome, KEGG and Ensembl) can be accessed by specifying a species designation (functional terms data) and dataset (Ensembl). In many cases these names are not obvious to the user. For example, species designations for yeast are "sgd", "Saccharomyces cerevisiae", and "sce" for GO, Reactome and KEGG databases. There is a small JSON file attached to the package that contains these designations and Ensembl biomart, host and dataset names for a selection of species. The file can be found at this path on the local machine:
 
 ```{r species_file}
 species_file <- system.file("extdata", "species.json", package = "dexdash")
 ```
 
-It contains designation information for a few species. If your species is not included, you need to create a JSON file in the same format, as the included file, and provide its location by argument `species_file` in the `download_functional_terms()` function.
+You can quickly check which species are available using a function
+
+```{r species}
+list_species()
+```
+
+If your species is not included, you need to create a JSON file in the same format, as the included file, and provide its location by argument `species_file` in the `download_functional_terms()` function.
 
 Here is the entry for yeast:
 
-```{r species_json, echo = FALSE}
-jsonlite::read_json(species_file) |> 
-  purrr::pluck("yeast") |> 
+```{r json_yeast, echo = FALSE, comment = ""}
+json <- jsonlite::read_json(species_file)
+json["yeast"] |> 
   jsonlite::toJSON(pretty = TRUE, auto_unbox = TRUE)
 ```
 
-The species designations can be found using `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and `fenr::fetch_kegg_species()`. These three functions return data frames, where column `designation` contains the species designation required.
+The "ontology" field contains species designations for on-line databases. The species designations can be found using `fenr::fetch_go_species()`, `fenr::fetch_reactome_species()` and `fenr::fetch_kegg_species()`. These three functions return data frames, where column `designation` contains the species designation required. 
 
-The second argument, `feature_name`, specifies the name of the column in the `mapping` tibble to be used as the feature identifier. See the [vignette](https://bioconductor.org/packages/release/bioc/vignettes/fenr/inst/doc/fenr.html) of `fenr` package for more details. `feature_name` can be either `"gene_symbol"` or `"gene_id"`. If
-your data contain gene symbols (e.g. `"BRCA1"` or `"FOXP1"`), use `feature_name = "gene_symbol"`. If your data contain Ensembl identifiers (e.g. `"ENSG00000012048"` or  `"ENSG00000114861"`), use `feature_name = "gene_id"`.
+The "ensembl" field contains the biomart, the host and the dataset used by the `BiomaRt::useMart()` function. These are different for plants and protists. For example, this is the entry for *Dictyostelium discoideum* (we call it "slime mold"):
+
+```{r json_dicty, echo = FALSE, comment = ""}
+json <- jsonlite::read_json(species_file)
+json["slime mold"] |> 
+  jsonlite::toJSON(pretty = TRUE, auto_unbox = TRUE)
+
+```
+
 
 
 ## Simple example
@@ -249,17 +293,17 @@ yeast_data
 
 Next, we need a table convertinggene identifiers into human-readable gene names and descriptions. This can be done with the helper function `download_feature_information()`:
 
-```{r load_yeast_features}
+```{r load_yeast_features, echo = FALSE}
 data(yeast_features)
 ```
-
 
 ```{r yeast_features, eval = FALSE}
 yeast_features <- download_feature_information(species = "yeast")
 ```
 
 ```{r show_yeast_features}
-yeast_features |> arrange(name)
+yeast_features |>
+  arrange(name)
 ```
 
 
@@ -309,14 +353,16 @@ Now, we look at a random selection of rows in feature-to-term mapping tables:
 ```{r mouse_mappings}
 set.seed(42)
 mouse_terms$go$mapping |> sample_n(10)
+
 mouse_terms$reactome$mapping |> sample_n(10)
+
 mouse_terms$kegg$mapping |> sample_n(10)
 ```
 
-We have a problem. Our data uses Ensembl IDs, but out of the three databases, only Reactome provides with Ensembl IDs. GO returns gene aliases and KEGG uses NCBI IDs. We need put all these data together. The only unifying identifier is the gene symbol, returned by all three databases. To make it consistent with our data, we need to convert Ensembl IDs into gene symbols. For this, we use the function `download_feature_information()`:
+We have a problem. Our data uses Ensembl IDs, but out of the three databases, only Reactome provides with Ensembl IDs. GO returns gene aliases and KEGG uses NCBI IDs. We need put all these data together. The only common identifier is the gene symbol, returned by all three databases. To make it consistent with our data, we need to convert Ensembl IDs into gene symbols. For this, we use the function `download_feature_information()`:
 
 
-```{r load_mouse_genes, include = FALSE}
+```{r load_mouse_genes, echo = FALSE}
 data(mouse_genes)
 ```
 
@@ -342,7 +388,7 @@ id2symbol <- tibble(
 id2symbol
 ```
 
-It contains the exact rowname from the count table, the extracted Ensembl ID, without the version number (e.g. `.1`), which is joined with our gene data frame. In addition, we converted gene symbols into upper case (column `gene_id`). This is another issue - different sources provide gene symbols in different capitalisation. Sometimes, the first letter in in capitals, sometimes the entire gene symbol is capitalised. To circumvent this issue our function `download_feature_information()` automatically capitalises all gene symbols, hence, we need to do the same in the `id2symbol` structure.
+It contains the exact rowname from the count table (`rowname`), the extracted Ensembl ID (`id`), with version number (e.g. `.1`) removed, which is joined with our gene data frame. In addition, we converted gene symbols into upper case (column `gene_id`). This is another issue - different sources provide gene symbols in different capitalisation. Sometimes, the first letter is in capitals, sometimes the entire gene symbol is capitalised. To circumvent this issue our function `download_functional_terms()` automatically capitalises all gene symbols, hence, we need to do the same in the `id2symbol` structure.
 
 Having prepared all of this, we can rename rows in the count table:
 
@@ -353,7 +399,7 @@ rownames(renamed_mtx) <- id2symbol$gene_id
 head(renamed_mtx)
 ```
 
-Now, we have consistent identifers in count data and functional enrichment data. We can proceed.
+Now, we have consistent identifers in count data and functional enrichment data. We can now proceed.
 
 ### Metadata
 
@@ -415,7 +461,7 @@ mouse_data
 
 ### Feature names and descriptions
 
-For the Shiny app, a feature information table is needed to link feature identifiers (capitalised gene symbols), feature names (original gene symbols) and descriptions:
+For the Shiny app, a feature information table is needed to link feature identifiers (capitalised gene symbols), feature names (original gene symbols) and descriptions. The columns needed are described in @tbl-feature-columns. Here is how we prepare the required tibble:
 
 ```{r new_mouse_features}
 mouse_features <- mouse_genes |> 
@@ -426,7 +472,7 @@ mouse_features
 
 ### Functional enrichment data
 
-Finally, we need to prepare functional enrichment data in the fast enrichment format:
+Finally, we need to prepare functional enrichment data in the fast enrichment format. We specify `feature_name = "gene_symbol"` to inform the function which column should be used to identify features.
 
 ```{r mouse_prepare_terms}
 mouse_fterms <- prepare_functional_terms(mouse_terms, feature_name = "gene_symbol")
