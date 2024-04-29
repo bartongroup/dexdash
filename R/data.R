@@ -46,20 +46,12 @@
 #' @return Expression data from a yeast RNA-seq experiment.
 "yeast_mtx"
 
-#' Functional terms for yeast.
-#'
-#' @usage data(mouse_fterms)
-#' @format A 'fenr_terms' object
-#' @return Functional terms for yeast.
-"yeast_fterms"
-
-
 #' Expression data for mouse RNA-seq in wide matrix format.
 #'
 #' @usage data(mouse_mtx)
 #' @format A matrix with 50892 rows and 16 columns.
 #' @return Expression data from a mouse RNA-seq experiment.
-"yeast_mtx"
+"mouse_mtx"
 
 #' Feature description for an example RNA-seq experiment.
 #'
