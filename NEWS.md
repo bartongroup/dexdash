@@ -23,3 +23,4 @@
 ## Version 0.1.4
 
  - Improving the vignette
+ - Reducing size of data
