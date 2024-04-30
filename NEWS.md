@@ -20,3 +20,6 @@
  - Bug fixes
  - Lazy data recompression
  
+## Version 0.1.4
+
+ - Improving the vignette

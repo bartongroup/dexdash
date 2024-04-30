@@ -14,6 +14,7 @@ data(mouse_terms)
 Functional terms for mouse.
 }
 \description{
-Functional terms for mouse
+Downloaded using \code{mouse_fterms <- prepare_functional_terms(mouse_terms,
+feature_name = "gene_symbol")}.
 }
 \keyword{datasets}
