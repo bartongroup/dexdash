@@ -48,8 +48,11 @@
 
 #' Expression data for mouse RNA-seq in wide matrix format.
 #'
+#' A subset of 3 time points from data reported in
+#' https://doi.org/10.1016/j.celrep.2021.109943
+#'
 #' @usage data(mouse_mtx)
-#' @format A matrix with 50892 rows and 16 columns.
+#' @format A matrix with 29134 rows and 12 columns.
 #' @return Expression data from a mouse RNA-seq experiment.
 "mouse_mtx"
 
@@ -62,6 +65,9 @@
 
 
 #' Functional terms for mouse
+#'
+#' Downloaded using \code{mouse_fterms <- prepare_functional_terms(mouse_terms,
+#' feature_name = "gene_symbol")}.
 #'
 #' @usage data(mouse_terms)
 #' @format A list with data frames
