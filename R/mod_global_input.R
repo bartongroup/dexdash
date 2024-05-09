@@ -54,12 +54,11 @@ mod_global_input_server <- function(id, data_set, state) {
     })
 
     # Update dummy feature selection
-    features <- c("", unique(data_set$features$name))
     shiny::observe({
       shiny::updateSelectizeInput(
         session = session,
         inputId = "search",
-        choices = features,
+        choices = c("", unique(data_set$features$name)),
         server = TRUE
       )
     })
@@ -78,7 +77,13 @@ mod_global_input_server <- function(id, data_set, state) {
 
     # Clear input
     shiny::observeEvent(input$clear, {
-      shiny::updateSelectizeInput(session, "search", selected = "")
+      shiny::updateSelectizeInput(
+        session = session,
+        inputId = "search",
+        choices = c("", unique(data_set$features$name)),
+        selected = NULL,
+        server = TRUE
+      )
     })
   }
 

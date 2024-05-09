@@ -20,3 +20,9 @@
  - Bug fixes
  - Lazy data recompression
  
+## Version 0.1.4
+
+ - Fixed a bug in SelectizeInput
+ 
+ 
+ 
