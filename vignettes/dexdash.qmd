@@ -32,11 +32,12 @@ library(purrr)
 library(forcats)
 library(stringr)
 library(edgeR)
-```
-
-```{r dexdash}
 library(dexdash)
 ```
+
+
+*dexdash* version `r packageVersion("dexdash")`.
+
 
 ## Overview
 
@@ -317,7 +318,6 @@ library(edgeR)
 Struggling with identifiers is all in a day's work of a bioinformatician. Alas, there are no unified gene of protein identifiers in this imperfect word, and getting data from various sources inevitable leads to inconsistencies. This is our read count matrix:
 
 ```{r mouse_matrix}
-library(dexdash)
 data(mouse_mtx)
 head(mouse_mtx)
 ```
@@ -332,7 +332,7 @@ data(mouse_terms)
 mouse_terms <- download_functional_terms(species = "mouse")
 ```
 
-Now, we look at a random selection of rows in feature-to-term mapping tables:
+It is a nested list, the first level corresponds to the "ontology", that is `go`, `reactome` and `kegg`. Each ontology consists of two data frames, `mapping` - containing feature-term mapping and `terms` - containing term information. Let's look at a random selection of rows in feature-to-term mapping tables:
 
 ```{r mouse_mappings}
 set.seed(42)
