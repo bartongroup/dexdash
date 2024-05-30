@@ -230,10 +230,12 @@ Next, we carry out differential expression using *edgeR*. This is a simple case 
 
 ```{r yeast_differential_expression}
 design_mat <- model.matrix(~group, yeast_metadata)
-yeast_de <- yeast_mtx |> 
-  DGEList() |>
-  calcNormFactors() |>
-  estimateDisp(design = design_mat) |>
+
+dge <- DGEList(yeast_mtx)
+keep <- filterByExpr(dge, design_mat)
+
+yeast_de <- dge[keep, ] |> 
+  normLibSizes() |>
   glmQLFit(design = design_mat) |>
   glmQLFTest(coef = "groupSnf2") |>
   topTags(n = 1e16, sort.by = "none") |>
@@ -404,10 +406,11 @@ Differential expression if carried out with *edgeR*, like for the yeast data, bu
 ```{r mouse_differential_expression}
 design_mat <- model.matrix(~group, mouse_metadata)
 coefficients <- colnames(design_mat)[-1]
-fit <- renamed_mtx |> 
-  DGEList() |>
-  calcNormFactors() |>
-  estimateDisp(design = design_mat) |>
+
+dge <- DGEList(renamed_mtx)
+keep <- filterByExpr(dge, design_mat)
+fit <- dge[keep, ] |> 
+  normLibSizes() |>
   glmQLFit(design = design_mat)
 
 mouse_de <- map(coefficients, function(coef) {
