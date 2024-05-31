@@ -311,6 +311,7 @@ run_app <- function(de, data, metadata, features, fterms) {
     name2id = rlang::set_names(features$id, features$name)
   )
 
+  version <- paste("version", packageVersion("dexdash"))
 
   ui <- bslib::page_sidebar(
     theme = bslib::bs_theme(bootswatch = "spacelab", spacer = "0.8rem") |>
@@ -319,7 +320,9 @@ run_app <- function(de, data, metadata, features, fterms) {
 
     sidebar = bslib::sidebar(
       title = "DE explorer",
-      mod_global_input_ui("global_input")
+      mod_global_input_ui("global_input"),
+      shiny::tags$hr(),
+      shiny::tags$span(style = "font-size: 0.7em; color: #191970", version)
     ),
 
     bslib::layout_column_wrap(

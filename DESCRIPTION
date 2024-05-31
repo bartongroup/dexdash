@@ -55,7 +55,6 @@ Imports:
 Suggests:
     testthat,
     quarto,
-    knitr,
     edgeR,
     forcats
 Depends: 

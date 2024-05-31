@@ -5,7 +5,7 @@
 \alias{mouse_mtx}
 \title{Expression data for mouse RNA-seq in wide matrix format.}
 \format{
-A matrix with 50892 rows and 16 columns.
+A matrix with 29134 rows and 12 columns.
 }
 \usage{
 data(mouse_mtx)
@@ -14,6 +14,7 @@ data(mouse_mtx)
 Expression data from a mouse RNA-seq experiment.
 }
 \description{
-Expression data for mouse RNA-seq in wide matrix format.
+A subset of 3 time points from data reported in
+https://doi.org/10.1016/j.celrep.2021.109943
 }
 \keyword{datasets}

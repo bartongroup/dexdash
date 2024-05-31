@@ -23,6 +23,5 @@
 ## Version 0.1.4
 
  - Fixed a bug in SelectizeInput
- 
- 
- 
+ - Improving the vignette
+ - Reducing size of data
