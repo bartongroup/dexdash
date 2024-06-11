@@ -7,13 +7,13 @@ mod_global_input_ui <- function(id) {
 
   contrast_info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/contrast.md"),
+    htmltools::includeMarkdown(system.file("helpers/contrast.md", package = "dexdash")),
     options = list(customClass = "info-pop")
   )
 
   search_info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/search.md"),
+    htmltools::includeMarkdown(system.file("helpers/search.md", package = "dexdash")),
     options = list(customClass = "info-pop")
   )
 

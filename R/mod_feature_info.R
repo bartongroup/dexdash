@@ -21,7 +21,7 @@ mod_feature_info_ui <- function(id) {
 
   info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/feature_info.md"),
+    htmltools::includeMarkdown(system.file("helpers/feature_info.md", package = "dexdash")),
     options = list(customClass = "info-pop")
   )
 

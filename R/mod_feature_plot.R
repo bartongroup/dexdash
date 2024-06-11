@@ -38,7 +38,7 @@ mod_feature_plot_ui <- function(id) {
 
   info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown("man/helpers/feature_plot.md"),
+    htmltools::includeMarkdown(system.file("helpers/feature_plot.md", package = "dexdash")),
     options = list(customClass = "info-pop")
   )
 
