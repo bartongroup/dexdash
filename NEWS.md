@@ -25,3 +25,8 @@
  - Fixed a bug in SelectizeInput
  - Improving the vignette
  - Reducing size of data
+ 
+ ## Version 0.1.5
+ 
+  - Fixed missing helpers (pop-up documents when info icon clicked)
+
