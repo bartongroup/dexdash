@@ -1,6 +1,6 @@
 ## Main plot
 
-This card condains an interactive volcano or MA plot, where each dot represents one feature. Black dots highlight statistically significant DE features.
+This card contains an interactive volcano or MA plot, where each dot represents one feature. Black dots highlight statistically significant DE features.
 
 ### Plot settings
 
