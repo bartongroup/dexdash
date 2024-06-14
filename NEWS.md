@@ -30,3 +30,8 @@
  
   - Fixed missing helpers (pop-up documents when info icon clicked)
 
+## Version 0.1.6
+
+ - New feature: a title can be added to the dashboard
+ 
+ 
