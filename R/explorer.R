@@ -270,6 +270,8 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #'   \code{download_gene_informarion()}.
 #' @param fterms An object containing functional term information, created using
 #'   function \code{download_functional_terms}.
+#' @param title A string with a short title, which is presented at the top of
+#'   the side bar.
 #'
 #' @return The function does not return a value but launches a Shiny application
 #'   in the user's default web browser, allowing for interactive exploration of
@@ -285,7 +287,7 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #'   run_app(de, data, metadata, features, fterms)
 #' }
 #' @export
-run_app <- function(de, data, metadata, features, fterms) {
+run_app <- function(de, data, metadata, features, fterms, title = "DE explorer") {
   p_value <- contrast <- NULL
 
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
@@ -293,6 +295,8 @@ run_app <- function(de, data, metadata, features, fterms) {
   assert_colnames(metadata, c("sample", "group"), deparse(substitute(metadata)))
   assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
+  assertthat::is.string(title)
+
   purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms"),
     msg = "fterms argument needs to be a list of 'fenr_terms' objects. Did you run 'prepare_functional_terms'?"))
 
@@ -319,7 +323,7 @@ run_app <- function(de, data, metadata, features, fterms) {
     title = "DEXDASH",
 
     sidebar = bslib::sidebar(
-      title = "DE explorer",
+      title = title,
       mod_global_input_ui("global_input"),
       shiny::tags$hr(),
       shiny::tags$span(style = "font-size: 0.7em; color: #191970", version)
