@@ -36,14 +36,14 @@ library(dexdash)
 ```
 
 
-*dexdash* version `r packageVersion("dexdash")`.
+*dexdash* version `r utils::packageVersion("dexdash")`.
 
 
 ## Overview
 
 Imagine you've carried out an RNA-seq experiment, a proteomics study, or maybe another type of -omics research. You've done read mapping or protein quantifications and now have a set of data in hand. This data captures expression or abundance (we will call it 'expression' for simplicity) for each gene, protein, or other entity (hereinafter referred to as 'feature'). These expressions are recorded across various biological conditions (which we'll call 'groups') and their replicates. Following this, you've conducted a differential expression analysis using tools like *limma*, *edgeR*, *DESeq2*, or similar, ending up with a data frame that includes log-fold change, p-value, among other metrics.
 
-Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voila! You're equipped with a web-based interactive tool to explore your data. A screenshow from *dexdash* app is shown in @fig-screenshot.
+Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voilà! You're equipped with a web-based interactive tool to explore your data. A screenshot from the *dexdash* app is shown in @fig-screenshot.
 
 ![Screenshot of *dexdash* Shiny app.](figures/screenshot.png){#fig-screenshot width=100% fig-align="left"}
 
@@ -105,10 +105,11 @@ There are three data frames containing experimental results, provided by the use
 |    | p_value |	numeric | p-value from statistical tests; use `PValue` from *edgeR* and *limma*, `pvalue` from *DESeq2* |
 |    | contrast | factor | name of the contrast; this data frame can contain results from multiple contrast |
 | data | id |	character |	feature identifier |
-|      | sample | character |	sample identifer |
+|      | sample | character |	sample identifier |
 |      | value |	numeric |	the expression, or abundance of the gene/protein for this sample |
-| metadata | sample |	character	sample identifer |
+| metadata | sample |	character	sample identifier |
 |          | group |	character/factor |	a grouping variable, for example condition or treatment |
+|          | ... | character/factor | any additional columns with information that will be used to colour the points in the feature plot
 : Column names, types and descriptions for data frames with differential expression results (de), expression data (data) and experimental design (metadata). {#tbl-data-columns}
 
 
@@ -118,7 +119,7 @@ There are three data frames containing experimental results, provided by the use
 |:-|:-|:-|:-----------|
 | features | id         |	character |	feature identifier |
 |          | name	      | character |	a human-readable name of the feature, typically a gene symbol |
-|          | decription |	character |	a brief description of the feature |
+|          | description |	character |	a brief description of the feature |
 : Column names, types and descriptions for data frame with feature (gene or protein) information. {#tbl-feature-columns}
 
 
@@ -217,12 +218,14 @@ head(yeast_mtx)
 First, we create metadata with grouping information. We extract group designation (WT or Snf2) form sample names (row names of `yeast_mtx`) and convert them into factors, with the first level `WT`. As per *dexdash* requirements, the column names of this data frame are `sample` and `group`:
 
 ```{r yeast_metadata}
-yeast_metadata <- tibble(sample = colnames(yeast_mtx)) |> 
-  mutate(group = str_extract(sample, "^.+(?=-)")) |> 
+yeast_metadata <- tibble(sample = colnames(yeast_mtx)) |>
+  separate_wider_delim(sample, names = c("group", "replicate"), delim = "-", cols_remove = FALSE) |> 
   mutate(group = fct_relevel(group, "WT"))
 
 yeast_metadata
 ```
+
+We also create an additional column called `replicate`. It can be used in the app to colour points in the feature plot.
 
 ### Differential expression
 
@@ -393,7 +396,7 @@ Like before, we create a metadata data frame with experiment grouping:
 
 ```{r mouse_metadata}
 mouse_metadata <- tibble(sample = colnames(renamed_mtx)) |> 
-  mutate(group = str_extract(sample, "^.+(?=-)")) |> 
+  separate_wider_delim(sample, names = c("group", "replicate"), delim = "-", cols_remove = FALSE) |> 
   mutate(group = fct_relevel(group, c("0h", "2h", "18h")))
 
 mouse_metadata
@@ -471,21 +474,19 @@ run_app(mouse_de, mouse_data, mouse_metadata, mouse_features, mouse_fterms)
 ```
 
 
-
-
 ## Comparison with other tools
 
 ### iDEP
 
-*[iDEP](http://bioinformatics.sdstate.edu/idep/)* is a flexible web-based tool that supports full data analysis, starting from the count matrix. It includes pre-processing, clustering, PCA, differential expression, KEGG pathway analysis and more. While it generates volcano and MA plots, they lack fast interactivity. In particular, pathway analysis in *iDEP* if only performed on down- or up-regulated genes. In contrast, *dexdash* is smaller and more focussed on interactivity, visualisation and fast functional enrichment on any arbitrary gene selection. Additionally, *dexdash* suports GO and Reactome functional terms, alongside with KEGG.
+*[iDEP](http://bioinformatics.sdstate.edu/idep/)* is a flexible web-based tool that supports full data analysis, starting from the count matrix. It includes preprocessing, clustering, PCA, differential expression, KEGG pathway analysis and more. While it generates volcano and MA plots, they lack fast interactivity. In particular, pathway analysis in *iDEP* is only performed on down- or up-regulated genes. In contrast, *dexdash* is smaller and more focused on interactivity, visualisation and fast functional enrichment on any arbitrary gene selection. Additionally, *dexdash* supports GO and Reactome functional terms, alongside KEGG.
 
 ### ShinyGO
 
-*[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-base Shiny app for comprehensive KEGG pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works on differential expression result set and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG and Reactome enrichment analysis.
+*[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-based Shiny app for comprehensive KEGG pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works on differential expression result set and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG and Reactome enrichment analysis.
 
 ### Glimma
 
-*[Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html)* is a Bioconductor R package designed to create interactive MDS, MA and volcano plots. Users can explore gene expression patterns by selecting individual genes. By contrast, *dexdash* allows for multiple gene selection, functional enrichment analysis and reverse selection of functional terms to find functionally related genes. 
+*[Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html)* is a Bioconductor R package designed to create interactive MDS, MA and volcano plots. Users can explore gene expression patterns by selecting individual genes. In contrast, *dexdash* allows for multiple gene selection, functional enrichment analysis and reverse selection of functional terms to find functionally related genes. 
 
 
 ### Other packages

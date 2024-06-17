@@ -5,7 +5,7 @@ This card displays the expression or abundance levels of selected features (gene
 ### Plot settings
 
 Adjust your preferences by clicking the gear icon:
-
+ - 'Colour variable' - variable name (column name in the `metdata` data frame provided to the app) to set colour to points
  - 'Heatmap averaged across replicates' - if enabled, the data for replicates in each group are averaged
  - 'Heatmap normalised per row' - if enabled, each row (gene) is normalised to its own mean; if unselected, the original expression or abundance data are shown
  - 'Intensity scale' - Choose between a linear or logarithmic scale. This option is unavailable when normalization to row is active.

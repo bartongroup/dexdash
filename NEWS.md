@@ -34,4 +34,7 @@
 
  - New feature: a title can be added to the dashboard
  
+## Version 0.1.7
+
+ - New feature: additional columns can be provided in `metadata` to colour points in the feature plot
  

@@ -17,6 +17,13 @@
 mod_feature_plot_ui <- function(id) {
   ns <- shiny::NS(id)
 
+
+  colour_variable <- shiny::selectInput(
+    inputId = ns("colour_var"),
+    label = "Colour variable",
+    choices = NULL
+  )
+
   group_mean <- shiny::checkboxInput(
     inputId = ns("group_mean"),
     label = "Heatmap averaged across replicates",
@@ -44,6 +51,7 @@ mod_feature_plot_ui <- function(id) {
 
   gear <- bslib::popover(
     bsicons::bs_icon("gear"),
+    colour_variable,
     group_mean,
     norm_fc,
     shiny::conditionalPanel(
@@ -75,6 +83,17 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
+    # Update dummy colour variable selections from data
+    meta_variables <- setdiff(names(data_set$metadata), "sample")
+    shiny::observe({
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "colour_var",
+        choices = meta_variables,
+        selected = "group"
+      )
+    })
+
     output$feature_plot <- shiny::renderPlot({
       ids <- state$sel_feature_plot
       shiny::req(ids)
@@ -82,8 +101,8 @@ mod_feature_plot_server <- function(id, data_set, state) {
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
         dplyr::left_join(data_set$metadata, by = "sample") |>
-        plot_features(what = "value", scale = input$intensity_scale, max_n_lab = 50,
-                      norm_fc = input$norm_fc, group_mean = input$group_mean)
+        plot_features(what = "value", colour_var = input$colour_var, scale = input$intensity_scale,
+                      max_n_lab = 50, norm_fc = input$norm_fc, group_mean = input$group_mean)
     })
   }
 
@@ -98,6 +117,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #'
 #' @param d Tibble with feature intensities. Columns needed: group, val, replicate
 #' @param ylab Label on y axis
+#' @param colour_var (Optional) variable used for point colours
 #' @param scale Scale of y axis (lin or log)
 #' @param text_size Text size
 #' @param point_size Point size
@@ -105,13 +125,19 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #'
 #' @return ggplot object
 #' @noRd
-plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_size, cex) {
-  val <- group <- shape <- x <- NULL
+plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
+                             text_size, point_size, cex) {
+  val <- group <- shape <- fill <- x <- NULL
   okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
     "#CC79A7", "grey80", "grey30", "black")
 
   d <- d |>
     dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
+
+  if(is.null(colour_var))
+    colour_var <- "group"
+
+  d <- d |> dplyr::mutate(fill = get(colour_var))
 
   ncond <- length(unique(d$group))
   vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
@@ -127,16 +153,18 @@ plot_one_feature <- function(d, ylab, scale = c("lin", "log"), text_size, point_
       legend.position = "bottom"
     ) +
     ggplot2::scale_shape_identity() +  # necessary for shape mapping
-    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = group, y = val, fill = group, shape = shape),
+    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = group, y = val, fill = fill, shape = shape),
                   colour = "grey40", size = point_size, cex = cex) +
     ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5) +
-    #scale_fill_viridis_d(option = "cividis") +
-    ggplot2::scale_fill_manual(values = okabe_ito_palette) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21))) +
-    ggplot2::labs(x = NULL, y = ylab, title = nm)
+    ggplot2::labs(x = NULL, y = ylab, title = nm, fill = colour_var)
 
-  # if(scale == "lin")
-  #   g <- g + scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA))
+  # If too many colours, use viridis
+  if(length(unique(d$fill)) <= length(okabe_ito_palette)){
+    g <- g +ggplot2::scale_fill_manual(values = okabe_ito_palette)
+  } else {
+    g <- g + ggplot2::scale_fill_viridis_d(option = "cividis")
+  }
 
   return(g)
 }
@@ -210,6 +238,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #' @param dat Tibble with feature intensities
 #' @param scale Intensity scale, "lin" or  "log"
 #' @param what Which column to plot
+#' @param colour_var (Optional) variable used for point colours
 #' @param text_size Text size
 #' @param point_size Point size
 #' @param cex Point spread scaling for beeswarm
@@ -219,8 +248,9 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, what = "value", scale = "lin", text_size = 14, point_size = 3, cex = 2,
-                          max_n_lab = 30, norm_fc = FALSE, group_mean = FALSE) {
+plot_features <- function(dat, what = "value", colour_var = NULL, scale = "lin", text_size = 14,
+                          point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE,
+                          group_mean = FALSE) {
   val <- NULL
 
   if(nrow(dat) == 0) return(NULL)
@@ -240,7 +270,7 @@ plot_features <- function(dat, what = "value", scale = "lin", text_size = 14, po
 
   n_feat <- length(unique(dat$id))
   if(n_feat == 1) {
-    plot_one_feature(dat, lab, scale, text_size, point_size, cex)
+    plot_one_feature(dat, lab, colour_var, scale, text_size, point_size, cex)
   } else {
     plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_fc, group_mean)
   }

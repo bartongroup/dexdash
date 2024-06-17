@@ -315,7 +315,7 @@ run_app <- function(de, data, metadata, features, fterms, title = "DE explorer")
     name2id = rlang::set_names(features$id, features$name)
   )
 
-  version <- paste("version", packageVersion("dexdash"))
+  version <- paste("version", utils::packageVersion("dexdash"))
 
   ui <- bslib::page_sidebar(
     theme = bslib::bs_theme(bootswatch = "spacelab", spacer = "0.8rem") |>

@@ -4,7 +4,7 @@
 \alias{run_app}
 \title{Launches an interactive differential expression (DE) data explorer}
 \usage{
-run_app(de, data, metadata, features, fterms)
+run_app(de, data, metadata, features, fterms, title = "DE explorer")
 }
 \arguments{
 \item{de}{Differential expression data as a data frame, expected to contain
@@ -33,6 +33,9 @@ of the feature. This data frame can be obtained using function
 
 \item{fterms}{An object containing functional term information, created using
 function \code{download_functional_terms}.}
+
+\item{title}{A string with a short title, which is presented at the top of
+the side bar.}
 }
 \value{
 The function does not return a value but launches a Shiny application
