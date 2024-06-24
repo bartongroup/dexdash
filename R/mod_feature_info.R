@@ -5,13 +5,13 @@
 # Input:
 #    state$sel_feature_info - selection of feature IDs to display
 #    state$contrast - which contrast information to display
-#    state$experiment - which experiment to select
+#    state$set_name - which set to select
 #
 # Output:
 #    state$sel_tab - one feature ID selected in this info table
 #
 # Uses:
-#    data_set$de - a tibble with differential expression values
+#    data_set$dex - user data
 #    data_set$features - a tibble with feature ID and feature name
 #
 
@@ -50,9 +50,9 @@ mod_feature_info_server <- function(id, data_set, state) {
     feature_info_table <- shiny::reactive({
       ids <- state$sel_feature_info
       ctr <- state$contrast
-      expm <- state$experiment
-      shiny::req(ids, ctr, expm)
-      make_feature_info_table(data_set$de, data_set$features, ids, ctr, expm)
+      sname <- state$set_name
+      shiny::req(ids, ctr, sname)
+      make_feature_info_table(data_set$dex, data_set$features, ids, ctr, sname)
     })
 
     # Wait for row selection in the feature info table, pass it to app state
@@ -102,17 +102,15 @@ mod_feature_info_server <- function(id, data_set, state) {
 #' exceeds the `max_points` threshold, the function returns an error message
 #' instead of a data frame.
 #'
-#' @param de A data frame containing differential expression data. This data
-#'   should include at least two columns: `id` for the feature identifier and
-#'   `contrast` for the comparison of interest.
+#' @param dexset A \code{dexset_list} object with all user data.
 #' @param features A data frame with feature ids and names.
 #' @param ids A vector of identifiers for the features of interest. This
 #'   parameter allows the user to specify which features should be included in
 #'   the information table.
 #' @param ctr A character string specifying the contrast to filter the
 #'   differential expression data.
-#' @param expm A character string specyifying the experiment to filter the DE
-#'   data.
+#' @param sname A character string specyifying the set to extraxt the DE
+#'   data from.
 #' @param max_points The maximum number of points (features) that can be
 #'   processed and included in the table at once. This parameter helps to
 #'   prevent performance issues with very large datasets. The default value is
@@ -122,12 +120,12 @@ mod_feature_info_server <- function(id, data_set, state) {
 #'   features specified by `ids` and filtered by `ctr`. If the number of ids
 #'   exceeds `max_points`, it returns a tibble with an error message.
 #' @noRd
-make_feature_info_table <- function(de, features, ids, ctr, expm, max_points = 3000) {
-  id <- contrast <- experiment <- name <- NULL
+make_feature_info_table <- function(dexset, features, ids, ctr, sname, max_points = 3000) {
+  id <- contrast <- name <- NULL
 
   if (length(ids) <= max_points) {
-    df <- de |>
-      dplyr::filter(id %in% ids & contrast == ctr & experiment == expm) |>
+    df <- dexset[[sname]]$de |>
+      dplyr::filter(id %in% ids & contrast == ctr) |>
       dplyr::left_join(features, by = "id") |>
       dplyr::arrange(name) |>
       dplyr::mutate(name = stringr::str_replace_all(name, ";", "; "))

@@ -11,7 +11,7 @@
 #
 # Uses:
 #    data_set$fterms - a list of fterm objects prepared by fterm
-#    data_set$de - differential expression results (only to find the full list of features)
+#    data_set$dex - user data
 #
 
 # ----- UI definitions -----
@@ -81,8 +81,9 @@ mod_enrichment_server <- function(id, data_set, state) {
     # fenr.
     enrichment_table <- shiny::reactive({
       sel_ids <- state$sel_functional_enrichment
-      shiny::req(!is.null(sel_ids) & length(sel_ids) > 1)
-      all_ids <- unique(data_set$de$id)
+      sname <- state$set_name
+      shiny::req(!is.null(sel_ids) & length(sel_ids) > 1, sname)
+      all_ids <- unique(data_set$dex[[sname]]$de$id)
       make_functional_enrichment(sel_ids, all_ids, data_set$fterms[[input$ontology]], data_set$id2name, input$fdr_limit)
     })
 

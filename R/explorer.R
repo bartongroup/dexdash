@@ -238,15 +238,10 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 }
 
 
-#' Launches an interactive differential expression (DE) data explorer
+#' Create *dexdash* data set
 #'
-#' This function creates and launches a Shiny application designed for exploring
-#' differential expression (DE) data. It integrates various data inputs and
-#' initializes interactive visualization modules for an enhanced data
-#' exploration experience. The application offers a sidebar layout with themed
-#' UI components and a range of interactive modules including global input,
-#' volume-magnitude plot, feature plot, feature information, and enrichment
-#' analysis.
+#' This function creates a data set for *dexdash* Shiny app, based on
+#' user-provided data.
 #'
 #' @param de Differential expression data as a data frame, expected to contain
 #'   the following columns: `id` - feature id, `log_fc` - log-fold change,
@@ -262,6 +257,70 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #'   `data`. Expected to contain the following columns: `sample` - must match
 #'   samples in the `data` object, `group` - a grouping variable, e.g.,
 #'   condition or treatment, `replicate` - replicate name.
+#' @param name A string to identify the name of the set.
+#'
+#' @return An object of class \code{dexdash_set} required by the Shiny app
+#'   launcher \code{run_app}.
+#' @export
+#'
+#' @examples
+#' data(yeast_de, yeast_data, yeast_metadata)
+#' dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, "Yeast")
+dexdash_set <- function(de, data, metadata, name) {
+  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
+  assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
+  assert_colnames(metadata, c("sample"), deparse(substitute(metadata)))
+  assertthat::is.string(name)
+
+  list(
+    de = de,
+    data = data,
+    metadata = metadata,
+    name = name
+  ) |>
+    structure(class = "dexdash_set")
+}
+
+
+#' Create a list of *dexdash* data sets.
+#'
+#' Merge multiple \code{dexdash_set} objects into a \code{dexdah_list}. This
+#' function is used to merge multiple data sets into one object, that can be fed
+#' into the Shiny app. This allows for browsing results from, e.g., different
+#' experiments in one app.
+#'
+#' @param ... One or more objects of class `dexdash_set`.
+#'
+#' @return A named list of `dexdash_set` objects with class attribute
+#'   `dexdash_list`.
+#' @export
+dexdash_list <- function(...) {
+  dexes <- list(...)
+
+  purrr::map(dexes, ~assertthat::assert_that(is(.x, "dexdash_set")))
+  names <- purrr::map_chr(dexes, function(x) x$name)
+  assertthat::assert_that(length(names) == length(unique(names)),
+              msg = "dexdash names must be unique")
+
+  rlang::set_names(dexes, names) |>
+    structure(class = "dexdash_list")
+}
+
+
+#' Launches an interactive differential expression (DE) data explorer
+#'
+#' This function creates and launches a Shiny application designed for exploring
+#' differential expression (DE) data. It integrates various data inputs and
+#' initializes interactive visualization modules for an enhanced data
+#' exploration experience. The application offers a sidebar layout with themed
+#' UI components and a range of interactive modules including global input,
+#' volume-magnitude plot, feature plot, feature information, and enrichment
+#' analysis.
+#'
+#' @param dexset Either a \code{dexdash_set} object containing data from one
+#'   set, or a \code{dexdash_list} object containing data from multiple sets.
+#'   The former one is created using \code{dexdash_set()} function, the latter
+#'   one is created with \code{dexdash_list()} function.
 #' @param features A data frame that maps feature identifiers to names and
 #'   descriptions. Expected to contain the following columns: `id` - feature id,
 #'   must match the identifier in the `data` object, `name` - human-friendly
@@ -283,32 +342,36 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #' @examples
 #' if(interactive()) {
 #'   data(de, data, metadata, features)
+#'   dexset <- dexdash_set(de, data, metadata, "Yeast")
 #'   fterms <- download_functional_terms("yeast", feature_name = "gene_id")
-#'   run_app(de, data, metadata, features, fterms)
+#'   run_app(dexset, features, fterms)
 #' }
 #' @export
-run_app <- function(de, data, metadata, features, fterms, title = "DE explorer") {
+run_app <- function(dexset, features, fterms, title = "DE explorer") {
   p_value <- contrast <- NULL
 
-  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast", "experiment"), deparse(substitute(de)))
-  assert_colnames(data, c("id", "sample", "value", "experiment"), deparse(substitute(data)))
-  assert_colnames(metadata, c("sample", "experiment"), deparse(substitute(metadata)))
+  assertthat::assert_that(is(dexset, "dexdash_set") | is(dexset, "dexdash_list"))
   assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
   assertthat::is.string(title)
-
   purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms"),
     msg = "fterms argument needs to be a list of 'fenr_terms' objects. Did you run 'prepare_functional_terms'?"))
 
-  de <- de |>
-    dplyr::group_by(contrast) |>
-    dplyr::mutate(fdr = p.adjust(p_value, method = "BH")) |>
-    dplyr::ungroup()
+  if(is(dexset, "dexdash_set")) {
+    dexset <- list(dexset) |> rlang::set_names(dexset$name)
+  }
+
+  # Mutliple test corrections
+  for(nm in names(dexset)) {
+    dexset[[nm]]$de <- dexset[[nm]]$de |>
+      dplyr::group_by(contrast) |>
+      dplyr::mutate(fdr = p.adjust(p_value, method = "BH")) |>
+      dplyr::ungroup()
+  }
 
   data_set <- list(
-    de = de,
-    data = data,
-    metadata = metadata,
+    dex = dexset,
+    names = names(dexset),
     fterms = fterms,
     features = features,
     id2name = rlang::set_names(features$name, features$id),
@@ -355,8 +418,8 @@ run_app <- function(de, data, metadata, features, fterms, title = "DE explorer")
     mod_global_input_server("global_input", data_set, app_state)
     mod_volma_plot_server("volma_plot", data_set, app_state)
     mod_feature_plot_server("feature_plot", data_set, app_state)
-    mod_feature_info_server("feature_info", data_set, app_state)
     mod_enrichment_server("enrichment", data_set, app_state)
+    mod_feature_info_server("feature_info", data_set, app_state)
     mod_communication_server("communication", data_set, app_state)
   }
 

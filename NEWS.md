@@ -37,4 +37,11 @@
 ## Version 0.1.7
 
  - New feature: additional columns can be provided in `metadata` to colour points in the feature plot
+
+## Version 0.2.0
+
+ - Data structure overhaul - all user data are now packed into one object class `dexdash_set` or `dexdash_list`.
+ - Allows for multiple data sets, selected from the drop-down menu
+ - New functions: `dexdash_set()` and `dexdash_list()`.
  
+

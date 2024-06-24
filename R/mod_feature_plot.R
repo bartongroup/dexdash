@@ -7,7 +7,7 @@
 #    state$sel_feature_plot - selection of feature IDs to plot
 #
 # Uses:
-#    data_set$data - a tibble with values per feature
+#    data_set$dex - user data
 #    data_set$features - a tibble with feature ID and feature name
 #    data_set$metadata - a tibble with data grouping
 #
@@ -84,30 +84,35 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
     # Update dummy colour variable selections from data
     shiny::observe({
+      sname <- state$set_name
+      shiny::req(sname)
       shiny::updateSelectInput(
         session = session,
         inputId = "colour_var",
-        choices = setdiff(names(data_set$metadata), c("sample", "experiment"))
+        choices = setdiff(names(data_set$dex[[sname]]$metadata), c("sample"))
       )
     })
 
     # Update dummy x-variable selections from data
     shiny::observe({
+      sname <- state$set_name
+      shiny::req(sname)
       shiny::updateSelectInput(
         session = session,
         inputId = "x_var",
-        choices = setdiff(names(data_set$metadata), c("experiment")),
+        choices = names(data_set$dex[[sname]]$metadata),
         selected = "sample"
       )
     })
 
     output$feature_plot <- shiny::renderPlot({
       ids <- state$sel_feature_plot
-      shiny::req(ids)
-      data_set$data |>
+      sname <- state$set_name
+      shiny::req(ids, sname)
+      data_set$dex[[sname]]$dat |>
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
-        dplyr::left_join(data_set$metadata, by = "sample") |>
+        dplyr::left_join(data_set$dex[[sname]]$metadata, by = "sample") |>
         plot_features(what = "value", x_var = input$x_var, colour_var = input$colour_var,
                       scale = input$intensity_scale, max_n_lab = 50, norm_fc = input$norm_fc)
     })
@@ -188,7 +193,7 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
 #' @return ggplot object
 #' @noRd
 plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name_len = 18) {
-  id <- val <- M <- name <- x <- NULL
+  id <- val <- M <- name <- x <- unique_name <- NULL
 
   i2n <- d |>
     dplyr::select(id, name) |>
@@ -206,7 +211,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
 
   d <- d |>
     dplyr::group_by(id, x) |>
-    dplyr::summarise(val = mean(val, na.rm = TRUE)) |>
+    dplyr::summarise(val = mean(val, na.rm = TRUE), .groups = "drop") |>
     dplyr::left_join(i2n, by = dplyr::join_by(id)) |>
     dplyr::mutate(name = dplyr::if_else(nchar(name) < max_name_len,
                             name,
@@ -254,7 +259,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, what = "value", x_var, colour_var = NULL, scale = "lin", text_size = 14,
+plot_features <- function(dat, what, x_var, colour_var = NULL, scale = "lin", text_size = 14,
                           point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE) {
   val <- NULL
 

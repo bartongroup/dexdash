@@ -1,3 +1,3 @@
 ## Contrast selection
 
-Select a differential expression contrast.
+Select differential expression contrast from the list below.

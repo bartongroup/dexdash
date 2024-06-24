@@ -2,6 +2,7 @@ test <- readRDS("../test_data/test_object.rds")
 
 test_ids <- c("G1", "G2")
 test_ctr <- "C1"
+test_sname <- "test"
 
 test_output <- tibble::tribble(
   ~id, ~log_fc, ~expr, ~p_value, ~fdr, ~contrast, ~name, ~description,
@@ -10,7 +11,8 @@ test_output <- tibble::tribble(
 )
 
 test_that("make_feature_info_table returns correct values", {
-  tb <- make_feature_info_table(test$de, test$features, test_ids, test_ctr)
+  tb <- make_feature_info_table(dexset = test$dex, features = test$features, ids = test_ids,
+                                ctr = test_ctr, sname = test_sname)
   expect_is(tb, "data.frame")
   expect_setequal(
     names(tb),
@@ -20,7 +22,8 @@ test_that("make_feature_info_table returns correct values", {
 })
 
 test_that("make_feature_info_table returns error message when too many points requested", {
-  tb <- make_feature_info_table(test$de, test$features, test_ids, test_ctr, max_points = 1)
+  tb <- make_feature_info_table(dexset = test$dex, features = test$features, ids = test_ids,
+                                ctr = test_ctr, sname = test_sname, max_points = 1)
   expect_is(tb, "data.frame")
   expect_setequal(
     names(tb),

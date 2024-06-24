@@ -4,25 +4,13 @@
 \alias{run_app}
 \title{Launches an interactive differential expression (DE) data explorer}
 \usage{
-run_app(de, data, metadata, features, fterms, title = "DE explorer")
+run_app(dexset, features, fterms, title = "DE explorer")
 }
 \arguments{
-\item{de}{Differential expression data as a data frame, expected to contain
-the following columns: `id` - feature id, `log_fc` - log-fold change,
-`expr` - expression or abundance, e.g. gene read count, `p_value` -
-uncorrected p-value from the DE test, `contrast` - name of the contrast
-used for the test.}
-
-\item{data}{A data frame containing the primary dataset for exploration,
-expected to contain the following columns: `id` - feature id, the same as
-in `de` data frame, `sample` - sample name, the same as in the `metadata`
-data frame, `value` - the expression or abundance.}
-
-\item{metadata}{Metadata associated with the `data` parameter, providing
-additional context or grouping for the samples or features included in
-`data`. Expected to contain the following columns: `sample` - must match
-samples in the `data` object, `group` - a grouping variable, e.g.,
-condition or treatment, `replicate` - replicate name.}
+\item{dexset}{Either a \code{dexdash_set} object containing data from one
+set, or a \code{dexdash_list} object containing data from multiple sets.
+The former one is created using \code{dexdash_set()} function, the latter
+one is created with \code{dexdash_list()} function.}
 
 \item{features}{A data frame that maps feature identifiers to names and
 descriptions. Expected to contain the following columns: `id` - feature id,
@@ -54,7 +42,8 @@ analysis.
 \examples{
 if(interactive()) {
   data(de, data, metadata, features)
+  dexset <- dexdash_set(de, data, metadata, "Yeast")
   fterms <- download_functional_terms("yeast", feature_name = "gene_id")
-  run_app(de, data, metadata, features, fterms)
+  run_app(dexset, features, fterms)
 }
 }

@@ -10,7 +10,7 @@
 #    state$sel_hover - a hovered feature ID
 #
 # Uses:
-#    data_set$de - a tibble with differential expression results
+#    data_set$dex - user data
 #
 
 # ----- UI definitions -----
@@ -88,7 +88,10 @@ mod_volma_plot_server <- function(id, data_set, state) {
 
     # ...update app state with the selection
     shiny::observeEvent(to_listen(), {
-      xy_data <- get_volma_data(data_set$de, state$contrast, state$experiment, input$plot_type)
+      ctr <- state$contrast
+      sname <- state$set_name
+      shiny::req(ctr, sname)
+      xy_data <- get_volma_data(data_set$dex, ctr, sname, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
       if(!is.null(input$plot_brush)){
@@ -103,7 +106,10 @@ mod_volma_plot_server <- function(id, data_set, state) {
     })
 
     output$main_plot <- shiny::renderPlot({
-      xy_data <- get_volma_data(data_set$de, state$contrast, state$experiment, input$plot_type)
+      ctr <- state$contrast
+      sname <- state$set_name
+      shiny::req(ctr, sname)
+      xy_data <- get_volma_data(data_set$dex, ctr, sname, input$plot_type)
       main_plot(xy_data, input$plot_type, state$sel_volma_highlight,
                    fdr_limit = input$fdr_limit, logfc_limit = input$logfc_limit)
     })
@@ -123,14 +129,10 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #' specified contrast and then calculates the coordinates (x and y values)
 #' appropriate for the selected plot type.
 #'
-#' @param de A dataframe containing differential expression data, including log
-#'   fold change, p-values, and expression levels. The dataframe must contain
-#'   columns that match the variables used for filtering and calculations within
-#'   the function.
+#' @param dexset A \code{dexset_list} object with all user data.
 #' @param ctr A character string specifying the contrast to filter the
 #'   differential expression data.
-#' @param expm A character string specyifying the experiment to filter the DE
-#'   data.
+#' @param sname A character string specyifying the name of the data set.
 #' @param plot_type A character string indicating the type of plot for which
 #'   data is being prepared. The accepted values are "Volcano" for volcano plots
 #'   (log fold change vs. -log10 p-value) and "MA" for MA plots (average
@@ -141,11 +143,11 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #'   represents -log10 transformed p-values. For an MA plot, x corresponds to
 #'   expression levels and y to log fold changes.
 #' @noRd
-get_volma_data <- function(de, ctr, expm, plot_type) {
-  contrast <- experiment <- log_fc <- p_value <- expr <- NULL
+get_volma_data <- function(dexset, ctr, sname, plot_type) {
+  contrast <- log_fc <- p_value <- expr <- NULL
 
-  de <- de |>
-    dplyr::filter(contrast == ctr & experiment == expm)
+  de <- dexset[[sname]]$de |>
+    dplyr::filter(contrast == ctr)
   if(plot_type == "Volcano") {
     xy_data <- de |>
       dplyr::mutate(x = log_fc, y = -log10(p_value))

@@ -67,13 +67,16 @@ library(dexdash)
 # Data examples available in the package
 data(yeast_de, yeast_data, yeast_metadata)
 
+# Create the dexdash data set
+yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
+
 # The slow bit: download feature information and functional term data
 yeast_features <- download_feature_information(species = "yeast")
 yeast_terms <- download_functional_terms(species = "yeast")
 yeast_fterms <- prepare_functional_terms(yeast_terms, feature_name = "gene_id")
 
 # The fast bit: interactive app
-run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
+run_app(yeast_dexset, yeast_features, yeast_fterms)
 ```
 
 ## Usage
@@ -81,21 +84,25 @@ run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
 The *dexdash* Shiny app is launched with a command:
 
 ```{r usage, eval = FALSE}
-run_app(de, data, metadata, features, fterms)
+run_app(dexset, features, fterms)
 ```
 
 There are five mandatory arguments:
 
-  - `de` - data frame with differential expression results,
-  - `data` - data frame with expression or abundance data,
-  - `metadata` - data frame with the design of the experiment,
+  - `dexset` - a `dexdash_set` or `dexdash_list` object containing differential expression results, expression of abundance data and the design of the experiment. `dexdash_set` contains data from one experiment, `dexdash_list` combines data from multiple experiments,
   - `features` - data frame with feature names and descriptions,
   - `fterms` - an object containing functional terms data.
 
 
 ### User data: experimental results
 
-There are three data frames containing experimental results, provided by the user. As differential expression output differs from tool to tool, it would be difficult to feed them directly into *dexdash*. Therefore, the user needs to rename data frame columns as shown in @tbl-data-columns. A fully worked example below demonstrates how to prepare the required data, step by step.
+The `dexset` argument for the app should be created with `dexdash_set()` or `dexdash_list()` function, for single- and multiple-experiment data, respectively. For the single experiment, the `dexdash_set` object is created using
+
+```{r dexdash_set}
+yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
+```
+
+The inputs for this function are three data frames containing experimental results, provided by the user. As differential expression output differs from tool to tool, it would be difficult to feed them directly into *dexdash*. Therefore, the user needs to rename data frame columns as shown in @tbl-data-columns. A fully worked example below demonstrates how to prepare the required data, step by step.
 
 | argument | column | type | description |
 |:-|:-|:-|:-----------|
@@ -108,8 +115,7 @@ There are three data frames containing experimental results, provided by the use
 |      | sample | character |	sample identifier |
 |      | value |	numeric |	the expression, or abundance of the gene/protein for this sample |
 | metadata | sample |	character	sample identifier |
-|          | group |	character/factor |	a grouping variable, for example condition or treatment |
-|          | ... | character/factor | any additional columns with information that will be used to colour the points in the feature plot
+|          | ... | character/factor | at least one additional column with information that will be used as the x-axis or to colour the points in the feature plot
 : Column names, types and descriptions for data frames with differential expression results (de), expression data (data) and experimental design (metadata). {#tbl-data-columns}
 
 
@@ -215,7 +221,7 @@ head(yeast_mtx)
 
 ### Metadata
 
-First, we create metadata with grouping information. We extract group designation (WT or Snf2) form sample names (row names of `yeast_mtx`) and convert them into factors, with the first level `WT`. As per *dexdash* requirements, the column names of this data frame are `sample` and `group`:
+First, we create metadata with grouping information. We extract group designation (WT or Snf2) form sample names (row names of `yeast_mtx`) and convert them into factors, with the first level `WT`. As per *dexdash* requirements, the column names of this data frame are `sample` and, an additonal grouping column, `group`:
 
 ```{r yeast_metadata}
 yeast_metadata <- tibble(sample = colnames(yeast_mtx)) |>
@@ -266,6 +272,16 @@ yeast_data <- yeast_mtx |>
 yeast_data
 ```
 
+### Complete data set
+
+Now the function `dexdash_set()` can be used to create the full data set for *dexdash*:
+
+```{r dexdash_yeast}
+yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
+```
+
+The name, `"Yeast"`, will be shown as a data set selection in the app.
+
 ### Feature names and descriptions
 
 Next, we need a table converting gene identifiers into human-readable gene names and descriptions. This can be done with the helper function `download_feature_information()`:
@@ -298,7 +314,7 @@ yeast_fterms <- prepare_functional_terms(yeast_terms, feature_name = "gene_id")
 Now, we have all necessary data to launch `dexdash`:
 
 ```{r yeast_run_app, eval = FALSE}
-run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
+run_app(yeast_dexset, yeast_features, yeast_fterms)
 ```
 
 ## Advanced example
@@ -446,6 +462,13 @@ mouse_data <- renamed_mtx |>
 mouse_data
 ```
 
+### Dexdash data set
+
+```{r mouse_dexdash_set}
+mouse_dexdash <- dexdash_set(mouse_de, mouse_data, mouse_metadata, name = "Mouse")
+```
+
+
 ### Feature names and descriptions
 
 For the Shiny app, a feature information table is needed to link feature identifiers (capitalised gene symbols), feature names (original gene symbols) and descriptions. The columns needed are described in @tbl-feature-columns. Here is how we prepare the required tibble:
@@ -470,9 +493,22 @@ mouse_fterms <- prepare_functional_terms(mouse_terms, feature_name = "gene_symbo
 Now, we have all necessary data to launch `dexdash`:
 
 ```{r mouse_run_app, eval = FALSE}
-run_app(mouse_de, mouse_data, mouse_metadata, mouse_features, mouse_fterms)
+run_app(mouse_dexdash, mouse_features, mouse_fterms)
 ```
 
+## Multiple data sets
+
+The function `dexdash_list()` can be used to combine a few data sets together, for example:
+
+```{r multiple_set, eval = FALSE}
+set1 <- dexdash_set(de1, data1, metadata1, "Experiment 1")
+set2 <- dexdash_set(de2, data2, metadata2, "Experiment 2")
+
+dexlist <- dexdash_list(se1, set2)
+run_app(declist, features, fterms)
+```
+
+Here `set1` and `set2` contain data and differential expression results from two separate expreiments. They are, however, based on the same organism, so they share `features` and `fterms`.
 
 ## Comparison with other tools
 

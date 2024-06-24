@@ -5,9 +5,9 @@
 mod_global_input_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  experiment_info <- bslib::popover(
+  data_set_info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/experiment.md", package = "dexdash")),
+    htmltools::includeMarkdown(system.file("helpers/data_set.md", package = "dexdash")),
     options = list(customClass = "info-pop")
   )
 
@@ -25,8 +25,8 @@ mod_global_input_ui <- function(id) {
 
   shiny::tagList(
     shiny::selectInput(
-      inputId = ns("experiment"),
-      label = shiny::span("Experiment", experiment_info),
+      inputId = ns("set_name"),
+      label = shiny::span("Data set", data_set_info),
       choices = NULL
     ),
     shiny::selectInput(
@@ -52,22 +52,21 @@ mod_global_input_ui <- function(id) {
 mod_global_input_server <- function(id, data_set, state) {
   contrast <- NULL
 
-  get_contrasts <- function(expm) {
-    data_set$de |>
-      dplyr::filter(experiment == expm) |>
+  get_contrasts <- function(sname) {
+    data_set$dex[[sname]]$de |>
       dplyr::pull(contrast) |>
+      as.character() |>
       unique()
   }
 
   server <- function(input, output, session) {
 
-    # Update dummy experiment selection
-    experiments <- unique(data_set$de$experiment)
+    # Update dummy set selection
     shiny::observe({
       shiny::updateSelectInput(
         session = session,
-        inputId = "experiment",
-        choices = experiments
+        inputId = "set_name",
+        choices = data_set$names
       )
     })
 
@@ -76,7 +75,7 @@ mod_global_input_server <- function(id, data_set, state) {
       shiny::updateSelectInput(
         session = session,
         inputId = "contrast",
-        choices = get_contrasts(experiments[1])
+        choices = get_contrasts(data_set$names[1])
       )
     })
 
@@ -90,10 +89,12 @@ mod_global_input_server <- function(id, data_set, state) {
       )
     })
 
-    # Observe experiment, copy to state, update contrasts
-    shiny::observeEvent(input$experiment, {
-      state$experiment <- input$experiment
-      contrasts <- get_contrasts(input$experiment)
+    # Observe data set, copy to state, update contrasts
+    shiny::observeEvent(input$set_name, {
+      sname <- input$set_name
+      shiny::req(sname)
+      state$set_name <- sname
+      contrasts <- get_contrasts(sname)
       shiny::updateSelectInput(
         session = session,
         inputId = "contrast",
@@ -101,7 +102,7 @@ mod_global_input_server <- function(id, data_set, state) {
       )
     })
 
-    # Observe contrast experiment, selection, copy to state
+    # Observe contrast, selection, copy to state
     shiny::observeEvent(input$contrast, state$contrast <- input$contrast)
 
     # Observe search input, copy to state, convert "" to NULL
