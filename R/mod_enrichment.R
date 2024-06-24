@@ -11,7 +11,7 @@
 #
 # Uses:
 #    data_set$fterms - a list of fterm objects prepared by fterm
-#    data_set$de - differential expression results (only to find the full list of featrures)
+#    data_set$de - differential expression results (only to find the full list of features)
 #
 
 # ----- UI definitions -----
