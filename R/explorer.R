@@ -290,9 +290,9 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 run_app <- function(de, data, metadata, features, fterms, title = "DE explorer") {
   p_value <- contrast <- NULL
 
-  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
-  assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
-  assert_colnames(metadata, c("sample", "group"), deparse(substitute(metadata)))
+  assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast", "experiment"), deparse(substitute(de)))
+  assert_colnames(data, c("id", "sample", "value", "experiment"), deparse(substitute(data)))
+  assert_colnames(metadata, c("sample", "experiment"), deparse(substitute(metadata)))
   assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
   assertthat::is.string(title)

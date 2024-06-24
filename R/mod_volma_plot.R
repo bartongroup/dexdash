@@ -88,7 +88,7 @@ mod_volma_plot_server <- function(id, data_set, state) {
 
     # ...update app state with the selection
     shiny::observeEvent(to_listen(), {
-      xy_data <- get_volma_data(data_set$de, state$contrast, input$plot_type)
+      xy_data <- get_volma_data(data_set$de, state$contrast, state$experiment, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
       if(!is.null(input$plot_brush)){
@@ -103,7 +103,7 @@ mod_volma_plot_server <- function(id, data_set, state) {
     })
 
     output$main_plot <- shiny::renderPlot({
-      xy_data <- get_volma_data(data_set$de, state$contrast, input$plot_type)
+      xy_data <- get_volma_data(data_set$de, state$contrast, state$experiment, input$plot_type)
       main_plot(xy_data, input$plot_type, state$sel_volma_highlight,
                    fdr_limit = input$fdr_limit, logfc_limit = input$logfc_limit)
     })
@@ -128,8 +128,9 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #'   columns that match the variables used for filtering and calculations within
 #'   the function.
 #' @param ctr A character string specifying the contrast to filter the
-#'   differential expression data. This contrast should match one of the values
-#'   in the contrast column of the `de` dataframe.
+#'   differential expression data.
+#' @param expm A character string specyifying the experiment to filter the DE
+#'   data.
 #' @param plot_type A character string indicating the type of plot for which
 #'   data is being prepared. The accepted values are "Volcano" for volcano plots
 #'   (log fold change vs. -log10 p-value) and "MA" for MA plots (average
@@ -140,11 +141,11 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #'   represents -log10 transformed p-values. For an MA plot, x corresponds to
 #'   expression levels and y to log fold changes.
 #' @noRd
-get_volma_data <- function(de, ctr, plot_type) {
-  contrast <- log_fc <- p_value <- expr <- NULL
+get_volma_data <- function(de, ctr, expm, plot_type) {
+  contrast <- experiment <- log_fc <- p_value <- expr <- NULL
 
   de <- de |>
-    dplyr::filter(contrast == ctr)
+    dplyr::filter(contrast == ctr & experiment == expm)
   if(plot_type == "Volcano") {
     xy_data <- de |>
       dplyr::mutate(x = log_fc, y = -log10(p_value))

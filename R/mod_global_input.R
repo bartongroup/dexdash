@@ -5,6 +5,12 @@
 mod_global_input_ui <- function(id) {
   ns <- shiny::NS(id)
 
+  experiment_info <- bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown(system.file("helpers/experiment.md", package = "dexdash")),
+    options = list(customClass = "info-pop")
+  )
+
   contrast_info <- bslib::popover(
     bsicons::bs_icon("info-circle"),
     htmltools::includeMarkdown(system.file("helpers/contrast.md", package = "dexdash")),
@@ -18,6 +24,11 @@ mod_global_input_ui <- function(id) {
   )
 
   shiny::tagList(
+    shiny::selectInput(
+      inputId = ns("experiment"),
+      label = shiny::span("Experiment", experiment_info),
+      choices = NULL
+    ),
     shiny::selectInput(
       inputId = ns("contrast"),
       label = shiny::span("Contrast", contrast_info),
@@ -41,15 +52,31 @@ mod_global_input_ui <- function(id) {
 mod_global_input_server <- function(id, data_set, state) {
   contrast <- NULL
 
+  get_contrasts <- function(expm) {
+    data_set$de |>
+      dplyr::filter(experiment == expm) |>
+      dplyr::pull(contrast) |>
+      unique()
+  }
+
   server <- function(input, output, session) {
 
-    # Update dummy contrast selection
-    contrasts <- unique(data_set$de$contrast)
+    # Update dummy experiment selection
+    experiments <- unique(data_set$de$experiment)
+    shiny::observe({
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "experiment",
+        choices = experiments
+      )
+    })
+
+    # update dummy contrast selection
     shiny::observe({
       shiny::updateSelectInput(
         session = session,
         inputId = "contrast",
-        choices = contrasts
+        choices = get_contrasts(experiments[1])
       )
     })
 
@@ -60,6 +87,17 @@ mod_global_input_server <- function(id, data_set, state) {
         inputId = "search",
         choices = c("", unique(data_set$features$name)),
         server = TRUE
+      )
+    })
+
+    # Observe experiment, copy to state, update contrasts
+    shiny::observeEvent(input$experiment, {
+      state$experiment <- input$experiment
+      contrasts <- get_contrasts(input$experiment)
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "contrast",
+        choices = contrasts
       )
     })
 

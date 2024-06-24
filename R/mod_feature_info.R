@@ -5,6 +5,7 @@
 # Input:
 #    state$sel_feature_info - selection of feature IDs to display
 #    state$contrast - which contrast information to display
+#    state$experiment - which experiment to select
 #
 # Output:
 #    state$sel_tab - one feature ID selected in this info table
@@ -49,8 +50,9 @@ mod_feature_info_server <- function(id, data_set, state) {
     feature_info_table <- shiny::reactive({
       ids <- state$sel_feature_info
       ctr <- state$contrast
-      shiny::req(ids, ctr)
-      make_feature_info_table(data_set$de, data_set$features, ids, ctr)
+      expm <- state$experiment
+      shiny::req(ids, ctr, expm)
+      make_feature_info_table(data_set$de, data_set$features, ids, ctr, expm)
     })
 
     # Wait for row selection in the feature info table, pass it to app state
@@ -108,8 +110,9 @@ mod_feature_info_server <- function(id, data_set, state) {
 #'   parameter allows the user to specify which features should be included in
 #'   the information table.
 #' @param ctr A character string specifying the contrast to filter the
-#'   differential expression data. This allows for the analysis of specific
-#'   subsets within the data.
+#'   differential expression data.
+#' @param expm A character string specyifying the experiment to filter the DE
+#'   data.
 #' @param max_points The maximum number of points (features) that can be
 #'   processed and included in the table at once. This parameter helps to
 #'   prevent performance issues with very large datasets. The default value is
@@ -119,12 +122,12 @@ mod_feature_info_server <- function(id, data_set, state) {
 #'   features specified by `ids` and filtered by `ctr`. If the number of ids
 #'   exceeds `max_points`, it returns a tibble with an error message.
 #' @noRd
-make_feature_info_table <- function(de, features, ids, ctr, max_points = 3000) {
-  id <- contrast <- name <- NULL
+make_feature_info_table <- function(de, features, ids, ctr, expm, max_points = 3000) {
+  id <- contrast <- experiment <- name <- NULL
 
   if (length(ids) <= max_points) {
     df <- de |>
-      dplyr::filter(id %in% ids & contrast == ctr) |>
+      dplyr::filter(id %in% ids & contrast == ctr & experiment == expm) |>
       dplyr::left_join(features, by = "id") |>
       dplyr::arrange(name) |>
       dplyr::mutate(name = stringr::str_replace_all(name, ";", "; "))
