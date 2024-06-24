@@ -17,17 +17,16 @@
 mod_feature_plot_ui <- function(id) {
   ns <- shiny::NS(id)
 
+  x_variable <- shiny::selectInput(
+    inputId = ns("x_var"),
+    label = "x-axis variable",
+    choices = NULL
+  )
 
   colour_variable <- shiny::selectInput(
     inputId = ns("colour_var"),
     label = "Colour variable",
     choices = NULL
-  )
-
-  group_mean <- shiny::checkboxInput(
-    inputId = ns("group_mean"),
-    label = "Heatmap averaged across replicates",
-    value = FALSE
   )
 
   norm_fc <- shiny::checkboxInput(
@@ -51,8 +50,8 @@ mod_feature_plot_ui <- function(id) {
 
   gear <- bslib::popover(
     bsicons::bs_icon("gear"),
+    x_variable,
     colour_variable,
-    group_mean,
     norm_fc,
     shiny::conditionalPanel(
       condition = 'input.norm_fc == 0',
@@ -84,13 +83,21 @@ mod_feature_plot_server <- function(id, data_set, state) {
   server <- function(input, output, session) {
 
     # Update dummy colour variable selections from data
-    meta_variables <- setdiff(names(data_set$metadata), "sample")
     shiny::observe({
       shiny::updateSelectInput(
         session = session,
         inputId = "colour_var",
-        choices = meta_variables,
-        selected = "group"
+        choices = setdiff(names(data_set$metadata), c("sample", "experiment"))
+      )
+    })
+
+    # Update dummy x-variable selections from data
+    shiny::observe({
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "x_var",
+        choices = setdiff(names(data_set$metadata), c("experiment")),
+        selected = "sample"
       )
     })
 
@@ -101,8 +108,8 @@ mod_feature_plot_server <- function(id, data_set, state) {
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
         dplyr::left_join(data_set$metadata, by = "sample") |>
-        plot_features(what = "value", colour_var = input$colour_var, scale = input$intensity_scale,
-                      max_n_lab = 50, norm_fc = input$norm_fc, group_mean = input$group_mean)
+        plot_features(what = "value", x_var = input$x_var, colour_var = input$colour_var,
+                      scale = input$intensity_scale, max_n_lab = 50, norm_fc = input$norm_fc)
     })
   }
 
@@ -115,7 +122,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
 #' Plot one feature
 #'
-#' @param d Tibble with feature intensities. Columns needed: group, val, replicate
+#' @param d Tibble with feature intensities. Columns needed: x, val, replicate
 #' @param ylab Label on y axis
 #' @param colour_var (Optional) variable used for point colours
 #' @param scale Scale of y axis (lin or log)
@@ -127,7 +134,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #' @noRd
 plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
                              text_size, point_size, cex) {
-  val <- group <- shape <- fill <- x <- NULL
+  val <- shape <- fill <- x <- NULL
   okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
     "#CC79A7", "grey80", "grey30", "black")
 
@@ -135,11 +142,11 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
     dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
 
   if(is.null(colour_var))
-    colour_var <- "group"
+    colour_var <- "x"
 
   d <- d |> dplyr::mutate(fill = get(colour_var))
 
-  ncond <- length(unique(d$group))
+  ncond <- length(unique(d$x))
   vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
 
   nm <- dplyr::first(d$name)
@@ -153,7 +160,7 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
       legend.position = "bottom"
     ) +
     ggplot2::scale_shape_identity() +  # necessary for shape mapping
-    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = group, y = val, fill = fill, shape = shape),
+    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = x, y = val, fill = fill, shape = shape),
                   colour = "grey40", size = point_size, cex = cex) +
     ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21))) +
@@ -176,17 +183,20 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
 #' @param text_size Text size
 #' @param max_n_lab Limit of features above which feature names are not displayed
 #' @param norm_fc Logical, normalise in each feature to its mean and plot logFC
-#' @param group_mean logical, to average data across groups (conditions)
 #' @param max_name_len Numeric, maximum length of the name; longer names will be shortened in the plot.
 #'
 #' @return ggplot object
 #' @noRd
-plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_mean, max_name_len = 18) {
-  id <- val <- M <- name <- group <- NULL
+plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name_len = 18) {
+  id <- val <- M <- name <- x <- NULL
+
+  i2n <- d |>
+    dplyr::select(id, name) |>
+    dplyr::distinct() |>
+    dplyr::mutate(unique_name = make.unique(name))
 
   if (norm_fc) {
     d <- d |>
-      #dplyr::mutate(val = get(CONFIG$default_data_column)) |>
       dplyr::group_by(id) |>
       dplyr::mutate(M = mean(val, na.rm = TRUE)) |>
       dplyr::mutate(val = log2(val / M)) |>
@@ -194,14 +204,10 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
     lab <- expression(log[2]~FC)
   }
 
-  if(group_mean) {
-    d <- d |>
-      dplyr::group_by(id, name, group) |>
-      dplyr::summarise(val = mean(val, na.rm = TRUE)) |>
-      dplyr::mutate(sample = group)
-  }
-
   d <- d |>
+    dplyr::group_by(id, x) |>
+    dplyr::summarise(val = mean(val, na.rm = TRUE)) |>
+    dplyr::left_join(i2n, by = dplyr::join_by(id)) |>
     dplyr::mutate(name = dplyr::if_else(nchar(name) < max_name_len,
                             name,
                             stringr::str_c(stringr::str_sub(name, end = max_name_len), "...")
@@ -209,7 +215,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
            )
 
   g <- d |>
-    ggplot2::ggplot(ggplot2::aes(x = sample, y = name, fill = val)) +
+    ggplot2::ggplot(ggplot2::aes(x = x, y = unique_name, fill = val)) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
@@ -238,24 +244,24 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, group_me
 #' @param dat Tibble with feature intensities
 #' @param scale Intensity scale, "lin" or  "log"
 #' @param what Which column to plot
+#' @param x_var Variable to put on x-axis
 #' @param colour_var (Optional) variable used for point colours
 #' @param text_size Text size
 #' @param point_size Point size
 #' @param cex Point spread scaling for beeswarm
 #' @param max_n_lab Limit of features above which feature names are not displayed
 #' @param norm_fc Logical, normalise in each feature to its mean and plot logFC
-#' @param group_mean logical, to average data across groups (conditions)
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, what = "value", colour_var = NULL, scale = "lin", text_size = 14,
-                          point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE,
-                          group_mean = FALSE) {
+plot_features <- function(dat, what = "value", x_var, colour_var = NULL, scale = "lin", text_size = 14,
+                          point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE) {
   val <- NULL
 
   if(nrow(dat) == 0) return(NULL)
 
   dat$val <- dat[[what]]
+  dat$x <- dat[[x_var]]
   dat <- dat |>
     tidyr::drop_na()
 
@@ -272,6 +278,6 @@ plot_features <- function(dat, what = "value", colour_var = NULL, scale = "lin",
   if(n_feat == 1) {
     plot_one_feature(dat, lab, colour_var, scale, text_size, point_size, cex)
   } else {
-    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_fc, group_mean)
+    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_fc)
   }
 }
