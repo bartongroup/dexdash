@@ -44,4 +44,10 @@
  - Allows for multiple data sets, selected from the drop-down menu
  - New functions: `dexdash_set()` and `dexdash_list()`.
  
+## Version 0.2.1
+
+ - Improvements to the documentation
+ - Changed column names in example metadata to better reflect the nature of the variable
+ - Small tweaks
+ 
 
