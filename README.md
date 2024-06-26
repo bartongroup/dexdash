@@ -20,13 +20,16 @@ library(dexdash)
 # Data examples available in the package
 data(yeast_de, yeast_data, yeast_metadata)
 
+# Create the dexdash data set
+yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
+
 # The slow bit: download feature information and functional term data
 yeast_features <- download_feature_information(species = "yeast")
 yeast_terms <- download_functional_terms(species = "yeast")
 yeast_fterms <- prepare_functional_terms(yeast_terms, feature_name = "gene_id")
 
 # The fast bit: interactive app
-run_app(yeast_de, yeast_data, yeast_metadata, yeast_features, yeast_fterms)
+run_app(yeast_dexset, yeast_features, yeast_fterms)
 ```
 
 ## More information
