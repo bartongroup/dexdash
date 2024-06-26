@@ -19,7 +19,7 @@ mod_feature_plot_ui <- function(id) {
 
   x_variable <- shiny::selectInput(
     inputId = ns("x_var"),
-    label = "x-axis variable",
+    label = "X-axis variable",
     choices = NULL
   )
 

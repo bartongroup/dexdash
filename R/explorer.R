@@ -270,6 +270,8 @@ dexdash_set <- function(de, data, metadata, name) {
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
   assert_colnames(metadata, c("sample"), deparse(substitute(metadata)))
+  assertthat::assert_that(ncol(metadata) > 1,
+    msg = "metadata requires at least one additional column apart from 'sample'.")
   assertthat::is.string(name)
 
   list(
