@@ -1,16 +1,18 @@
 ---
 title: "Dexdash: Differential EXpression Downstream Analysis SHiny app"
 package: dexdash
-format: 
+format:
   html:
+    theme: css/styles.scss
     toc: true
+self-contained: true
 abstract: |
     This R package is designed for interactive exploration and analysis
     of differential expression (DE) results. It combines Shiny-based
     visualization tools with rapid functional enrichment analysis. Users
     can select genes from a volcano or MA plot to find their names,
-    descriptions and plot expression patterns. The build-in fast functional
-    enrichment (based on `fenr` package) allows to see instantly which
+    descriptions and plot expression patterns. The built-in fast functional
+    enrichment (based on the fenr package) allows users to instantly see which
     biological pathways and processes those genes are involved in, based on
     enrichment analysis of Gene Ontology (GO), KEGG, and Reactome databases.
     The input for the app consists of five data frames containing DE results,
@@ -39,16 +41,16 @@ library(dexdash)
 *dexdash* version `r utils::packageVersion("dexdash")`.
 
 
-## Overview
+# Overview
 
-Imagine you've carried out an RNA-seq experiment, a proteomics study, or maybe another type of -omics research. You've done read mapping or protein quantifications and now have a set of data in hand. This data captures expression or abundance (we will call it 'expression' for simplicity) for each gene, protein, or other entity (hereinafter referred to as 'feature'). These expressions are recorded across various biological conditions (which we'll call 'groups') and their replicates. Following this, you've conducted a differential expression analysis using tools like *limma*, *edgeR*, *DESeq2*, or similar, ending up with a data frame that includes log-fold change, p-value, among other metrics.
+Imagine you've carried out an RNA-seq experiment, a proteomics study, or another type of -omics research. You've done read mapping or protein quantifications and now have a set of data in hand. This data capture expression or abundance (we will call it 'expression' for simplicity) for each gene, protein, or other entity (hereinafter referred to as 'feature'). These expressions are recorded across various biological conditions (which we'll call 'groups') and their replicates. Following this, you've conducted a differential expression analysis using tools like *limma*, *edgeR*, *DESeq2*, or similar, ending up with a data frame that includes log-fold change, p-value, among other metrics.
 
-Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voilà! You're equipped with a web-based interactive tool to explore your data. A screenshot from the *dexdash* app is shown in @fig-screenshot.
+Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voilà! You're equipped with a web-based interactive tool to explore your data. A screenshot of the *dexdash* app is shown in @fig-screenshot.
 
 ![Screenshot of *dexdash* Shiny app.](figures/screenshot.png){#fig-screenshot width=100% fig-align="left"}
 
 
-## Installation
+# Installation
 
 *dexdash* can be installed from *GitHub* by using:
 
@@ -59,7 +61,7 @@ if (!require("remotes", quietly = TRUE))
 remotes::install_github("bartongroup/dexdash")
 ```
 
-## Quick example
+# Quick example
 
 ```{r quick_example, eval = FALSE}
 library(dexdash)
@@ -79,7 +81,7 @@ yeast_fterms <- prepare_functional_terms(yeast_terms, feature_name = "gene_id")
 run_app(yeast_dexset, yeast_features, yeast_fterms)
 ```
 
-## Usage
+# Usage
 
 The *dexdash* Shiny app is launched with a command:
 
@@ -94,32 +96,32 @@ There are five mandatory arguments:
   - `fterms` - an object containing functional terms data.
 
 
-### User data: experimental results
+## User data: experimental results
 
-The `dexset` argument for the app should be created with `dexdash_set()` or `dexdash_list()` function, for single- and multiple-experiment data, respectively. For the single experiment, the `dexdash_set` object is created using
+The `dexset` argument for the app should be created with `dexdash_set()` or `dexdash_list()` function, for single- and multiple-experiment data, respectively. For a single experiment, the `dexdash_set` object is created using
 
 ```{r dexdash_set}
 yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
 ```
 
-The inputs for this function are three data frames containing experimental results, provided by the user. As differential expression output differs from tool to tool, it would be difficult to feed them directly into *dexdash*. Therefore, the user needs to rename data frame columns as shown in @tbl-data-columns. A fully worked example below demonstrates how to prepare the required data, step by step.
+The inputs for this function are three data frames containing experimental results, provided by the user. As differential expression output differs from tool to tool, it would be difficult to feed them directly into *dexdash*. Therefore, users need to rename data frame columns as shown in @tbl-data-columns. A fully worked example below demonstrates how to prepare the required data, step by step.
 
-| argument | column | type | description |
+| Data frame | Column | Type | Description |
 |:-|:-|:-|:-----------|
 | de |	id    | character |	feature identifier |
-|    | log_fc |	numeric   |	log-fold change; use `logFC` from *edgeR* and *limma*, `log2FoldChange` from *DESeq2* |
+|    | log_fc |	numeric   |	log-fold change; use `logFC` column from *edgeR* and *limma* output, `log2FoldChange` from *DESeq2* |
 |	   | expr | numeric | mean expression or abundance, typically in logarithmic scale; use `logCPM` from *edgeR*, `log10(baseMean)` from *DESeq2*, `AveExpr` from *limma* |
 |    | p_value |	numeric | p-value from statistical tests; use `PValue` from *edgeR* and *limma*, `pvalue` from *DESeq2* |
 |    | contrast | factor | name of the contrast; this data frame can contain results from multiple contrast |
 | data | id |	character |	feature identifier |
 |      | sample | character |	sample identifier |
 |      | value |	numeric |	the expression, or abundance of the gene/protein for this sample |
-| metadata | sample |	character	sample identifier |
+| metadata | sample |	character	| sample identifier |
 |          | ... | character/factor | at least one additional column with information that will be used as the x-axis or to colour the points in the feature plot
 : Column names, types and descriptions for data frames with differential expression results (de), expression data (data) and experimental design (metadata). {#tbl-data-columns}
 
 
-### Feature information
+## Feature information
 
 | argument | column | type | description |
 |:-|:-|:-|:-----------|
@@ -139,7 +141,7 @@ yeast_features <- download_feature_information(species = "yeast")
 
 The necessary information to connect to the correct Ensembl dataset is stored in a JSON file attached to the package (see @sec-json for details).
 
-### Functional term data
+## Functional term data
 
 For fast interactive functional enrichment, *dexdash* requires data downloaded and formatted appropriately. This can be achieved with the following built-in functions:
 
@@ -152,9 +154,9 @@ The first function, `download_functional_terms()`, retrieves functional term dat
 
 The second function, `prepare_functional_terms()`, transforms these data frames into an object optimized for fast functional enrichment within *dexdash*, based on Bioconductor's *fenr* package. The `feature_name` argument designates which column in the mapping tibble acts as the feature identifier. For more details, refer to the *fenr* package [vignette](https://bioconductor.org/packages/release/bioc/vignettes/fenr/inst/doc/fenr.html). Depending on your dataset, `feature_name` should be set to `"gene_symbol"` if dealing with gene symbols like "BRCA1" or "FOXP1", or `"gene_id"` for Ensembl identifiers such as "ENSG00000012048" or "ENSG00000114861".
 
-### Species JSON file {#sec-json}
+## Species JSON file {#sec-json}
 
-Online databases such as GO, Reactome, KEGG, and Ensembl require specific species designations and dataset names for access, which are often not intuitive. For example, the designations for yeast are "sgd" in GO, "Saccharomyces cerevisiae" in Reactome, and "sce in KEGG. To make access easier, *dexdash* includes a JSON file containing these necessary identifiers along with Ensembl BioMart, host, and dataset details for various species. This file is located locally at:
+Online databases such as GO, Reactome, KEGG, and Ensembl require specific species designations and dataset names for access, which are often not intuitive. For example, the designations for yeast are "sgd" in GO, "Saccharomyces cerevisiae" in Reactome, and "sce in KEGG. To make access easier, *dexdash* includes a JSON file containing these necessary identifiers along with Ensembl BioMart host and dataset details for various species. This file is located locally at:
 
 ```{r species_file}
 species_file <- system.file("extdata", "species.json", package = "dexdash")
@@ -191,7 +193,7 @@ json["slime mold"] |>
 
 
 
-## Simple example
+# Simple example
 
 
 In this example we are given only one data set containing read counts from an RNA-seq experiment ([Gierlinski et al. 2015](https://doi.org/10.1093/bioinformatics/btv425)). It is a matrix `yeast_mtx`, with rows corresponding to genes and columns corresponding to samples. It contains the same data as the `yeast_data` object, but in wide, matrix format. We will demonstrate how to prepare all data required for *dexdash* from this one matrix.
@@ -209,9 +211,9 @@ library(stringr)
 library(edgeR)
 ```
 
-### Count data
+## Count data
 
-Here is the count matrix.
+Here is the count matrix. This is the starting point for most of RNA-seq data analysis.
 
 ```{r yeast_count_matrix}
 data(yeast_mtx)
@@ -219,26 +221,26 @@ dim(yeast_mtx)
 head(yeast_mtx)
 ```
 
-### Metadata
+## Metadata
 
-First, we create metadata with grouping information. We extract group designation (WT or Snf2) form sample names (row names of `yeast_mtx`) and convert them into factors, with the first level `WT`. As per *dexdash* requirements, the column names of this data frame are `sample` and, an additonal grouping column, `group`:
+First, we create metadata with the design of the experiment. We extract strain designation (WT or Snf2) from sample names (column names of `yeast_mtx`) and convert them into factors, with the first level `WT`. As per *dexdash* requirements, `metadata` contains a column called `sample` and an additional column `strain`:
 
 ```{r yeast_metadata}
 yeast_metadata <- tibble(sample = colnames(yeast_mtx)) |>
-  separate_wider_delim(sample, names = c("group", "replicate"), delim = "-", cols_remove = FALSE) |> 
-  mutate(group = fct_relevel(group, "WT"))
+  separate_wider_delim(sample, names = c("strain", "replicate"), delim = "-", cols_remove = FALSE) |> 
+  mutate(strain = fct_relevel(strain, "WT"))
 
 yeast_metadata
 ```
 
 We also create an additional column called `replicate`. It can be used in the app to colour points in the feature plot.
 
-### Differential expression
+## Differential expression
 
-Next, we carry out differential expression using *edgeR*. This is a simple case of two conditions (groups), each in six replicates. Again, we need specific column names for *dexdash*. If you use a different differential expression tool, the default column names would be different. In any case, they need to be `id`, `log_fc`, `expr`, `p_value`, and `contrast` (see @tbl-data-columns). Whichever DE tool you use, make sure to rename the columns before passing the result to `dexdash`.
+Next, we carry out differential expression using *edgeR*. This is a simple case of two conditions (strains), each in six replicates. Again, we need specific column names for *dexdash*. If you use a different differential expression tool, the default column names would be different. In any case, they need to be `id`, `log_fc`, `expr`, `p_value`, and `contrast` (see @tbl-data-columns). Whichever DE tool you use, make sure to rename the columns before passing the result to `dexdash`.
 
 ```{r yeast_differential_expression}
-design_mat <- model.matrix(~group, yeast_metadata)
+design_mat <- model.matrix(~strain, yeast_metadata)
 
 dge <- DGEList(yeast_mtx)
 keep <- filterByExpr(dge, design_mat)
@@ -246,7 +248,7 @@ keep <- filterByExpr(dge, design_mat)
 yeast_de <- dge[keep, ] |> 
   normLibSizes() |>
   glmQLFit(design = design_mat) |>
-  glmQLFTest(coef = "groupSnf2") |>
+  glmQLFTest(coef = "strainSnf2") |>
   topTags(n = 1e16, sort.by = "none") |>
   pluck("table") |>
   as_tibble(rownames = "id") |>
@@ -260,7 +262,7 @@ yeast_de <- dge[keep, ] |>
 yeast_de
 ```
 
-### Count data in long format
+## Count data in long format
 
 `dexdash` requires count data in long format, with column names `id`, `sample` and `value`. We create the appropriate data frame:
 
@@ -272,7 +274,7 @@ yeast_data <- yeast_mtx |>
 yeast_data
 ```
 
-### Complete data set
+## Complete data set
 
 Now the function `dexdash_set()` can be used to create the full data set for *dexdash*:
 
@@ -280,9 +282,9 @@ Now the function `dexdash_set()` can be used to create the full data set for *de
 yeast_dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, name = "Yeast")
 ```
 
-The name, `"Yeast"`, will be shown as a data set selection in the app.
+The name, `"Yeast"`, will be shown in the data set drop-down menu in the app. In this case we have just one experiment, so the drop-down menu will contain only one element.
 
-### Feature names and descriptions
+## Feature names and descriptions
 
 Next, we need a table converting gene identifiers into human-readable gene names and descriptions. This can be done with the helper function `download_feature_information()`:
 
@@ -300,7 +302,7 @@ yeast_features |>
 ```
 
 
-### Functional enrichment data
+## Functional enrichment data
 
 Finally, as indicated earlier, we need the functional enrichment data. This is done in two steps:
 
@@ -309,7 +311,7 @@ yeast_terms <- download_functional_terms("yeast")
 yeast_fterms <- prepare_functional_terms(yeast_terms, feature_name = "gene_id")
 ```
 
-### Run dexdash
+## Run dexdash
 
 Now, we have all necessary data to launch `dexdash`:
 
@@ -317,7 +319,7 @@ Now, we have all necessary data to launch `dexdash`:
 run_app(yeast_dexset, yeast_features, yeast_fterms)
 ```
 
-## Advanced example
+# Advanced example
 
 Here we show an example of data, where feature identifiers do not correspond directly to those in the online databases. The data comes from a mouse RNA-seq experiment (originally from [Blümli et al. (2021)](https://www.sciencedirect.com/science/article/pii/S2211124721014169?via%3Dihub). Here we use only three time points.
 
@@ -334,7 +336,7 @@ library(stringr)
 library(edgeR)
 ```
 
-### Messing with identifiers
+## Messing with identifiers
 
 Struggling with identifiers is all in a day's work of a bioinformatician. Alas, there are no unified gene of protein identifiers in this imperfect word, and getting data from various sources inevitable leads to inconsistencies. This is our read count matrix:
 
@@ -364,7 +366,7 @@ mouse_terms$reactome$mapping |> slice_sample(n = 10)
 mouse_terms$kegg$mapping |> slice_sample(n = 10)
 ```
 
-We have a problem. Our data uses Ensembl IDs, but out of the three databases, only Reactome provides with Ensembl IDs. GO returns gene aliases and KEGG uses NCBI IDs. We need put all these data together. The only common identifier is the gene symbol, returned by all three databases. To make it consistent with our data, we need to convert Ensembl IDs into gene symbols. For this, we use the function `download_feature_information()`:
+We have a problem. Our data uses Ensembl IDs, but out of the three databases, only Reactome provides with Ensembl IDs. GO returns gene aliases and KEGG uses NCBI IDs. We need put all these data together. The only common identifier is the gene symbol returned by all three databases. To make it consistent with our data, we need to convert Ensembl IDs into gene symbols. For this, we use the function `download_feature_information()`:
 
 
 ```{r load_mouse_genes, echo = FALSE}
@@ -406,24 +408,24 @@ head(renamed_mtx)
 
 Now, we have consistent identifers in count data and functional enrichment data. We can now proceed.
 
-### Metadata
+## Metadata
 
-Like before, we create a metadata data frame with experiment grouping:
+Like before, we create a metadata data frame with experiment design:
 
 ```{r mouse_metadata}
 mouse_metadata <- tibble(sample = colnames(renamed_mtx)) |> 
-  separate_wider_delim(sample, names = c("group", "replicate"), delim = "-", cols_remove = FALSE) |> 
-  mutate(group = fct_relevel(group, c("0h", "2h", "18h")))
+  separate_wider_delim(sample, names = c("time_point", "replicate"), delim = "-", cols_remove = FALSE) |> 
+  mutate(time_point = fct_relevel(time_point, c("0h", "2h", "18h")))
 
 mouse_metadata
 ```
 
-### Differential expression
+## Differential expression
 
 Differential expression if carried out with *edgeR*, like for the yeast data, but this time we have more than one contrast. We select timepoint `0h` as the baseline and find contrasts between this and other time points.
 
 ```{r mouse_differential_expression}
-design_mat <- model.matrix(~group, mouse_metadata)
+design_mat <- model.matrix(~time_point, mouse_metadata)
 coefficients <- colnames(design_mat)[-1]
 
 dge <- DGEList(renamed_mtx)
@@ -450,7 +452,7 @@ mouse_de <- map(coefficients, function(coef) {
 mouse_de
 ```
 
-### Count data in long format
+## Count data in long format
 
 We need data in long format:
 
@@ -462,14 +464,14 @@ mouse_data <- renamed_mtx |>
 mouse_data
 ```
 
-### Dexdash data set
+## Dexdash data set
 
 ```{r mouse_dexdash_set}
 mouse_dexdash <- dexdash_set(mouse_de, mouse_data, mouse_metadata, name = "Mouse")
 ```
 
 
-### Feature names and descriptions
+## Feature names and descriptions
 
 For the Shiny app, a feature information table is needed to link feature identifiers (capitalised gene symbols), feature names (original gene symbols) and descriptions. The columns needed are described in @tbl-feature-columns. Here is how we prepare the required tibble:
 
@@ -480,7 +482,7 @@ mouse_features <- mouse_genes |>
 mouse_features
 ```
 
-### Functional enrichment data
+## Functional enrichment data
 
 Finally, we need to prepare functional enrichment data in the fast enrichment format. We specify `feature_name = "gene_symbol"` to inform the function which column should be used to identify features.
 
@@ -488,7 +490,7 @@ Finally, we need to prepare functional enrichment data in the fast enrichment fo
 mouse_fterms <- prepare_functional_terms(mouse_terms, feature_name = "gene_symbol")
 ```
 
-### Run dexdash
+## Run dexdash
 
 Now, we have all necessary data to launch `dexdash`:
 
@@ -496,7 +498,7 @@ Now, we have all necessary data to launch `dexdash`:
 run_app(mouse_dexdash, mouse_features, mouse_fterms)
 ```
 
-## Multiple data sets
+# Multiple data sets
 
 The function `dexdash_list()` can be used to combine a few data sets together, for example:
 
@@ -510,26 +512,17 @@ run_app(declist, features, fterms)
 
 Here `set1` and `set2` contain data and differential expression results from two separate expreiments. They are, however, based on the same organism, so they share `features` and `fterms`.
 
-## Comparison with other tools
 
-### iDEP
+# Comparison with Other Tools
 
-*[iDEP](http://bioinformatics.sdstate.edu/idep/)* is a flexible web-based tool that supports full data analysis, starting from the count matrix. It includes preprocessing, clustering, PCA, differential expression, KEGG pathway analysis and more. While it generates volcano and MA plots, they lack fast interactivity. In particular, pathway analysis in *iDEP* is only performed on down- or up-regulated genes. In contrast, *dexdash* is smaller and more focused on interactivity, visualisation and fast functional enrichment on any arbitrary gene selection. Additionally, *dexdash* supports GO and Reactome functional terms, alongside KEGG.
-
-### ShinyGO
-
-*[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-based Shiny app for comprehensive KEGG pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works on differential expression result set and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG and Reactome enrichment analysis.
-
-### Glimma
-
-*[Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html)* is a Bioconductor R package designed to create interactive MDS, MA and volcano plots. Users can explore gene expression patterns by selecting individual genes. In contrast, *dexdash* allows for multiple gene selection, functional enrichment analysis and reverse selection of functional terms to find functionally related genes. 
+ - *[iDEP](http://bioinformatics.sdstate.edu/idep/)* is a flexible web-based tool that supports comprehensive data analysis, starting from the count matrix. It includes preprocessing, clustering, PCA, differential expression, KEGG pathway analysis, and more. While it generates volcano and MA plots, these lack fast interactivity. Specifically, enrichment analysis in *iDEP* is only performed on down- or up-regulated genes. In contrast, *dexdash* is smaller and more focused on interactivity, visualization, and fast functional enrichment on any arbitrary gene selection.
+ - *[ShinyGO](http://bioinformatics.sdstate.edu/go/)* is a web-based Shiny app for comprehensive pathway enrichment analysis. Users can submit a list of gene names for analysis, which then provides various outputs. In contrast, *dexdash* works with differential expression result sets and creates interactive volcano/MA plots for fast repeated gene selection and simple GO, KEGG, and Reactome enrichment analysis.
+ - *[Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html)* is a Bioconductor R package designed to create interactive MDS, MA, and volcano plots. Users can explore gene expression patterns by selecting individual genes. In contrast, *dexdash* allows for multiple gene selection, functional enrichment analysis, and reverse selection of functional terms to find functionally related genes.
+ - *[ShinyNGS](https://github.com/pinin4fjords/shinyngs)* is a Shiny-based exploratory tool for RNA-seq data analysis. It includes a variety of interactive plots for quality control, differential expression, and gene-set enrichment. While *dexdash* shares some features, it offers fast interactive enrichment analysis, which is not provided by *ShinyNGS*.
+ - Other packages. *[VolcaNoseR](https://huygens.science.uva.nl/VolcaNoseR/)* is a simple customizable volcano plot with no additional functionality. *[Degust](https://degust.erc.monash.edu/)* is a web-based tool that includes interactive volcano and MA plots offering KEGG pathway visualization but lacks functional enrichment. R packages *[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)*, *[ReactomePA](https://bioconductor.org/packages/release/bioc/html/ReactomePA.html)*, *[GOplot](https://wencke.github.io/)*, and *[topGO](https://bioconductor.org/packages/release/bioc/html/topGO.html)* provide robust tools for enrichment analysis but do not offer the interactive, user-driven experience found in *dexdash*.
 
 
-### Other packages
-
-*[VolcaNoseR](https://huygens.science.uva.nl/VolcaNoseR/)* is a simple customisable volcano plot with no additional functionality. *clusterProfiler*, *ReactomePA*, *GOplot* and *topGO* provide robust tools for enrichment analysis but do not offer the interactive, user-driven experience found in *dexdash*.
-
-## Session info {.unnumbered}
+# Session info {.unnumbered}
 
 ```{r session_info, echo = FALSE}
 sessionInfo()

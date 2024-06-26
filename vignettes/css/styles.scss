@@ -1,0 +1,14 @@
+/*-- scss:rules --*/
+
+// Title block is derived from h1, so we need to modify it
+#title-block-header.quarto-title-block.default .quarto-title .title {
+  font-size: 2.5rem;
+  color: black;
+}
+
+// Top header larger, greener and spacier
+h1, .h1 {
+  font-size: 2.5rem;
+  color: DarkGreen;
+  margin-top: 4rem;
+}
