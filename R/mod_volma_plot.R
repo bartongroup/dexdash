@@ -40,23 +40,20 @@ mod_volma_plot_ui <- function(id) {
     max = 1
   )
 
-  gear <- bslib::popover(
-    bsicons::bs_icon("gear"),
+  download <- shiny::uiOutput(ns("download_plot"))
+
+  gear <- gear_icon(
     plot_type,
     fc_limit,
     fdr_limit
   )
 
-  info <- bslib::popover(
-    bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/volma.md", package = "dexdash")),
-    options = list(customClass = "info-pop")
-  )
+  info <- info_icon("volma")
 
   bslib::card(
     bslib::card_header(
       "Volcano/MA plot ",
-      shiny::span(info, gear),
+      shiny::span(info, download, gear),
       class = "d-flex justify-content-between"
     ),
     bslib::card_body(
@@ -89,9 +86,9 @@ mod_volma_plot_server <- function(id, data_set, state) {
     # ...update app state with the selection
     shiny::observeEvent(to_listen(), {
       ctr <- state$contrast
-      sname <- state$set_name
-      shiny::req(ctr, sname)
-      xy_data <- get_volma_data(data_set$dex, ctr, sname, input$plot_type)
+      set_name <- state$set_name
+      shiny::req(ctr, set_name)
+      xy_data <- get_volma_data(data_set$dex, ctr, set_name, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
       if(!is.null(input$plot_brush)){
@@ -105,14 +102,34 @@ mod_volma_plot_server <- function(id, data_set, state) {
       state$sel_hover <- ids_hover
     })
 
-    output$main_plot <- shiny::renderPlot({
+    # Function to make plot
+    make_plot <- shiny::reactive({
       ctr <- state$contrast
-      sname <- state$set_name
-      shiny::req(ctr, sname)
-      xy_data <- get_volma_data(data_set$dex, ctr, sname, input$plot_type)
+      set_name <- state$set_name
+      shiny::req(ctr, set_name)
+      xy_data <- get_volma_data(data_set$dex, ctr, set_name, input$plot_type)
       main_plot(xy_data, input$plot_type, state$sel_volma_highlight,
-                   fdr_limit = input$fdr_limit, logfc_limit = input$logfc_limit)
+                fdr_limit = input$fdr_limit, logfc_limit = input$logfc_limit)
     })
+
+    # Output plot
+    output$main_plot <- shiny::renderPlot({
+      make_plot()
+    })
+
+    # Display download icon only when there are data to plot
+    output$download_plot <- shiny::renderUI({
+      shiny::req(state$contrast, state$set_name)
+      download_link(id)
+    })
+
+    # Download handler
+    output$handle_download <- shiny::downloadHandler(
+      filename = "main_plot.pdf",
+      content = function(file) {
+        ggplot2::ggsave(file, plot = make_plot(), device = "pdf", width = 6, height = 6)
+      }
+    )
   }
 
   shiny::moduleServer(id, server)
@@ -132,7 +149,7 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #' @param dexset A \code{dexset_list} object with all user data.
 #' @param ctr A character string specifying the contrast to filter the
 #'   differential expression data.
-#' @param sname A character string specyifying the name of the data set.
+#' @param set_name A character string specyifying the name of the data set.
 #' @param plot_type A character string indicating the type of plot for which
 #'   data is being prepared. The accepted values are "Volcano" for volcano plots
 #'   (log fold change vs. -log10 p-value) and "MA" for MA plots (average
@@ -143,10 +160,10 @@ mod_volma_plot_server <- function(id, data_set, state) {
 #'   represents -log10 transformed p-values. For an MA plot, x corresponds to
 #'   expression levels and y to log fold changes.
 #' @noRd
-get_volma_data <- function(dexset, ctr, sname, plot_type) {
+get_volma_data <- function(dexset, ctr, set_name, plot_type) {
   contrast <- log_fc <- p_value <- expr <- NULL
 
-  de <- dexset[[sname]]$de |>
+  de <- dexset[[set_name]]$de |>
     dplyr::filter(contrast == ctr)
   if(plot_type == "Volcano") {
     xy_data <- de |>

@@ -50,4 +50,8 @@
  - Changed column names in example metadata to better reflect the nature of the variable
  - Small tweaks
  
+## Version 0.2.2
+
+ - New feature: each plot and table can be now downloaded by clicking the "download" icon
+ - Minor improvements to the code
 

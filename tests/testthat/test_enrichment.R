@@ -50,7 +50,7 @@ test_sel <- mapping |>
 test_that("make_functional_enrichment returns correct results", {
   returned <- make_functional_enrichment(test_sel, features_all, fterms, id2name = feat2name, fdr_limit = 1)
   expected <- enr |>
-    dplyr::select(TermId = term_id, Name = term_name, n = n_with_sel, OR = odds_ratio, ids)
+    dplyr::select(TermID = term_id, Name = term_name, N_with, n_with_sel, OR = odds_ratio, ids, p_value, FDR = p_adjust)
   expect_equal(returned, expected)
 })
 
