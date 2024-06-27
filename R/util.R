@@ -26,3 +26,45 @@ assert_colnames <- function(df, cols, df_name) {
     msg = stringr::str_glue("Some columns in '{df_name}' are missing. Required columns are: {colstr}.")
   )
 }
+
+#' Create a Download Link
+#'
+#' This function creates a Shiny download link with a specified ID.
+#'
+#' @param id A character string specifying the ID for the download link.
+#' @return A Shiny download link UI component.
+download_link <- function(id) {
+  shiny::downloadLink(
+    outputId = shiny::NS(id, "handle_download"),
+    label = bsicons::bs_icon("download")
+  )
+}
+
+#' Create an Info Icon with Popover
+#'
+#' This function creates an info icon that, when clicked, displays a popover
+#' with content from a markdown file.
+#'
+#' @param helper A character string specifying the name of the markdown file
+#'   (without the extension) located in the "inst/helpers" directory.
+#' @return A Shiny UI component with an info icon and a popover.
+info_icon <- function(helper) {
+  bslib::popover(
+    bsicons::bs_icon("info-circle"),
+    htmltools::includeMarkdown(system.file(stringr::str_glue("helpers/{helper}.md"), package = "dexdash")),
+    options = list(customClass = "info-pop")
+  )
+}
+
+#' Create a Gear Icon with Popover
+#'
+#' This function creates a gear icon that, when clicked, displays a popover with the specified content.
+#'
+#' @param ... Additional arguments to be passed to the popover content.
+#' @return A Shiny UI component with a gear icon and a popover.
+gear_icon <- function(...) {
+  bslib::popover(
+    bsicons::bs_icon("gear"),
+    ...
+  )
+}

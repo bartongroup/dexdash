@@ -42,14 +42,11 @@ mod_feature_plot_ui <- function(id) {
     inline = TRUE
   )
 
-  info <- bslib::popover(
-    bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/feature_plot.md", package = "dexdash")),
-    options = list(customClass = "info-pop")
-  )
+  info <-info_icon("feature_plot")
 
-  gear <- bslib::popover(
-    bsicons::bs_icon("gear"),
+  download <- shiny::uiOutput(ns("download_plot"))
+
+  gear <- gear_icon(
     x_variable,
     colour_variable,
     norm_fc,
@@ -63,10 +60,9 @@ mod_feature_plot_ui <- function(id) {
   bslib::card(
     bslib::card_header(
       "Feature plot",
-      shiny::span(info, gear),
+      shiny::span(info, download, gear),
       class = "d-flex justify-content-between"
     ),
-
     shiny::plotOutput(
       outputId = ns("feature_plot"),
       width = "100%",
@@ -84,38 +80,58 @@ mod_feature_plot_server <- function(id, data_set, state) {
 
     # Update dummy colour variable selections from data
     shiny::observe({
-      sname <- state$set_name
-      shiny::req(sname)
+      set_name <- state$set_name
+      shiny::req(set_name)
       shiny::updateSelectInput(
         session = session,
         inputId = "colour_var",
-        choices = setdiff(names(data_set$dex[[sname]]$metadata), c("sample"))
+        choices = setdiff(names(data_set$dex[[set_name]]$metadata), c("sample"))
       )
     })
 
     # Update dummy x-variable selections from data
     shiny::observe({
-      sname <- state$set_name
-      shiny::req(sname)
+      set_name <- state$set_name
+      shiny::req(set_name)
       shiny::updateSelectInput(
         session = session,
         inputId = "x_var",
-        choices = names(data_set$dex[[sname]]$metadata),
+        choices = names(data_set$dex[[set_name]]$metadata),
         selected = "sample"
       )
     })
 
-    output$feature_plot <- shiny::renderPlot({
+    # Function to make plot
+    make_plot <- shiny::reactive({
       ids <- state$sel_feature_plot
-      sname <- state$set_name
-      shiny::req(ids, sname)
-      data_set$dex[[sname]]$dat |>
+      set_name <- state$set_name
+      shiny::req(ids, set_name)
+      data_set$dex[[set_name]]$dat |>
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
-        dplyr::left_join(data_set$dex[[sname]]$metadata, by = "sample") |>
+        dplyr::left_join(data_set$dex[[set_name]]$metadata, by = "sample") |>
         plot_features(what = "value", x_var = input$x_var, colour_var = input$colour_var,
                       scale = input$intensity_scale, max_n_lab = 50, norm_fc = input$norm_fc)
     })
+
+    # Output plot
+    output$feature_plot <- shiny::renderPlot({
+      make_plot()
+    })
+
+    # Display download icon only when there are data to plot
+    output$download_plot <- shiny::renderUI({
+      shiny::req(state$sel_feature_plot)
+      download_link(id)
+    })
+
+    # Download handler
+    output$handle_download <- shiny::downloadHandler(
+      filename = "feature_plot.pdf",
+      content = function(file) {
+        ggplot2::ggsave(file, plot = make_plot(), device = "pdf", width = 6, height = 6)
+      }
+    )
   }
 
   shiny::moduleServer(id, server)

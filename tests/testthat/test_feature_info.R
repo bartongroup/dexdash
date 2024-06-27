@@ -5,25 +5,25 @@ test_ctr <- "C1"
 test_sname <- "test"
 
 test_output <- tibble::tribble(
-  ~id, ~log_fc, ~expr, ~p_value, ~fdr, ~contrast, ~name, ~description,
-  "G1", 1, 1, 0.1, 0.1, "C1", "N1", "D1",
-  "G2", 1, 1, 0.1, 0.1, "C1", "N2", "D2"
+  ~Name, ~Description, ~Expression, ~logFC, ~p_value, ~FDR,
+  "N1", "D1", 1, 1, 0.1, 0.1,
+  "N2", "D2", 1, 1, 0.1, 0.1
 )
 
 test_that("make_feature_info_table returns correct values", {
   tb <- make_feature_info_table(dexset = test$dex, features = test$features, ids = test_ids,
-                                ctr = test_ctr, sname = test_sname)
+                                ctr = test_ctr, set_name = test_sname)
   expect_is(tb, "data.frame")
   expect_setequal(
     names(tb),
-    c("id", "log_fc", "expr", "p_value", "fdr", "contrast", "name", "description")
+    c("Name", "Description", "Expression", "logFC", "p_value", "FDR")
   )
   expect_equal(tb, test_output)
 })
 
 test_that("make_feature_info_table returns error message when too many points requested", {
   tb <- make_feature_info_table(dexset = test$dex, features = test$features, ids = test_ids,
-                                ctr = test_ctr, sname = test_sname, max_points = 1)
+                                ctr = test_ctr, set_name = test_sname, max_points = 1)
   expect_is(tb, "data.frame")
   expect_setequal(
     names(tb),

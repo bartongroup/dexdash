@@ -5,23 +5,9 @@
 mod_global_input_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  data_set_info <- bslib::popover(
-    bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/data_set.md", package = "dexdash")),
-    options = list(customClass = "info-pop")
-  )
-
-  contrast_info <- bslib::popover(
-    bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/contrast.md", package = "dexdash")),
-    options = list(customClass = "info-pop")
-  )
-
-  search_info <- bslib::popover(
-    bsicons::bs_icon("info-circle"),
-    htmltools::includeMarkdown(system.file("helpers/search.md", package = "dexdash")),
-    options = list(customClass = "info-pop")
-  )
+  data_set_info <- info_icon("data_set")
+  contrast_info <- info_icon("contrast")
+  search_info <- info_icon("search")
 
   shiny::tagList(
     shiny::selectInput(
@@ -52,8 +38,8 @@ mod_global_input_ui <- function(id) {
 mod_global_input_server <- function(id, data_set, state) {
   contrast <- NULL
 
-  get_contrasts <- function(sname) {
-    data_set$dex[[sname]]$de |>
+  get_contrasts <- function(set_name) {
+    data_set$dex[[set_name]]$de |>
       dplyr::pull(contrast) |>
       as.character() |>
       unique()
@@ -91,10 +77,10 @@ mod_global_input_server <- function(id, data_set, state) {
 
     # Observe data set, copy to state, update contrasts
     shiny::observeEvent(input$set_name, {
-      sname <- input$set_name
-      shiny::req(sname)
-      state$set_name <- sname
-      contrasts <- get_contrasts(sname)
+      set_name <- input$set_name
+      shiny::req(set_name)
+      state$set_name <- set_name
+      contrasts <- get_contrasts(set_name)
       shiny::updateSelectInput(
         session = session,
         inputId = "contrast",
