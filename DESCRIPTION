@@ -53,7 +53,8 @@ Imports:
     bslib,
     bsicons,
     shinyWidgets,
-    htmltools
+    htmltools,
+    markdown
 Suggests:
     testthat,
     quarto,
