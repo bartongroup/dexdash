@@ -9,6 +9,15 @@ mod_communication_server <- function(id, data_set, state) {
 
   server <- function(input, output, session) {
 
+    # Prevent stale highlight of feature from table or features from enrichment,
+    # when the main plot is clicked and brush selction disappears
+    shiny::observe({
+      if(is.null(state$sel_brush)) {
+        state$sel_term <- NULL
+        state$sel_tab <- NULL
+      }
+    })
+
     # Select feature IDs to be displayed by feature plot and shown in feature
     # table. Order of commands defines priority, the last one being most
     # important.
@@ -45,7 +54,7 @@ mod_communication_server <- function(id, data_set, state) {
     # For functional enrichment we only take brushed IDs from the Volcano/MA
     # plot
     shiny::observe({
-      state$sel_functional_enrichment <- state$sel_brush
+      state$sel_enrichment <- state$sel_brush
     })
 
     # Selection of feature IDs to highlight in the Volcano/MA plot

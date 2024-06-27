@@ -4,7 +4,7 @@
 # brush.
 #
 # Input:
-#    state$sel_functional_enrichment - selection of feature IDs to use in functional enrichment.
+#    state$sel_enrichment - selection of feature IDs to use in functional enrichment.
 #
 # Output:
 #    state$sel_term - feature IDs corresponding to the functional term selected in the table.
@@ -90,7 +90,7 @@ mod_enrichment_server <- function(id, data_set, state) {
     # data_set$de - differential expression results and data_set$fterms - prepared for
     # fenr.
     make_table <- shiny::reactive({
-      sel_ids <- state$sel_functional_enrichment
+      sel_ids <- state$sel_enrichment
       set_name <- state$set_name
       shiny::req(!is.null(sel_ids) & length(sel_ids) > 1, set_name)
       all_ids <- unique(data_set$dex[[set_name]]$de$id)
@@ -117,7 +117,7 @@ mod_enrichment_server <- function(id, data_set, state) {
 
     # Display download icon only when there are data to show
     output$download_table <- shiny::renderUI({
-      shiny::req(state$sel_functional_enrichment, state$set_name)
+      shiny::req(state$sel_enrichment, state$set_name)
       download_link(id)
     })
 

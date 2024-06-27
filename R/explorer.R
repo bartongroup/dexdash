@@ -413,8 +413,7 @@ run_app <- function(dexset, features, fterms, title = "DE explorer") {
     })
 
     # Initialise app state, reactive object for communication between modules
-    # Note: an undefined reactive value defaults to NULL, so we can start with an empty list
-    app_state <- shiny::reactiveValues()
+    app_state <- new_app_state()
 
     # server logic: modules
     mod_global_input_server("global_input", data_set, app_state)

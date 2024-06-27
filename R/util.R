@@ -68,3 +68,27 @@ gear_icon <- function(...) {
     ...
   )
 }
+
+#' Create reactive container for app state
+#'
+#' Creates a container for app state to exchange information between modules. The
+#' initialisation of fields is not necessary, as by default all undefined
+#' fields are NULL. However, this seems like a good spot to gather all the field
+#' names and comments together.
+#'
+#' @return A reactive values list with pre-initialised fields.
+new_app_state <- function() {
+  shiny::reactiveValues(
+    set_name = NULL,         # data set selection from the drop-down menu
+    contrast = NULL,         # contrast selection from the drop-down menu
+    search = NULL,           # name selection from the search box
+    sel_brush = NULL,        # id selection in the main plot: brush
+    sel_hover = NULL,        # id selection in the main plot: hover
+    sel_tab = NULL,          # id selection from the feature info table: click row
+    sel_term = NULL,         # id selection from the enrichment table: click row, select annotated feature ids
+    sel_feature_info = NULL, # id selection from communication: features to show in feature info
+    sel_feature_plot = NULL, # id selection from communication: features to show in feature plot
+    sel_enrichment = NULL,   # id selection from brush for enrichment
+    sel_volma_highlight = NULL, # id selection from communication: features to highlight in the main plot
+  )
+}
