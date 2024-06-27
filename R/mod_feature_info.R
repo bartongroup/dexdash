@@ -142,7 +142,7 @@ make_feature_info_table <- function(dexset, features, ids, ctr, set_name, max_po
       dplyr::left_join(features, by = "id") |>
       dplyr::arrange(name) |>
       dplyr::mutate(name = stringr::str_replace_all(name, ";", "; ")) |>
-      dplyr::select(Name = name, Description = description, Expression = expr, logFC = log_fc, p_value, FDR = fdr) |>
+      dplyr::select(id, Name = name, Description = description, Expression = expr, logFC = log_fc, p_value, FDR = fdr) |>
       dplyr::mutate(dplyr::across(tidyselect::where(is.numeric), ~signif(.x, 3)))
   } else {
     df <- tibble::tibble(Error = stringr::str_glue("Only {max_points} points can be selected."))

@@ -101,7 +101,7 @@ mod_enrichment_server <- function(id, data_set, state) {
     output$enrichment <- DT::renderDataTable({
       TermID <- Name <- n_with_sel <- OR <- ids <- NULL
       fe <- make_table()
-      if(!("Error" %in% colnames(fe))) {
+      if(!is.null(fe) & !("Error" %in% colnames(fe))) {
         fe <- fe |>
           dplyr::select(TermID, Name, n = n_with_sel, OR, ids)
         DT::datatable(
