@@ -33,6 +33,7 @@ assert_colnames <- function(df, cols, df_name) {
 #'
 #' @param id A character string specifying the ID for the download link.
 #' @return A Shiny download link UI component.
+#' @noRd
 download_link <- function(id) {
   shiny::downloadLink(
     outputId = shiny::NS(id, "handle_download"),
@@ -48,6 +49,7 @@ download_link <- function(id) {
 #' @param helper A character string specifying the name of the markdown file
 #'   (without the extension) located in the "inst/helpers" directory.
 #' @return A Shiny UI component with an info icon and a popover.
+#' @noRd
 info_icon <- function(helper) {
   bslib::popover(
     bsicons::bs_icon("info-circle"),
@@ -62,6 +64,7 @@ info_icon <- function(helper) {
 #'
 #' @param ... Additional arguments to be passed to the popover content.
 #' @return A Shiny UI component with a gear icon and a popover.
+#' @noRd
 gear_icon <- function(...) {
   bslib::popover(
     bsicons::bs_icon("gear"),
@@ -77,6 +80,7 @@ gear_icon <- function(...) {
 #' names and comments together.
 #'
 #' @return A reactive values list with pre-initialised fields.
+#' @noRd
 new_app_state <- function() {
   shiny::reactiveValues(
     set_name = NULL,         # data set selection from the drop-down menu
