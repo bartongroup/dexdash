@@ -55,3 +55,6 @@
  - New feature: each plot and table can be now downloaded by clicking the "download" icon
  - Minor improvements to the code
 
+## Version 0.2.3
+
+ - A few minor changes
