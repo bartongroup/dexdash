@@ -40,5 +40,5 @@ Please read the package's vignette:
 vignette("dexdash")
 ```
 
-A copy of the vignette is available on [our server](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html).
+Alternatively, a copy of the [vignette](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html) and [reference manual](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.pdf) are available on our server.
 
