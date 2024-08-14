@@ -284,7 +284,7 @@ plot_features <- function(dat, what, x_var, colour_var = NULL, scale = "lin", te
   dat$val <- dat[[what]]
   dat$x <- dat[[x_var]]
   dat <- dat |>
-    tidyr::drop_na()
+    dplyr::filter(!is.na(val) & !is.na(x))
 
   if(nrow(dat) == 0) return(NULL)
 

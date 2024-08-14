@@ -58,3 +58,7 @@
 ## Version 0.2.3
 
  - A few minor changes
+
+## Version 0.2.4
+
+ - Fixed a bug where NAs in any metadata column caused filtering data out in the feature plot
