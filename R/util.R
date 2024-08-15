@@ -78,10 +78,13 @@ gear_icon <- function(...) {
 #' initialisation of fields is not necessary, as by default all undefined
 #' fields are NULL. However, this seems like a good spot to gather all the field
 #' names and comments together.
+#' 
+#' @param x_variable A startup variable to display in the x-axis in the feature plot.
+#' @param colour_variable A startup variable to to use for colour in the feature plot.
 #'
 #' @return A reactive values list with pre-initialised fields.
 #' @noRd
-new_app_state <- function() {
+new_app_state <- function(x_variable, colour_variable) {
   shiny::reactiveValues(
     set_name = NULL,         # data set selection from the drop-down menu
     contrast = NULL,         # contrast selection from the drop-down menu
@@ -94,5 +97,7 @@ new_app_state <- function() {
     sel_feature_plot = NULL, # id selection from communication: features to show in feature plot
     sel_enrichment = NULL,   # id selection from brush for enrichment
     sel_volma_highlight = NULL, # id selection from communication: features to highlight in the main plot
+    x_variable = x_variable, # a startup variable to display in the x-axis in the feature plot
+    colour_variable = colour_variable # a startup variable to to use for colour in the feature plot
   )
 }

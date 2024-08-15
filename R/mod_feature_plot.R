@@ -85,7 +85,8 @@ mod_feature_plot_server <- function(id, data_set, state) {
       shiny::updateSelectInput(
         session = session,
         inputId = "colour_var",
-        choices = setdiff(names(data_set$dex[[set_name]]$metadata), c("sample"))
+        choices = setdiff(names(data_set$dex[[set_name]]$metadata), c("sample")),
+        selected = state$colour_variable
       )
     })
 
@@ -97,7 +98,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
         session = session,
         inputId = "x_var",
         choices = names(data_set$dex[[set_name]]$metadata),
-        selected = "sample"
+        selected = state$x_variable
       )
     })
 
@@ -277,7 +278,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
 #' @noRd
 plot_features <- function(dat, what, x_var, colour_var = NULL, scale = "lin", text_size = 14,
                           point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE) {
-  val <- NULL
+  val <- x <- NULL
 
   if(nrow(dat) == 0) return(NULL)
 

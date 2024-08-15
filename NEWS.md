@@ -62,3 +62,10 @@
 ## Version 0.2.4
 
  - Fixed a bug where NAs in any metadata column caused filtering data out in the feature plot
+
+## Version 0.2.5
+
+ - Fixed a bug in feature info testing
+ - Added new  `run_app` arguments to set the startup values of the x- and colour-variables in the feature plot
+ - Added ability to provide own FDR column in differential expression table
+ 

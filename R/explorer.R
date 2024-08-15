@@ -333,6 +333,12 @@ dexdash_list <- function(...) {
 #'   function \code{download_functional_terms}.
 #' @param title A string with a short title, which is presented at the top of
 #'   the side bar.
+#' @param x_variable A string with the name of the startup x-axis variable for the
+#'   feature plot. It should correspond to a column name in the metadata, included
+#'   in the dexset object. The default is "sample".
+#' @param colour_variable A string with the name of the startup colour variable for the
+#'   feature plot. It should correspond to a column name in the metadata, included
+#'   in the dexset object. The default is "sample".
 #'
 #' @return The function does not return a value but launches a Shiny application
 #'   in the user's default web browser, allowing for interactive exploration of
@@ -349,7 +355,8 @@ dexdash_list <- function(...) {
 #'   run_app(dexset, features, fterms)
 #' }
 #' @export
-run_app <- function(dexset, features, fterms, title = "DE explorer") {
+run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable = "sample",
+                    colour_variable = "sample") {
   p_value <- contrast <- NULL
 
   assertthat::assert_that(is(dexset, "dexdash_set") | is(dexset, "dexdash_list"))
@@ -363,12 +370,23 @@ run_app <- function(dexset, features, fterms, title = "DE explorer") {
     dexset <- list(dexset) |> rlang::set_names(dexset$name)
   }
 
+  assertthat::assert_that(
+    x_variable %in% colnames(dexset[[1]]$metadata),
+    msg = "'x_variable' has to a column name in the metadata"
+  )
+  assertthat::assert_that(
+    colour_variable %in% colnames(dexset[[1]]$metadata),
+    msg = "'colour_variable' has to a column name in the metadata"
+  )
+
   # Mutliple test corrections
   for(nm in names(dexset)) {
-    dexset[[nm]]$de <- dexset[[nm]]$de |>
-      dplyr::group_by(contrast) |>
-      dplyr::mutate(fdr = p.adjust(p_value, method = "BH")) |>
-      dplyr::ungroup()
+    if(!("fdr" %in% colnames(dexset[[nm]]$de))) {
+      dexset[[nm]]$de <- dexset[[nm]]$de |>
+        dplyr::group_by(contrast) |>
+        dplyr::mutate(fdr = p.adjust(p_value, method = "BH")) |>
+        dplyr::ungroup()
+    }
   }
 
   data_set <- list(
@@ -413,7 +431,7 @@ run_app <- function(dexset, features, fterms, title = "DE explorer") {
     })
 
     # Initialise app state, reactive object for communication between modules
-    app_state <- new_app_state()
+    app_state <- new_app_state(x_variable, colour_variable)
 
     # server logic: modules
     mod_global_input_server("global_input", data_set, app_state)

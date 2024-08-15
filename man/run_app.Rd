@@ -4,7 +4,14 @@
 \alias{run_app}
 \title{Launches an interactive differential expression (DE) data explorer}
 \usage{
-run_app(dexset, features, fterms, title = "DE explorer")
+run_app(
+  dexset,
+  features,
+  fterms,
+  title = "DE explorer",
+  x_variable = "sample",
+  colour_variable = "sample"
+)
 }
 \arguments{
 \item{dexset}{Either a \code{dexdash_set} object containing data from one
@@ -24,6 +31,14 @@ function \code{download_functional_terms}.}
 
 \item{title}{A string with a short title, which is presented at the top of
 the side bar.}
+
+\item{x_variable}{A string with the name of the startup x-axis variable for the
+feature plot. It should correspond to a column name in the metadata, included
+in the dexset object. The default is "sample".}
+
+\item{colour_variable}{A string with the name of the startup colour variable for the
+feature plot. It should correspond to a column name in the metadata, included
+in the dexset object. The default is "sample".}
 }
 \value{
 The function does not return a value but launches a Shiny application

@@ -5,9 +5,9 @@ test_ctr <- "C1"
 test_sname <- "test"
 
 test_output <- tibble::tribble(
-  ~Name, ~Description, ~Expression, ~logFC, ~p_value, ~FDR,
-  "N1", "D1", 1, 1, 0.1, 0.1,
-  "N2", "D2", 1, 1, 0.1, 0.1
+  ~id, ~Name, ~Description, ~Expression, ~logFC, ~p_value, ~FDR,
+  "G1", "N1", "D1", 1, 1, 0.1, 0.1,
+  "G2", "N2", "D2", 1, 1, 0.1, 0.1
 )
 
 test_that("make_feature_info_table returns correct values", {
@@ -16,7 +16,7 @@ test_that("make_feature_info_table returns correct values", {
   expect_is(tb, "data.frame")
   expect_setequal(
     names(tb),
-    c("Name", "Description", "Expression", "logFC", "p_value", "FDR")
+    c("id", "Name", "Description", "Expression", "logFC", "p_value", "FDR")
   )
   expect_equal(tb, test_output)
 })

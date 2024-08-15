@@ -112,6 +112,7 @@ The inputs for this function are three data frames containing experimental resul
 |    | log_fc |	numeric   |	log-fold change; use `logFC` column from *edgeR* and *limma* output, `log2FoldChange` from *DESeq2* |
 |	   | expr | numeric | mean expression or abundance, typically in logarithmic scale; use `logCPM` from *edgeR*, `log10(baseMean)` from *DESeq2*, `AveExpr` from *limma* |
 |    | p_value |	numeric | p-value from statistical tests; use `PValue` from *edgeR* and *limma*, `pvalue` from *DESeq2* |
+|    | fdr | numeric | (optional) false discovery rate to assess statistical significance; if not provided, FDR will be calculated using the Benjamini-Hochberg multiple test corrections from the p-values
 |    | contrast | factor | name of the contrast; this data frame can contain results from multiple contrast |
 | data | id |	character |	feature identifier |
 |      | sample | character |	sample identifier |
