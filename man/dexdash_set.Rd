@@ -35,6 +35,9 @@ This function creates a data set for *dexdash* Shiny app, based on
 user-provided data.
 }
 \examples{
+\dontrun{
+library(dexdata)
 data(yeast_de, yeast_data, yeast_metadata)
 dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, "Yeast")
+}
 }

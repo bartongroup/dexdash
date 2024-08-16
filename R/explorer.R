@@ -264,8 +264,11 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' library(dexdata)
 #' data(yeast_de, yeast_data, yeast_metadata)
 #' dexset <- dexdash_set(yeast_de, yeast_data, yeast_metadata, "Yeast")
+#' }
 dexdash_set <- function(de, data, metadata, name) {
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
   assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))

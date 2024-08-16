@@ -65,7 +65,8 @@
 
 ## Version 0.2.5
 
+ - Moved all example data to a separate package bartongroup/dexdata to reduce footprint
+ - Move the large vignette to a separate directory and created minimal vignette to reduce footprint
  - Fixed a bug in feature info testing
  - Added new  `run_app` arguments to set the startup values of the x- and colour-variables in the feature plot
  - Added ability to provide own FDR column in differential expression table
- 
