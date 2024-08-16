@@ -17,7 +17,7 @@ abstract: |
     enrichment analysis of Gene Ontology (GO), KEGG, and Reactome databases.
     The input for the app consists of five data frames containing DE results,
     expression or abundance data, experimental design, gene names and descriptions.
-    A build-in function allowes for easy downloading of functional term data.
+    A build-in function allows for easy downloading of functional term data.
     Once started, the app is fast and easy to use.
 vignette: >
   %\VignetteIndexEntry{Differential EXpression Downstream Analysis SHiny app}
