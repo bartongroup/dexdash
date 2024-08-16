@@ -12,7 +12,7 @@ abstract: |
     visualization tools with rapid functional enrichment analysis. Users
     can select genes from a volcano or MA plot to find their names,
     descriptions and plot expression patterns. The built-in fast functional
-    enrichment (based on the fenr package) allows users to instantly see which
+    enrichment (based on the *fenr* package) allows users to instantly see which
     biological pathways and processes those genes are involved in, based on
     enrichment analysis of Gene Ontology (GO), KEGG, and Reactome databases.
     The input for the app consists of five data frames containing DE results,
