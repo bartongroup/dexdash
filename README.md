@@ -34,11 +34,5 @@ run_app(yeast_dexset, yeast_features, yeast_fterms)
 
 ## More information
 
-Please read the package's vignette:
-
-```
-vignette("dexdash")
-```
-
-Alternatively, a copy of the [vignette](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html) and the [reference manual](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.pdf) are available on our server.
+The package [tutorial](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html) and the [reference manual](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.pdf) are available on our server.
 
