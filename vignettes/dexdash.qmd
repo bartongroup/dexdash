@@ -38,9 +38,7 @@ library(dexdash)
 
 Imagine you've carried out an RNA-seq experiment, a proteomics study, or another type of -omics research. You've done read mapping or protein quantifications and now have a set of data in hand. This data capture expression or abundance (we will call it 'expression' for simplicity) for each gene, protein, or other entity (hereinafter referred to as 'feature'). These expressions are recorded across various biological conditions (which we'll call 'groups') and their replicates. Following this, you've conducted a differential expression analysis using tools like *limma*, *edgeR*, *DESeq2*, or similar, ending up with a data frame that includes log-fold change, p-value, among other metrics.
 
-Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voilà! You're equipped with a web-based interactive tool to explore your data. A screenshot of the *dexdash* app is shown in @fig-screenshot.
-
-![Screenshot of *dexdash* Shiny app.](figures/screenshot.png){#fig-screenshot width=100% fig-align="left"}
+Now, you're ready to investigate the results. You want to generate a volcano or MA plot, quickly identify features of interest, and explore the functional similarities among groups of features that behave similarly. This is exactly what *dexdash* is for. Simply feed it your expression data, differential expression results, and some details about your experimental design and gene names, and voilà! You're equipped with a web-based interactive tool to explore your data.
 
 
 # Installation
@@ -57,8 +55,11 @@ remotes::install_github("bartongroup/dexdash")
 # Quick example
 
 ```{r quick_example, eval = FALSE}
+# Additional data is required to run this example
 remotes::install_github("bartongroup/dexdata")
+
 library(dexdash)
+library(dexdata)
 
 # Data examples available in the package
 data(yeast_de, yeast_data, yeast_metadata)
@@ -77,5 +78,4 @@ run_app(yeast_dexset, yeast_features, yeast_fterms)
 
 # Full manual
 
-A full manual and tutorial with examples can be found at [our server](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.pdf).
-
+The package [tutorial](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.html) and the [reference manual](https://www.compbio.dundee.ac.uk/user/mgierlinski/dexdash/dexdash.pdf) are available on our server.
