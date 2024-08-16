@@ -15,9 +15,13 @@ remotes::install_github("bartongroup/dexdash", build_vignettes = TRUE)
 ## Example
 
 ```
-library(dexdash)
+# Additional data is required to run this example
+remotes::install_github("bartongroup/dexdata")
 
-# Data examples available in the package
+library(dexdash)
+library(dexdata)
+
+# Data examples available in the dexdata package
 data(yeast_de, yeast_data, yeast_metadata)
 
 # Create the dexdash data set
