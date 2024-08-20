@@ -10,7 +10,7 @@ run_app(
   fterms,
   title = "DE explorer",
   x_variable = "sample",
-  colour_variable = "sample"
+  colour_variable = NULL
 )
 }
 \arguments{
@@ -38,7 +38,8 @@ in the dexset object. The default is "sample".}
 
 \item{colour_variable}{A string with the name of the startup colour variable for the
 feature plot. It should correspond to a column name in the metadata, included
-in the dexset object. The default is "sample".}
+in the dexset object. If left NULL (default), the second column from metadata
+will be used.}
 }
 \value{
 The function does not return a value but launches a Shiny application

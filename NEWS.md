@@ -76,3 +76,7 @@
  - Fixed an issue with mean normalisation in the feature plot that tried to take a logarithm of zero by calculating a log-ratio.
  - Minor tweaks to the plot feature code.
  - Fixing `dexdata` package references.
+
+## Version 0.2.7
+
+ - Bug fix: missing x-axis column error if `x_variable` argument not specified in `run_app`.

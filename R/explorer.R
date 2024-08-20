@@ -341,7 +341,8 @@ dexdash_list <- function(...) {
 #'   in the dexset object. The default is "sample".
 #' @param colour_variable A string with the name of the startup colour variable for the
 #'   feature plot. It should correspond to a column name in the metadata, included
-#'   in the dexset object. The default is "sample".
+#'   in the dexset object. If left NULL (default), the second column from metadata
+#'   will be used.
 #'
 #' @return The function does not return a value but launches a Shiny application
 #'   in the user's default web browser, allowing for interactive exploration of
@@ -360,7 +361,7 @@ dexdash_list <- function(...) {
 #' }
 #' @export
 run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable = "sample",
-                    colour_variable = "sample") {
+                    colour_variable = NULL) {
   p_value <- contrast <- NULL
 
   assertthat::assert_that(is(dexset, "dexdash_set") | is(dexset, "dexdash_list"))
@@ -376,12 +377,18 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
 
   assertthat::assert_that(
     x_variable %in% colnames(dexset[[1]]$metadata),
-    msg = "'x_variable' has to a column name in the metadata"
+    msg = "'x_variable' has to be a column name in the metadata"
   )
+
+  if(is.null(colour_variable))
+    colour_variable <- colnames(dexset[[1]]$metadata)[2]
+
   assertthat::assert_that(
     colour_variable %in% colnames(dexset[[1]]$metadata),
-    msg = "'colour_variable' has to a column name in the metadata"
+    msg = "'colour_variable' has to be a column name in the metadata"
   )
+
+  
 
   # Mutliple test corrections
   for(nm in names(dexset)) {
