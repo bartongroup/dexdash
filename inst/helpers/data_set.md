@@ -1,3 +1,3 @@
 ## Data set selection
 
-If multiple experiments are provided, this drop-down list allow to select one experiment to browse.
+If multiple data sets (e.g. experiments) are provided, this drop-down list allow to select one data set to browse.

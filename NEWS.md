@@ -70,3 +70,9 @@
  - Fixed a bug in feature info testing
  - Added new  `run_app` arguments to set the startup values of the x- and colour-variables in the feature plot
  - Added ability to provide own FDR column in differential expression table
+
+## Version 0.2.6
+
+ - Fixed an issue with mean normalisation in the feature plot that tried to take a logarithm of zero by calculating a log-ratio.
+ - Minor tweaks to the plot feature code.
+ - Fixing `dexdata` package references.

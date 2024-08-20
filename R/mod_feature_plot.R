@@ -29,8 +29,8 @@ mod_feature_plot_ui <- function(id) {
     choices = NULL
   )
 
-  norm_fc <- shiny::checkboxInput(
-    inputId = ns("norm_fc"),
+  norm_mean <- shiny::checkboxInput(
+    inputId = ns("norm_mean"),
     label = "Heatmap normalised per row",
     value = TRUE
   )
@@ -49,12 +49,8 @@ mod_feature_plot_ui <- function(id) {
   gear <- gear_icon(
     x_variable,
     colour_variable,
-    norm_fc,
-    shiny::conditionalPanel(
-      condition = 'input.norm_fc == 0',
-      ns = ns,
-      intensity_scale
-    )
+    norm_mean,
+    intensity_scale
   )
 
   bslib::card(
@@ -112,7 +108,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
         dplyr::left_join(data_set$features, by = "id") |>
         dplyr::left_join(data_set$dex[[set_name]]$metadata, by = "sample") |>
         plot_features(what = "value", x_var = input$x_var, colour_var = input$colour_var,
-                      scale = input$intensity_scale, max_n_lab = 50, norm_fc = input$norm_fc)
+                      scale = input$intensity_scale, max_n_lab = 50, norm_mean = input$norm_mean)
     })
 
     # Output plot
@@ -146,28 +142,24 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #'
 #' @param d Tibble with feature intensities. Columns needed: x, val, replicate
 #' @param ylab Label on y axis
-#' @param colour_var (Optional) variable used for point colours
-#' @param scale Scale of y axis (lin or log)
+#' @param colour_var Variable used for point colours
 #' @param text_size Text size
 #' @param point_size Point size
 #' @param cex Point spread scaling for beeswarm
 #'
 #' @return ggplot object
 #' @noRd
-plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
-                             text_size, point_size, cex) {
+plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
   val <- shape <- fill <- x <- NULL
   okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
     "#CC79A7", "grey80", "grey30", "black")
 
   d <- d |>
-    dplyr::mutate(shape = dplyr::if_else(val == 0, 24, 21))
-
-  if(is.null(colour_var))
-    colour_var <- "x"
-
-  d <- d |> dplyr::mutate(fill = get(colour_var))
-
+    dplyr::mutate(
+      shape = dplyr::if_else(val == 0, 24, 21),
+      fill = get(colour_var)
+    )
+  
   ncond <- length(unique(d$x))
   vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
 
@@ -190,7 +182,7 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
 
   # If too many colours, use viridis
   if(length(unique(d$fill)) <= length(okabe_ito_palette)){
-    g <- g +ggplot2::scale_fill_manual(values = okabe_ito_palette)
+    g <- g + ggplot2::scale_fill_manual(values = okabe_ito_palette)
   } else {
     g <- g + ggplot2::scale_fill_viridis_d(option = "cividis")
   }
@@ -201,15 +193,17 @@ plot_one_feature <- function(d, ylab, colour_var = NULL,scale = c("lin", "log"),
 #' Plot a heatmap of multiple features
 #'
 #' @param d Feature data
-#' @param lab Label on y axis
+#' @param ylab Label on z axis
 #' @param text_size Text size
 #' @param max_n_lab Limit of features above which feature names are not displayed
-#' @param norm_fc Logical, normalise in each feature to its mean and plot logFC
-#' @param max_name_len Numeric, maximum length of the name; longer names will be shortened in the plot.
+#' @param norm_mean Logical, normalise in each feature to its mean and plot data 
+#'   centered around the mean.
+#' @param max_name_len Numeric, maximum length of the name; longer names will be 
+#'   shortened in the plot.
 #'
 #' @return ggplot object
 #' @noRd
-plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name_len = 18) {
+plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_mean, max_name_len = 18) {
   id <- val <- M <- name <- x <- unique_name <- NULL
 
   i2n <- d |>
@@ -217,13 +211,13 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
     dplyr::distinct() |>
     dplyr::mutate(unique_name = make.unique(name))
 
-  if (norm_fc) {
+  if (norm_mean) {
     d <- d |>
       dplyr::group_by(id) |>
       dplyr::mutate(M = mean(val, na.rm = TRUE)) |>
-      dplyr::mutate(val = log2(val / M)) |>
+      dplyr::mutate(val = val - M) |>
       dplyr::ungroup()
-    lab <- expression(log[2]~FC)
+    lab <- paste(lab, "- mean")
   }
 
   d <- d |>
@@ -249,7 +243,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
     ggplot2::scale_y_discrete(expand = c(0, 0)) +
     ggplot2::labs(x = NULL, y = NULL, fill = lab)
 
-  if(norm_fc) {
+  if(norm_mean) {
     g <- g + ggplot2::scale_fill_distiller(type = "div", palette = "RdBu")
   } else {
     g <-  g + ggplot2::scale_fill_viridis_c(option = "cividis")
@@ -267,17 +261,17 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_fc, max_name
 #' @param scale Intensity scale, "lin" or  "log"
 #' @param what Which column to plot
 #' @param x_var Variable to put on x-axis
-#' @param colour_var (Optional) variable used for point colours
+#' @param colour_var Variable used for point colours
 #' @param text_size Text size
 #' @param point_size Point size
 #' @param cex Point spread scaling for beeswarm
 #' @param max_n_lab Limit of features above which feature names are not displayed
-#' @param norm_fc Logical, normalise in each feature to its mean and plot logFC
+#' @param norm_mean Logical, normalise in each feature to its mean
 #'
 #' @return A ggplot object
 #' @noRd
-plot_features <- function(dat, what, x_var, colour_var = NULL, scale = "lin", text_size = 14,
-                          point_size = 3, cex = 2, max_n_lab = 30, norm_fc = FALSE) {
+plot_features <- function(dat, what, x_var, colour_var, scale = "lin", text_size = 14,
+                          point_size = 3, cex = 2, max_n_lab = 30, norm_mean = FALSE) {
   val <- x <- NULL
 
   if(nrow(dat) == 0) return(NULL)
@@ -292,14 +286,16 @@ plot_features <- function(dat, what, x_var, colour_var = NULL, scale = "lin", te
   lab <- what
 
   if(scale == "log"){
-    dat$val <- log10(dat$val)
-    lab <-  stringr::str_glue("Log {what}")
+    dat <- dat |> 
+      dplyr::filter(val > 0) |> 
+      dplyr::mutate(val = log10(val))
+    lab <-  stringr::str_glue("log {what}")
   }
 
   n_feat <- length(unique(dat$id))
   if(n_feat == 1) {
-    plot_one_feature(dat, lab, colour_var, scale, text_size, point_size, cex)
+    plot_one_feature(dat, lab, colour_var, text_size, point_size, cex)
   } else {
-    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_fc)
+    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_mean)
   }
 }

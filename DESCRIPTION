@@ -1,7 +1,7 @@
 Package: dexdash
 Type: Package
 Title: Shiny app to explore results from differential expression experiments
-Version: 0.2.5
+Version: 0.2.6
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
@@ -54,6 +54,7 @@ Imports:
     shinyWidgets,
     htmltools
 Suggests:
+    dexdata,
     markdown,
     tidyr,
     testthat,

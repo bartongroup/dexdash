@@ -8,5 +8,5 @@ Adjust your preferences by clicking the gear icon:
  - 'X-axis variable' - variable name (column name in the `metdata` data frame) to use on the X axis
  - 'Colour variable' - variable name (column name in the `metdata` data frame) to set colour to points
  - 'Heatmap normalised per row' - if enabled, each row (gene) is normalised to its own mean; if unselected, the original expression or abundance data are shown
- - 'Intensity scale' - Choose between a linear or logarithmic scale. This option is unavailable when normalization to row is active.
+ - 'Intensity scale' - Choose between a linear or logarithmic scale. If logarithmic scale is chosen, any non-positive values will be removed before plotting.
  

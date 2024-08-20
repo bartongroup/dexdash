@@ -352,6 +352,7 @@ dexdash_list <- function(...) {
 #'
 #' @examples
 #' if(interactive()) {
+#'   library(dexdata)
 #'   data(de, data, metadata, features)
 #'   dexset <- dexdash_set(de, data, metadata, "Yeast")
 #'   fterms <- download_functional_terms("yeast", feature_name = "gene_id")
@@ -412,7 +413,10 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
       title = title,
       mod_global_input_ui("global_input"),
       shiny::tags$hr(),
-      shiny::tags$span(style = "font-size: 0.7em; color: #191970", version)
+      shiny::tags$span(
+        style = "font-size: 0.7em; color: #191970",
+        shiny::tags$a(href = "https://github.com/bartongroup/dexdash", version)
+      )
     ),
 
     bslib::layout_column_wrap(

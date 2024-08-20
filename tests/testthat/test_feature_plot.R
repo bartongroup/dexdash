@@ -6,7 +6,7 @@ test_that("plot_features returns correct object for one gene", {
     dplyr::filter(id == "G1") |>
     dplyr::left_join(test$features, by = "id") |>
     dplyr::left_join(test_data$metadata, by = "sample")
-  plt <- plot_features(d, what = "value", x_var = "group")
+  plt <- plot_features(d, what = "value", x_var = "group", colour_var = "group")
   expect_true(ggplot2::is.ggplot(plt))
 
   data_used <- ggplot2::ggplot_build(plt)$data[[1]]
@@ -20,7 +20,7 @@ test_that("plot_features returns correct object for two genes", {
   d <- test_data$data |>
     dplyr::left_join(test$features, by = "id") |>
     dplyr::left_join(test_data$metadata, by = "sample")
-  plt <- plot_features(d, what = "value", x_var = "sample")
+  plt <- plot_features(d, what = "value", x_var = "sample", colour_var = "sample")
   expect_true(ggplot2::is.ggplot(plt))
 
   dm <- d |>
@@ -35,6 +35,6 @@ test_that("plot_features returns correct object for two genes", {
 test_that("plot_features returns NULL when data are empty", {
   d <-  test_data$data |>
     dplyr::filter(id == "none")
-  plt <- plot_features(d)
+  plt <- plot_features(d, x_var = "sample", colour_var = "sample")
   expect_null(plt)
 })

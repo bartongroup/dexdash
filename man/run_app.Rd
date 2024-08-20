@@ -56,6 +56,7 @@ analysis.
 }
 \examples{
 if(interactive()) {
+  library(dexdata)
   data(de, data, metadata, features)
   dexset <- dexdash_set(de, data, metadata, "Yeast")
   fterms <- download_functional_terms("yeast", feature_name = "gene_id")
