@@ -80,3 +80,7 @@
 ## Version 0.2.7
 
  - Bug fix: missing x-axis column error if `x_variable` argument not specified in `run_app`.
+
+## Version 0.2.8
+
+ - Bug fix: card_body() was missing in three cards.

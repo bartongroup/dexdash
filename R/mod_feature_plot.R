@@ -59,10 +59,13 @@ mod_feature_plot_ui <- function(id) {
       shiny::span(info, download, gear),
       class = "d-flex justify-content-between"
     ),
-    shiny::plotOutput(
-      outputId = ns("feature_plot"),
-      width = "100%",
-      height = "300px"
+    bslib::card_body(
+      min_height = 250,
+      shiny::plotOutput(
+        outputId = ns("feature_plot"),
+        width = "100%",
+        height = "300px"
+      )
     )
   )
 

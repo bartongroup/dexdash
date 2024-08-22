@@ -48,8 +48,10 @@ mod_enrichment_ui <- function(id) {
       shiny::span(info, download, gear),
       class = "d-flex justify-content-between"
     ),
-    DT::dataTableOutput(
-      outputId = ns("enrichment")
+    bslib::card_body(
+      DT::dataTableOutput(
+        outputId = ns("enrichment")
+      )
     )
   )
 

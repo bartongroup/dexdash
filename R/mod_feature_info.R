@@ -30,8 +30,10 @@ mod_feature_info_ui <- function(id) {
       shiny::span(info, download),
       class = "d-flex justify-content-between"
     ),
-    DT::dataTableOutput(
-      outputId = ns("feature_info")
+    bslib::card_body(
+      DT::dataTableOutput(
+        outputId = ns("feature_info")
+      )
     )
   )
 
