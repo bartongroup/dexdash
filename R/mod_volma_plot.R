@@ -91,7 +91,7 @@ mod_volma_plot_server <- function(id, data_set, state) {
       xy_data <- get_volma_data(data_set$dex, ctr, set_name, input$plot_type)
       ids_brush <- NULL
       ids_hover <- NULL
-      if(!is.null(input$plot_brush)){
+      if(!is.null(input$plot_brush)) {
         brushed <- stats::na.omit(shiny::brushedPoints(xy_data, input$plot_brush))
         ids_brush <- brushed$id
       } else if(!is.null(input$plot_hover)) {
@@ -194,7 +194,7 @@ get_volma_data <- function(dexset, ctr, set_name, plot_type) {
 #' @return A ggplot object
 #' @noRd
 plot_xy <- function(d, point_size = 0.2, sig_size = 0.4, sel_size = 3, text_size = 13,
-                       point_colour = "grey70", sig_colour = "black", sel_fill = "blue", sel_colour = "yellow") {
+                    point_colour = "grey70", sig_colour = "black", sel_fill = "blue", sel_colour = "yellow") {
   x <- y <- NULL
 
   g <- ggplot2::ggplot(mapping = ggplot2::aes(x, y)) +
@@ -234,13 +234,16 @@ plot_volcano <- function(d, ...) {
   d |>
     plot_xy(...) +
     ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
-    ggplot2::labs(x = expression(log[2]~FC), y = expression(-log[10]~P)) +
+    ggplot2::labs(x = expression(log[2] ~ FC), y = expression(-log[10] ~ P)) +
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.03)))
 }
 
 #' Create an MA Plot
 #'
-#' Uses the `plot_xy` function framework to generate an MA plot, which plots the log ratio of changes against the average magnitude of the quantities measured. This type of plot is commonly used in genomic studies, particularly for visualizing expression data.
+#' Uses the `plot_xy` function framework to generate an MA plot, which plots the
+#' log ratio of changes against the average magnitude of the quantities
+#' measured. This type of plot is commonly used in genomic studies, particularly
+#' for visualizing expression data.
 #'
 #' @param d Dataframe with data structured for `plot_xy`.
 #' @param ... Additional arguments passed to `plot_xy`.
@@ -251,7 +254,7 @@ plot_ma <- function(d, ...) {
   d |>
     plot_xy(...) +
     ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
-    ggplot2::labs(x = expression(log[2]~CPM), y = expression(log[2]~FC))
+    ggplot2::labs(x = expression(log[2] ~ CPM), y = expression(log[2] ~ FC))
 }
 
 #' Main plot: volcano or MA
@@ -282,4 +285,3 @@ main_plot <- function(d, plot_type, sel_ids, fdr_limit, logfc_limit, ...) {
   }
   return(g)
 }
-

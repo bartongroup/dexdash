@@ -81,7 +81,7 @@ mod_feature_info_server <- function(id, data_set, state) {
           selection = "single",
           rownames = FALSE
         ) |>
-          DT::formatStyle(columns = colnames(ge), fontSize = '80%')
+          DT::formatStyle(columns = colnames(ge), fontSize = "80%")
       }
     })
 
@@ -152,4 +152,3 @@ make_feature_info_table <- function(dexset, features, ids, ctr, set_name, max_po
 
   return(df)
 }
-

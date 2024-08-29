@@ -42,7 +42,7 @@ mod_feature_plot_ui <- function(id) {
     inline = TRUE
   )
 
-  info <-info_icon("feature_plot")
+  info <- info_icon("feature_plot")
 
   download <- shiny::uiOutput(ns("download_plot"))
 
@@ -155,14 +155,14 @@ mod_feature_plot_server <- function(id, data_set, state) {
 plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
   val <- shape <- fill <- x <- NULL
   okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
-    "#CC79A7", "grey80", "grey30", "black")
+                         "#CC79A7", "grey80", "grey30", "black")
 
   d <- d |>
     dplyr::mutate(
       shape = dplyr::if_else(val == 0, 24, 21),
       fill = get(colour_var)
     )
-  
+
   ncond <- length(unique(d$x))
   vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
 
@@ -178,13 +178,13 @@ plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
     ) +
     ggplot2::scale_shape_identity() +  # necessary for shape mapping
     ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = x, y = val, fill = fill, shape = shape),
-                  colour = "grey40", size = point_size, cex = cex) +
+                              colour = "grey40", size = point_size, cex = cex) +
     ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21))) +
     ggplot2::labs(x = NULL, y = ylab, title = nm, fill = colour_var)
 
   # If too many colours, use viridis
-  if(length(unique(d$fill)) <= length(okabe_ito_palette)){
+  if(length(unique(d$fill)) <= length(okabe_ito_palette)) {
     g <- g + ggplot2::scale_fill_manual(values = okabe_ito_palette)
   } else {
     g <- g + ggplot2::scale_fill_viridis_d(option = "cividis")
@@ -199,9 +199,9 @@ plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
 #' @param ylab Label on z axis
 #' @param text_size Text size
 #' @param max_n_lab Limit of features above which feature names are not displayed
-#' @param norm_mean Logical, normalise in each feature to its mean and plot data 
+#' @param norm_mean Logical, normalise in each feature to its mean and plot data
 #'   centered around the mean.
-#' @param max_name_len Numeric, maximum length of the name; longer names will be 
+#' @param max_name_len Numeric, maximum length of the name; longer names will be
 #'   shortened in the plot.
 #'
 #' @return ggplot object
@@ -227,11 +227,13 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_mean, max_na
     dplyr::group_by(id, x) |>
     dplyr::summarise(val = mean(val, na.rm = TRUE), .groups = "drop") |>
     dplyr::left_join(i2n, by = dplyr::join_by(id)) |>
-    dplyr::mutate(name = dplyr::if_else(nchar(name) < max_name_len,
-                            name,
-                            stringr::str_c(stringr::str_sub(name, end = max_name_len), "...")
-                          )
-           )
+    dplyr::mutate(
+      name = dplyr::if_else(
+        nchar(name) < max_name_len,
+        name,
+        stringr::str_c(stringr::str_sub(name, end = max_name_len), "...")
+      )
+    )
 
   g <- d |>
     ggplot2::ggplot(ggplot2::aes(x = x, y = unique_name, fill = val)) +
@@ -288,9 +290,9 @@ plot_features <- function(dat, what, x_var, colour_var, scale = "lin", text_size
 
   lab <- what
 
-  if(scale == "log"){
-    dat <- dat |> 
-      dplyr::filter(val > 0) |> 
+  if(scale == "log") {
+    dat <- dat |>
+      dplyr::filter(val > 0) |>
       dplyr::mutate(val = log10(val))
     lab <-  stringr::str_glue("log {what}")
   }

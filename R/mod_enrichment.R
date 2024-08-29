@@ -113,7 +113,7 @@ mod_enrichment_server <- function(id, data_set, state) {
           selection = "single",
           rownames = FALSE
         ) |>
-          DT::formatStyle(columns = colnames(fe), fontSize = '80%')
+          DT::formatStyle(columns = colnames(fe), fontSize = "80%")
       }
     })
 
@@ -169,5 +169,3 @@ make_functional_enrichment <- function(sel_ids, all_ids, trms, id2name, fdr_limi
   }
   fe
 }
-
-

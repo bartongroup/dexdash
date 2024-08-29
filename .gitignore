@@ -3,5 +3,6 @@
 .Rhistory
 .RData
 .Ruserdata
+.lintr
 /doc/
 /Meta/

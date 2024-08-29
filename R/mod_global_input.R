@@ -93,7 +93,7 @@ mod_global_input_server <- function(id, data_set, state) {
 
     # Observe search input, copy to state, convert "" to NULL
     shiny::observeEvent(input$search, {
-      state$search <- input$search;
+      state$search <- input$search
       if(state$search == "")
         state$search <- NULL
     },

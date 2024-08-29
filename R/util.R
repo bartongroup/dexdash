@@ -78,7 +78,7 @@ gear_icon <- function(...) {
 #' initialisation of fields is not necessary, as by default all undefined
 #' fields are NULL. However, this seems like a good spot to gather all the field
 #' names and comments together.
-#' 
+#'
 #' @param x_variable A startup variable to display in the x-axis in the feature plot.
 #' @param colour_variable A startup variable to to use for colour in the feature plot.
 #'

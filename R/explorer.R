@@ -34,8 +34,8 @@ load_species_file <- function(species_file = NULL) {
 #' @return A list containing the configuration data for the specified species.
 #' @noRd
 load_species <- function(species, species_file = NULL, field_names = c("ensembl", "ontology"),
-                              ontology_names = c("go", "kegg", "reactome"),
-                              ensembl_names = c("biomart", "dataset", "host")) {
+                         ontology_names = c("go", "kegg", "reactome"),
+                         ensembl_names = c("biomart", "dataset", "host")) {
 
   all_sp <- load_species_file(species_file)
 
@@ -161,7 +161,7 @@ download_functional_terms <- function(species, species_file = NULL) {
 #' fterms <- prepare_functional_terms(terms)
 #' }
 #' @export
-prepare_functional_terms <- function(terms, feature_name = c("gene_symbol" ,"gene_id"), all_features = NULL) {
+prepare_functional_terms <- function(terms, feature_name = c("gene_symbol", "gene_id"), all_features = NULL) {
   feature_name <- match.arg(feature_name)
 
   ontologies <- names(terms)
@@ -305,7 +305,7 @@ dexdash_list <- function(...) {
   purrr::map(dexes, ~assertthat::assert_that(is(.x, "dexdash_set")))
   names <- purrr::map_chr(dexes, function(x) x$name)
   assertthat::assert_that(length(names) == length(unique(names)),
-              msg = "dexdash names must be unique")
+                          msg = "dexdash names must be unique")
 
   rlang::set_names(dexes, names) |>
     structure(class = "dexdash_list")
@@ -388,8 +388,6 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
     msg = "'colour_variable' has to be a column name in the metadata"
   )
 
-  
-
   # Mutliple test corrections
   for(nm in names(dexset)) {
     if(!("fdr" %in% colnames(dexset[[nm]]$de))) {
@@ -427,7 +425,7 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
     ),
 
     bslib::layout_column_wrap(
-      width = 1/3,
+      width = 1 / 3,
       bslib::layout_column_wrap(
         width = 1,
         mod_volma_plot_ui("volma_plot"),
