@@ -106,7 +106,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
       ids <- state$sel_feature_plot
       set_name <- state$set_name
       shiny::req(ids, set_name)
-      data_set$dex[[set_name]]$dat |>
+      data_set$dex[[set_name]]$data |>
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
         dplyr::left_join(data_set$dex[[set_name]]$metadata, by = "sample") |>
