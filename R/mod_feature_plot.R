@@ -144,6 +144,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #' Plot one feature
 #'
 #' @param d Tibble with feature intensities. Columns needed: x, val, replicate
+#' @param xlab Label on x axis
 #' @param ylab Label on y axis
 #' @param colour_var Variable used for point colours
 #' @param text_size Text size
@@ -152,7 +153,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
 #'
 #' @return ggplot object
 #' @noRd
-plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
+plot_one_feature <- function(d, xlab, ylab, colour_var, text_size, point_size, cex) {
   val <- shape <- fill <- x <- NULL
   okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00",
                          "#CC79A7", "grey80", "grey30", "black")
@@ -177,17 +178,29 @@ plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
       legend.position = "bottom"
     ) +
     ggplot2::scale_shape_identity() +  # necessary for shape mapping
-    ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = x, y = val, fill = fill, shape = shape),
-                              colour = "grey40", size = point_size, cex = cex) +
-    ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5) +
-    ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21))) +
-    ggplot2::labs(x = NULL, y = ylab, title = nm, fill = colour_var)
+    ggplot2::labs(x = xlab, y = ylab, title = nm, fill = colour_var)
 
-  # If too many colours, use viridis
-  if(length(unique(d$fill)) <= length(okabe_ito_palette)) {
-    g <- g + ggplot2::scale_fill_manual(values = okabe_ito_palette)
+  # Select appropriate x scale
+  if(is.numeric(d$x) | inherits(d$x, c("Date", "POSIXt"))) {
+    g <- g +
+      ggplot2::geom_point(data = d, ggplot2::aes(x = x, y = val, fill = fill, shape = shape),
+                          colour = "grey40", size = point_size)
   } else {
-    g <- g + ggplot2::scale_fill_viridis_d(option = "cividis")
+    g <- g +
+      ggbeeswarm::geom_beeswarm(data = d, ggplot2::aes(x = x, y = val, fill = fill, shape = shape),
+                                colour = "grey40", size = point_size, cex = cex) +
+      ggplot2::geom_vline(data = vlines, ggplot2::aes(xintercept = x), colour = "grey80", alpha = 0.5)
+  }
+
+  # Select appropriate colour scale
+  if(is.numeric(d$fill) | inherits(d$fill, c("Date", "POSIXt"))) {
+    g <- g + ggplot2::scale_fill_viridis_c(option = "cividis")
+  } else if(length(unique(d$fill)) <= length(okabe_ito_palette)) {
+    g <- g + ggplot2::scale_fill_manual(values = okabe_ito_palette) +
+      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21)))
+  } else {
+    g <- g + ggplot2::scale_fill_viridis_d(option = "cividis") +
+      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = 21)))
   }
 
   return(g)
@@ -196,6 +209,7 @@ plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
 #' Plot a heatmap of multiple features
 #'
 #' @param d Feature data
+#' @param zlab Label on x axis
 #' @param ylab Label on z axis
 #' @param text_size Text size
 #' @param max_n_lab Limit of features above which feature names are not displayed
@@ -203,10 +217,11 @@ plot_one_feature <- function(d, ylab, colour_var, text_size, point_size, cex) {
 #'   centered around the mean.
 #' @param max_name_len Numeric, maximum length of the name; longer names will be
 #'   shortened in the plot.
+#' @param x_bins Number of bins to group the x-variable into if it is continuous.
 #'
 #' @return ggplot object
 #' @noRd
-plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_mean, max_name_len = 18) {
+plot_feature_heatmap <- function(d, xlab, zlab, text_size, max_n_lab, norm_mean, max_name_len = 18, x_bins = 10) {
   id <- val <- M <- name <- x <- unique_name <- NULL
 
   i2n <- d |>
@@ -220,7 +235,12 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_mean, max_na
       dplyr::mutate(M = mean(val, na.rm = TRUE)) |>
       dplyr::mutate(val = val - M) |>
       dplyr::ungroup()
-    lab <- paste(lab, "- mean")
+    zlab <- paste(zlab, "- mean")
+  }
+
+  # Bin numeric axis
+  if(is.numeric(d$x)) {
+    d$x <- cut(d$x, breaks = x_bins)
   }
 
   d <- d |>
@@ -246,7 +266,7 @@ plot_feature_heatmap <- function(d, lab, text_size, max_n_lab, norm_mean, max_na
     ggplot2::geom_tile() +
     ggplot2::scale_x_discrete(expand = c(0, 0)) +
     ggplot2::scale_y_discrete(expand = c(0, 0)) +
-    ggplot2::labs(x = NULL, y = NULL, fill = lab)
+    ggplot2::labs(x = xlab, y = NULL, fill = zlab)
 
   if(norm_mean) {
     g <- g + ggplot2::scale_fill_distiller(type = "div", palette = "RdBu")
@@ -288,19 +308,21 @@ plot_features <- function(dat, what, x_var, colour_var, scale = "lin", text_size
 
   if(nrow(dat) == 0) return(NULL)
 
-  lab <- what
+  xlab <- x_var
+  ylab <- what
 
   if(scale == "log") {
     dat <- dat |>
       dplyr::filter(val > 0) |>
       dplyr::mutate(val = log10(val))
-    lab <-  stringr::str_glue("log {what}")
+    ylab <-  stringr::str_glue("log {what}")
   }
 
   n_feat <- length(unique(dat$id))
   if(n_feat == 1) {
-    plot_one_feature(dat, lab, colour_var, text_size, point_size, cex)
+    plot_one_feature(dat, xlab, ylab, colour_var, text_size, point_size, cex)
   } else {
-    plot_feature_heatmap(dat, lab, text_size, max_n_lab, norm_mean)
+    plot_feature_heatmap(dat, xlab, ylab, text_size, max_n_lab, norm_mean)
   }
 }
+

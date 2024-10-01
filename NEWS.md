@@ -84,3 +84,9 @@
 ## Version 0.2.8
 
  - Bug fix: card_body() was missing in three cards.
+
+## Version 0.2.9
+
+ - Typo fix
+ - Allow for continuous (numeric) variables for x-axis and colour scale in feature plot
+ 
