@@ -35,7 +35,7 @@ mod_volma_plot_ui <- function(id) {
   fdr_limit <- shiny::numericInput(
     inputId = ns("fdr_limit"),
     label = "FDR significance limit",
-    value = 0.01,
+    value = 0.05,
     min = 0,
     max = 1
   )
