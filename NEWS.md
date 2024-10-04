@@ -90,3 +90,6 @@
  - Typo fix
  - Allow for continuous (numeric) variables for x-axis and colour scale in feature plot
  
+## Version 0.2.10
+
+ - Changed the default FDR limit from 0.01 to 0.05 (I know!)
