@@ -235,7 +235,7 @@ plot_volcano <- function(d, ...) {
     plot_xy(...) +
     ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
     ggplot2::labs(x = expression(log[2] ~ FC), y = expression(-log[10] ~ P)) +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.03)))
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.03)), limits = c(0, NA))
 }
 
 #' Create an MA Plot

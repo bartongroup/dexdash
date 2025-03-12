@@ -1,9 +1,9 @@
 Package: dexdash
 Type: Package
 Title: Shiny app to explore results from differential expression experiments
-Version: 0.2.11
+Version: 0.2.12
 Remotes:
-    bartongroup/dexdash@v0.2.11
+    bartongroup/dexdash@v0.2.12
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",

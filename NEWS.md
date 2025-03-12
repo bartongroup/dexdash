@@ -93,3 +93,7 @@
 ## Version 0.2.10
 
  - Changed the default FDR limit from 0.01 to 0.05 (I know!)
+
+## Version 0.2.12
+
+ - Make sure that the y axis in the volcano plot always starts from zero, even if there are no data points near zero.
