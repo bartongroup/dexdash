@@ -97,3 +97,7 @@
 ## Version 0.2.12
 
  - Make sure that the y axis in the volcano plot always starts from zero, even if there are no data points near zero.
+
+## Version 0.2.13
+
+ - Replaced shinyWidgets::radioGroupButtons with shiny::selectInput in enrichment panel, because with larger amount of ontologies the selection box went outside the browser window and became invisible.

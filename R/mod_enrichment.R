@@ -19,7 +19,7 @@
 mod_enrichment_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  ontology <- shinyWidgets::radioGroupButtons(
+  ontology <- shiny::selectInput(
     inputId = ns("ontology"),
     label = "Ontology",
     choices = ""
@@ -66,7 +66,7 @@ mod_enrichment_server <- function(id, data_set, state) {
     # Update dummy ontology selections from data
     ontologies <- names(data_set$fterms)
     shiny::observe({
-      shinyWidgets::updateRadioGroupButtons(
+      shiny::updateSelectInput(
         session = session,
         inputId = "ontology",
         choices = ontologies
