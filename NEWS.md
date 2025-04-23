@@ -101,3 +101,8 @@
 ## Version 0.2.13
 
  - Replaced shinyWidgets::radioGroupButtons with shiny::selectInput in enrichment panel, because with larger amount of ontologies the selection box went outside the browser window and became invisible.
+
+ ## Version 0.2.14
+
+  - Fixed rounding errors causing very small FDRs in the feature info table to be displayed with lots of nines (e.g. 3.829999999999999e-188).
+

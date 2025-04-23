@@ -81,7 +81,8 @@ mod_feature_info_server <- function(id, data_set, state) {
           selection = "single",
           rownames = FALSE
         ) |>
-          DT::formatStyle(columns = colnames(ge), fontSize = "80%")
+          DT::formatStyle(columns = colnames(ge), fontSize = "80%") |> 
+          DT::formatSignif(columns = "FDR", digits = 3)
       }
     })
 
