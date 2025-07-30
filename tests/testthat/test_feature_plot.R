@@ -7,7 +7,7 @@ test_that("plot_features returns correct object for one gene", {
     dplyr::left_join(test$features, by = "id") |>
     dplyr::left_join(test_data$metadata, by = "sample")
   plt <- plot_features(d, what = "value", x_var = "group", colour_var = "group")
-  expect_true(ggplot2::is.ggplot(plt))
+  expect_true(ggplot2::is_ggplot(plt))
 
   data_used <- ggplot2::ggplot_build(plt)$data[[1]]
   expect_equal(data_used$x |> as.numeric(), d$group |> as.factor() |> as.numeric())
@@ -21,7 +21,7 @@ test_that("plot_features returns correct object for two genes", {
     dplyr::left_join(test$features, by = "id") |>
     dplyr::left_join(test_data$metadata, by = "sample")
   plt <- plot_features(d, what = "value", x_var = "sample", colour_var = "sample")
-  expect_true(ggplot2::is.ggplot(plt))
+  expect_true(ggplot2::is_ggplot(plt))
 
   dm <- d |>
     dplyr::left_join(test_data$metadata, by = "sample")

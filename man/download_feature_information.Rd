@@ -47,6 +47,6 @@ BioMart requires a biomart name, a host name and a dataset, to
 }
 \examples{
 \dontrun{
-gene_info <- download_gene_information("mouse")
+gene_info <- download_feature_information("mouse")
 }
 }

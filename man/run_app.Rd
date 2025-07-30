@@ -10,6 +10,7 @@ run_app(
   fterms,
   title = "DE explorer",
   x_variable = "sample",
+  value_variable = "value",
   colour_variable = NULL
 )
 }
@@ -33,13 +34,17 @@ function \code{download_functional_terms}.}
 the side bar.}
 
 \item{x_variable}{A string with the name of the startup x-axis variable for the
-feature plot. It should correspond to a column name in the metadata, included
-in the dexset object. The default is "sample".}
+feature plot. It should correspond to a column name in dexset$metadata. The default
+is "sample".}
+
+\item{value_variable}{A string with the name of the startup value variable for the
+feature plot, used on the y-axis of a single feature plot and for fill colour in
+the mutliple features heatmap. It should correspond to a column name in dexset$data.
+The default is "value".}
 
 \item{colour_variable}{A string with the name of the startup colour variable for the
-feature plot. It should correspond to a column name in the metadata, included
-in the dexset object. If left NULL (default), the second column from metadata
-will be used.}
+feature plot. It should correspond to a column name in dexset$metadata. If left
+NULL (default), the second column from metadata will be used.}
 }
 \value{
 The function does not return a value but launches a Shiny application

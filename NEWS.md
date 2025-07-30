@@ -109,3 +109,9 @@
 ## Version 0.2.15
 
  - Added a possibility to select the value shown in the feature plot. This can be now any column from the data.
+
+ ## Version 0.2.16
+
+  - Bug fixes
+  - More tests added
+

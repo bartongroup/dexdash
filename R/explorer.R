@@ -204,7 +204,7 @@ prepare_functional_terms <- function(terms, feature_name = c("gene_symbol", "gen
 #'   descriptions (cleaned).
 #' @examples
 #' \dontrun{
-#' gene_info <- download_gene_information("mouse")
+#' gene_info <- download_feature_information("mouse")
 #' }
 #' @export
 download_feature_information <- function(species, species_file = NULL, id = "ensembl_gene_id") {

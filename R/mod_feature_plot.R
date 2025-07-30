@@ -115,7 +115,7 @@ mod_feature_plot_server <- function(id, data_set, state) {
       shiny::updateSelectInput(
         session = session,
         inputId = "value_var",
-        choices = setdiff(names(yeast_dexset$data), c("id", "sample")),
+        choices = setdiff(names(data_set$dex[[set_name]]$data), c("id", "sample")),
         selected = state$value_variable
       )
     })
