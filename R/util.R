@@ -80,11 +80,12 @@ gear_icon <- function(...) {
 #' names and comments together.
 #'
 #' @param x_variable A startup variable to display in the x-axis in the feature plot.
+#' @param value_variable A startup variable to display as a value in the feature plot.
 #' @param colour_variable A startup variable to to use for colour in the feature plot.
 #'
 #' @return A reactive values list with pre-initialised fields.
 #' @noRd
-new_app_state <- function(x_variable, colour_variable) {
+new_app_state <- function(x_variable, value_variable, colour_variable) {
   shiny::reactiveValues(
     set_name = NULL,         # data set selection from the drop-down menu
     contrast = NULL,         # contrast selection from the drop-down menu
@@ -98,6 +99,7 @@ new_app_state <- function(x_variable, colour_variable) {
     sel_enrichment = NULL,   # id selection from brush for enrichment
     sel_volma_highlight = NULL, # id selection from communication: features to highlight in the main plot
     x_variable = x_variable, # a startup variable to display in the x-axis in the feature plot
+    value_variable = value_variable, # a startup variable to display in the y-axis in the feature plot
     colour_variable = colour_variable # a startup variable to to use for colour in the feature plot
   )
 }

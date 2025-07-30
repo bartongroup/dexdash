@@ -271,8 +271,10 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 #' }
 dexdash_set <- function(de, data, metadata, name) {
   assert_colnames(de, c("id", "log_fc", "expr", "p_value", "contrast"), deparse(substitute(de)))
-  assert_colnames(data, c("id", "sample", "value"), deparse(substitute(data)))
+  assert_colnames(data, c("id", "sample"), deparse(substitute(data)))
   assert_colnames(metadata, c("sample"), deparse(substitute(metadata)))
+  assertthat::assert_that(ncol(data) > 2,
+    msg = "data requires at least one additional column apart from 'id' and 'sample'.")
   assertthat::assert_that(ncol(metadata) > 1,
     msg = "metadata requires at least one additional column apart from 'sample'.")
   assertthat::is.string(name)
@@ -337,12 +339,15 @@ dexdash_list <- function(...) {
 #' @param title A string with a short title, which is presented at the top of
 #'   the side bar.
 #' @param x_variable A string with the name of the startup x-axis variable for the
-#'   feature plot. It should correspond to a column name in the metadata, included
-#'   in the dexset object. The default is "sample".
+#'   feature plot. It should correspond to a column name in dexset$metadata. The default
+#'   is "sample".
+#' @param value_variable A string with the name of the startup value variable for the
+#'   feature plot, used on the y-axis of a single feature plot and for fill colour in
+#'   the mutliple features heatmap. It should correspond to a column name in dexset$data.
+#'   The default is "value".
 #' @param colour_variable A string with the name of the startup colour variable for the
-#'   feature plot. It should correspond to a column name in the metadata, included
-#'   in the dexset object. If left NULL (default), the second column from metadata
-#'   will be used.
+#'   feature plot. It should correspond to a column name in dexset$metadata. If left
+#'   NULL (default), the second column from metadata will be used.
 #'
 #' @return The function does not return a value but launches a Shiny application
 #'   in the user's default web browser, allowing for interactive exploration of
@@ -361,7 +366,7 @@ dexdash_list <- function(...) {
 #' }
 #' @export
 run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable = "sample",
-                    colour_variable = NULL) {
+                    value_variable = "value", colour_variable = NULL) {
   p_value <- contrast <- NULL
 
   assertthat::assert_that(is(dexset, "dexdash_set") | is(dexset, "dexdash_list"))
@@ -378,6 +383,11 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
   assertthat::assert_that(
     x_variable %in% colnames(dexset[[1]]$metadata),
     msg = "'x_variable' has to be a column name in the metadata"
+  )
+
+  assertthat::assert_that(
+    value_variable %in% colnames(dexset[[1]]$data),
+    msg = "'value_variable' has to be a column name in the data"
   )
 
   if(is.null(colour_variable))
@@ -443,7 +453,7 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
     })
 
     # Initialise app state, reactive object for communication between modules
-    app_state <- new_app_state(x_variable, colour_variable)
+    app_state <- new_app_state(x_variable, value_variable, colour_variable)
 
     # server logic: modules
     mod_global_input_server("global_input", data_set, app_state)

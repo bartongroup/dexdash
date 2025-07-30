@@ -22,7 +22,13 @@ mod_feature_plot_ui <- function(id) {
     label = "X-axis variable",
     choices = NULL
   )
-
+  
+  value_variable <- shiny::selectInput(
+    inputId = ns("value_var"),
+    label = "Value variable",
+    choices = NULL
+  )
+  
   colour_variable <- shiny::selectInput(
     inputId = ns("colour_var"),
     label = "Colour variable",
@@ -48,6 +54,7 @@ mod_feature_plot_ui <- function(id) {
 
   gear <- gear_icon(
     x_variable,
+    value_variable,
     colour_variable,
     norm_mean,
     intensity_scale
@@ -101,6 +108,18 @@ mod_feature_plot_server <- function(id, data_set, state) {
       )
     })
 
+    # Update dummy y-variable selections from data
+    shiny::observe({
+      set_name <- state$set_name
+      shiny::req(set_name)
+      shiny::updateSelectInput(
+        session = session,
+        inputId = "value_var",
+        choices = setdiff(names(yeast_dexset$data), c("id", "sample")),
+        selected = state$value_variable
+      )
+    })
+
     # Function to make plot
     make_plot <- shiny::reactive({
       ids <- state$sel_feature_plot
@@ -110,8 +129,9 @@ mod_feature_plot_server <- function(id, data_set, state) {
         dplyr::filter(id %in% ids) |>
         dplyr::left_join(data_set$features, by = "id") |>
         dplyr::left_join(data_set$dex[[set_name]]$metadata, by = "sample") |>
-        plot_features(what = "value", x_var = input$x_var, colour_var = input$colour_var,
-                      scale = input$intensity_scale, max_n_lab = 50, norm_mean = input$norm_mean)
+        plot_features(what = input$value_var, x_var = input$x_var,
+                      colour_var = input$colour_var, scale = input$intensity_scale,
+                      max_n_lab = 50, norm_mean = input$norm_mean)
     })
 
     # Output plot

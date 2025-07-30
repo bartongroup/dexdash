@@ -106,3 +106,6 @@
 
   - Fixed rounding errors causing very small FDRs in the feature info table to be displayed with lots of nines (e.g. 3.829999999999999e-188).
 
+## Version 0.2.15
+
+ - Added a possibility to select the value shown in the feature plot. This can be now any column from the data.
