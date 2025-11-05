@@ -15,7 +15,7 @@
 
 # ----- UI definitions -----
 
-mod_volma_plot_ui <- function(id) {
+mod_volma_plot_ui <- function(id, initial_fdr_limit = 0.05, initial_logfc_limit = 0) {
   ns <- shiny::NS(id)
 
   plot_type <- shinyWidgets::radioGroupButtons(
@@ -27,7 +27,7 @@ mod_volma_plot_ui <- function(id) {
   fc_limit <- shiny::numericInput(
     inputId = ns("logfc_limit"),
     label = "|log FC| significance limit",
-    value = 0,
+    value = initial_logfc_limit,
     min = 0,
     max = 100
   )
@@ -35,7 +35,7 @@ mod_volma_plot_ui <- function(id) {
   fdr_limit <- shiny::numericInput(
     inputId = ns("fdr_limit"),
     label = "FDR significance limit",
-    value = 0.05,
+    value = initial_fdr_limit,
     min = 0,
     max = 1
   )

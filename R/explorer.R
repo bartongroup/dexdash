@@ -348,6 +348,9 @@ dexdash_list <- function(...) {
 #' @param colour_variable A string with the name of the startup colour variable for the
 #'   feature plot. It should correspond to a column name in dexset$metadata. If left
 #'   NULL (default), the second column from metadata will be used.
+#' @param volma_fdr_limit Initial FDR limit for volcano/MA plot.
+#' @param volma_logfc_limit Initial |logFC| limit for volcano/MA plot.
+#' @param enrichment_fdr_limit Initial FDR limit for enrichment analysis.
 #'
 #' @return The function does not return a value but launches a Shiny application
 #'   in the user's default web browser, allowing for interactive exploration of
@@ -366,13 +369,23 @@ dexdash_list <- function(...) {
 #' }
 #' @export
 run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable = "sample",
-                    value_variable = "value", colour_variable = NULL) {
+                    value_variable = "value", colour_variable = NULL, volma_fdr_limit = 0.05,
+                    volma_logfc_limit = 0, enrichment_fdr_limit = 0.05) {
   p_value <- contrast <- NULL
 
   assertthat::assert_that(is(dexset, "dexdash_set") | is(dexset, "dexdash_list"))
   assert_colnames(features, c("id", "name", "description"), deparse(substitute(features)))
   assertthat::assert_that(is(fterms, "list"))
   assertthat::is.string(title)
+  assertthat::is.number(volma_fdr_limit)
+  assertthat::assert_that(volma_fdr_limit >= 0 & volma_fdr_limit <= 1,
+    msg = "volma_fdr_limit has to be between 0 and 1")
+  assertthat::is.number(volma_logfc_limit)
+  assertthat::assert_that(volma_logfc_limit >= 0 & volma_logfc_limit <= 100,
+    msg = "volma_logfc_limit has to be between 0 and 100")
+  assertthat::is.number(enrichment_fdr_limit)
+  assertthat::assert_that(enrichment_fdr_limit >= 0 & enrichment_fdr_limit <= 1,
+    msg = "enrichment_fdr_limit has to be between 0 and 1")
   purrr::map(fterms, ~assertthat::assert_that(is(.x, "fenr_terms"),
     msg = "fterms argument needs to be a list of 'fenr_terms' objects. Did you run 'prepare_functional_terms'?"))
 
@@ -438,11 +451,12 @@ run_app <- function(dexset, features, fterms, title = "DE explorer", x_variable 
       width = 1 / 3,
       bslib::layout_column_wrap(
         width = 1,
-        mod_volma_plot_ui("volma_plot"),
+        mod_volma_plot_ui("volma_plot", initial_fdr_limit = volma_fdr_limit,
+                           initial_logfc_limit = volma_logfc_limit),
         mod_feature_plot_ui("feature_plot")
       ),
       mod_feature_info_ui("feature_info"),
-      mod_enrichment_ui("enrichment"),
+      mod_enrichment_ui("enrichment", initial_fdr_limit = enrichment_fdr_limit),
     )
   )
 

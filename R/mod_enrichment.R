@@ -16,7 +16,7 @@
 
 # ----- UI definitions -----
 
-mod_enrichment_ui <- function(id) {
+mod_enrichment_ui <- function(id, initial_fdr_limit = 0.05) {
   ns <- shiny::NS(id)
 
   ontology <- shiny::selectInput(
@@ -28,7 +28,7 @@ mod_enrichment_ui <- function(id) {
   fdr_limit <- shiny::numericInput(
     inputId = ns("fdr_limit"),
     label = "FDR limit",
-    value = 0.05,
+    value = initial_fdr_limit,
     min = 0,
     max = 1
   )

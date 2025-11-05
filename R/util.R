@@ -82,6 +82,8 @@ gear_icon <- function(...) {
 #' @param x_variable A startup variable to display in the x-axis in the feature plot.
 #' @param value_variable A startup variable to display as a value in the feature plot.
 #' @param colour_variable A startup variable to to use for colour in the feature plot.
+#' @param volma_fdr_limit Initial FDR limit for volcano/MA plot.
+#' @param enrichment_fdr_limit Initial FDR limit for enrichment analysis.
 #'
 #' @return A reactive values list with pre-initialised fields.
 #' @noRd

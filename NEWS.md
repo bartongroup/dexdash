@@ -115,3 +115,7 @@
   - Bug fixes
   - More tests added
 
+## Version 0.2.17
+
+ - Added initialisation values for FDR and |logFC| limits into `run_app()`.
+

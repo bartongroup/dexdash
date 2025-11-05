@@ -11,7 +11,10 @@ run_app(
   title = "DE explorer",
   x_variable = "sample",
   value_variable = "value",
-  colour_variable = NULL
+  colour_variable = NULL,
+  volma_fdr_limit = 0.05,
+  volma_logfc_limit = 0,
+  enrichment_fdr_limit = 0.05
 )
 }
 \arguments{
@@ -45,6 +48,12 @@ The default is "value".}
 \item{colour_variable}{A string with the name of the startup colour variable for the
 feature plot. It should correspond to a column name in dexset$metadata. If left
 NULL (default), the second column from metadata will be used.}
+
+\item{volma_fdr_limit}{Initial FDR limit for volcano/MA plot.}
+
+\item{volma_logfc_limit}{Initial |logFC| limit for volcano/MA plot.}
+
+\item{enrichment_fdr_limit}{Initial FDR limit for enrichment analysis.}
 }
 \value{
 The function does not return a value but launches a Shiny application
