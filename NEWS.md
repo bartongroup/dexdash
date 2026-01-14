@@ -119,3 +119,7 @@
 
  - Added initialisation values for FDR and |logFC| limits into `run_app()`.
 
+## Version 0.2.18
+
+ - Moved `markdown` from `Suggests` to `Imports` in `DESCRIPTION`, as it is required for Shiny to run.
+ 
