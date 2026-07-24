@@ -1,67 +1,67 @@
 {
   "human" : {
     "ontology" : {
-      "go" : "goa_human",
+      "go" : "HUMAN-uniprot",
       "reactome" : "Homo sapiens",
       "kegg" : "hsa"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "hsapiens_gene_ensembl"
     }
   },
   "mouse" : {
     "ontology" : {
-      "go" : "mgi",
+      "go" : "MOUSE-mod",
       "reactome" : "Mus musculus",
       "kegg" : "mmu"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "mmusculus_gene_ensembl"
     }
   },
   "rat" : {
     "ontology" : {
-      "go" : "rgd",
+      "go" : "RAT-mod",
       "reactome" : "Rattus norvegicus",
       "kegg" : "rno"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "rnorvegicus_gene_ensembl"
     }
   },
   "yeast" : {
     "ontology" : {
-      "go" : "sgd",
+      "go" : "YEAST-mod",
       "reactome" : "Saccharomyces cerevisiae",
       "kegg" : "sce"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "scerevisiae_gene_ensembl"
     }
   },
   "roundworm" : {
     "ontology" : {
-      "go" : "wb",
+      "go" : "CAEEL-mod",
       "reactome" : "Caenorhabditis elegans",
       "kegg" : "cel"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "celegans_gene_ensembl"
     }
   },
   "slime mold" : {
     "ontology" : {
-      "go" : "dictybase",
+      "go" : "DICDI-mod",
       "reactome" : "Dictyostelium discoideum",
       "kegg" : "ddi"
     },
@@ -73,31 +73,31 @@
   },
   "fruit fly" : {
     "ontology" : {
-      "go" : "fb",
+      "go" : "DROME-mod",
       "reactome" : "Drosophila melanogaster",
       "kegg" : "dme"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "dmelanogaster_gene_ensembl"
     }
   },
   "xenopus" : {
     "ontology" : {
-      "go" : "xenbase",
+      "go" : "XENTR-mod",
       "reactome" : "Xenopus tropicalis",
       "kegg" : "xtr"
     },
     "ensembl" : {
-      "biomart" : "ensembl",
+      "biomart" : "genes",
       "host" : "https://www.ensembl.org",
       "dataset" : "xtropicalis_gene_ensembl"
     }
   },
   "arabidopsis" : {
     "ontology" : {
-      "go" : "tair",
+      "go" : "ARATH-mod",
       "kegg" : "ath"
     },
     "ensembl" : {

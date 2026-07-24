@@ -123,3 +123,9 @@
 
  - Moved `markdown` from `Suggests` to `Imports` in `DESCRIPTION`, as it is required for Shiny to run.
  
+ ## Version 0.2.19
+
+ - Updates following Gene Ontology change of species naming.
+ - Minor changes to Biomart access
+
+ 

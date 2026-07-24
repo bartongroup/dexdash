@@ -1,9 +1,9 @@
 Package: dexdash
 Type: Package
 Title: Shiny app to explore results from differential expression experiments
-Version: 0.2.18
+Version: 0.2.19
 Remotes:
-    bartongroup/dexdash@v0.2.18
+    bartongroup/dexdash@v0.2.19
 Authors@R: person(
     given = "Marek",
     family = "Gierlinski",
@@ -64,7 +64,7 @@ Suggests:
     forcats
 Depends: 
     R (>= 4.1)
-RoxygenNote: 7.3.3
 VignetteBuilder: quarto
 LazyData: true
 LazyDataCompression: xz
+Config/roxygen2/version: 8.0.0

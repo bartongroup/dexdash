@@ -94,7 +94,7 @@ list_species <- function(species_file = NULL) {
 #' @return A list of three elements named "go", "reactome" and "kegg", each
 #'   containing two data frames with term descriptions and feature mapping.
 #' @details The GO, KEGG and Reactome databases use different species
-#'   designation names. For example, designation for yeast is "sgd",
+#'   designation names. For example, designation for yeast is "YEAST-mod",
 #'   "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG,
 #'   respectively. In oder to interrogate these databases, the correct
 #'   designations must be passed on. This package contains a small JSON file
@@ -212,7 +212,7 @@ download_feature_information <- function(species, species_file = NULL, id = "ens
 
   sp <- load_species(species, species_file)
 
-  mart <- biomaRt::useMart(biomart = sp$ensembl$biomart, host = sp$ensembl$host, dataset = sp$ensembl$dataset)
+  mart <- biomaRt::useEnsembl(biomart = sp$ensembl$biomart, host = sp$ensembl$host, dataset = sp$ensembl$dataset)
   attr <- c(
     id = id,
     name = "external_gene_name",

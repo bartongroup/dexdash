@@ -25,7 +25,7 @@ Retrieves Gene Ontology (GO), Reactome, and KEGG terms for a given species.
 }
 \details{
 The GO, KEGG and Reactome databases use different species
-  designation names. For example, designation for yeast is "sgd",
+  designation names. For example, designation for yeast is "YEAST-mod",
   "Saccharomyces cerevisiae" and "sce", for GO, Reactome and KEGG,
   respectively. In oder to interrogate these databases, the correct
   designations must be passed on. This package contains a small JSON file
