@@ -128,4 +128,8 @@
  - Updates following Gene Ontology change of species naming.
  - Minor changes to Biomart access
 
+ ## Version 0.2.20
+
+ - Fixed the bug when having only one value on the horizontal axis in the feature plot caused a crash.
+
  

@@ -185,8 +185,12 @@ plot_one_feature <- function(d, xlab, ylab, colour_var, text_size, point_size, c
     )
 
   ncond <- length(unique(d$x))
-  vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
-
+  if(ncond > 1) {
+    vlines <- tibble::tibble(x = seq(1.5, ncond - 0.5, 1))
+  } else {
+    vlines <- tibble::tibble(x = numeric(0))
+  }
+  
   nm <- dplyr::first(d$name)
 
   g <- ggplot2::ggplot() +
